@@ -61,3 +61,101 @@
   /* Ajusta los selectores si tu build usa otros nombres */
   .config-simulada, [data-role="config-pill"], .pill-config, .btn-config { display: none !important; }
 </style>
+<!-- === PROCESOS | Bootstrap de nube + fix export HTML (universal, sin depender de <body>) === -->
+<script>
+(function () {
+  var CFG_KEY='FIREBASE_CFG_JSON', WS_KEY='WORKSPACE_ID', LOCK_KEY='CONFIG_LOCKED', BOOT_FLAG='PROCESOS_BOOTSTRAPPED';
+
+  // --- 1) TU firebaseConfig (SOLO JSON con llaves) ---
+  var FIREBASE_CONFIG={
+    "apiKey":"AIzaSyD7k7IbzhXt0PXUP6YCy6ZAQGXQdIKRU_U",
+    "authDomain":"proceso-84254.firebaseapp.com",
+    "projectId":"proceso-84254",
+    "storageBucket":"proceso-84254.firebasestorage.app",
+    "messagingSenderId":"433589034329",
+    "appId":"1:433589034329:web:ad5d60d662c8beed9e0048",
+    "measurementId":"G-DTVJE8D3FG"
+  };
+  var DEFAULT_WORKSPACE='procesos';
+
+  // --- 2) Escribe config en localStorage (si cambia) y bloquea UI de config ---
+  function seedConfig(){
+    var changed=false;
+    try{
+      var desired=JSON.stringify(FIREBASE_CONFIG);
+      if (localStorage.getItem(CFG_KEY)!==desired){ localStorage.setItem(CFG_KEY,desired); changed=true; }
+      if (localStorage.getItem(WS_KEY)!==DEFAULT_WORKSPACE){ localStorage.setItem(WS_KEY,DEFAULT_WORKSPACE); changed=true; }
+      localStorage.setItem(LOCK_KEY,'1');
+    }catch(e){ console.warn('[PROCESOS] No se pudo escribir configuración:', e); }
+    return changed;
+  }
+
+  // --- 3) Snippet que se inyectará dentro de cualquier HTML exportado ---
+  function buildBootstrapSnippet(){
+    var cfg = JSON.stringify(FIREBASE_CONFIG).replace(/</g,'\\u003c');
+    var ws  = DEFAULT_WORKSPACE.replace(/</g,'\\u003c');
+    return [
+      "<!-- === PROCESOS | Bootstrap nube integrado (export) === -->",
+      "<script>(function(){",
+      "var CFG_KEY='",CFG_KEY,"',WS_KEY='",WS_KEY,"',LOCK_KEY='",LOCK_KEY,"',FLAG='",BOOT_FLAG,"';",
+      "var FIREBASE_CONFIG=",cfg,";",
+      "var DEFAULT_WORKSPACE='",ws,"';",
+      "function seed(){var ch=false;try{var d=JSON.stringify(FIREBASE_CONFIG);",
+      "if(localStorage.getItem(CFG_KEY)!==d){localStorage.setItem(CFG_KEY,d);ch=true;}",
+      "if(localStorage.getItem(WS_KEY)!==DEFAULT_WORKSPACE){localStorage.setItem(WS_KEY,DEFAULT_WORKSPACE);ch=true;}",
+      "localStorage.setItem(LOCK_KEY,'1');}catch(e){console.warn('[PROCESOS] export seed err',e);}return ch}",
+      "var changed=seed();",
+      "if(changed && !sessionStorage.getItem(FLAG)){sessionStorage.setItem(FLAG,'1');location.reload();}",
+      "})();<\/script>",
+      "<!-- === /PROCESOS | Fin bootstrap (export) === -->"
+    ].join("");
+  }
+
+  // --- 4) Inyecta el snippet en HTML exportado (antes de </body> si existe) ---
+  function injectIntoHtml(html){
+    try{
+      var snippet = buildBootstrapSnippet();
+      if (typeof html!=='string') html = String(html);
+      if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, snippet + '\n</body>');
+      return html + '\n' + snippet;
+    }catch(e){ console.warn('[PROCESOS] Falló la inyección en HTML exportado:', e); return html; }
+  }
+
+  // --- 5) Parche universal del constructor Blob para capturar export HTML ---
+  try{
+    var _Blob = window.Blob;
+    var PatchedBlob = function(parts, opts){
+      try{
+        var type = opts && (opts.type || opts['contentType']) || '';
+        if (typeof type==='string' && type.toLowerCase().indexOf('text/html')>-1){
+          // Unimos partes y aplicamos inyección
+          var text = '';
+          for (var i=0; i<(parts?parts.length:0); i++){
+            var p = parts[i];
+            if (p instanceof ArrayBuffer) p = new TextDecoder('utf-8').decode(new Uint8Array(p));
+            else if (p instanceof Uint8Array) p = new TextDecoder('utf-8').decode(p);
+            text += (typeof p==='string') ? p : (p && p.toString ? p.toString() : '');
+          }
+          var injected = injectIntoHtml(text);
+          return new _Blob([injected], opts);
+        }
+      }catch(e){ console.warn('[PROCESOS] Blob patch warning:', e); }
+      return new _Blob(parts, opts);
+    };
+    PatchedBlob.prototype = _Blob.prototype;
+    window.Blob = PatchedBlob;
+    console.log('[PROCESOS] Patch Blob activo → los HTML exportados llevarán la config integrada.');
+  }catch(e){ console.warn('[PROCESOS] No se pudo parchear Blob:', e); }
+
+  // --- 6) Sembrar config y forzar una recarga única si era necesario ---
+  var changed = seedConfig();
+  if (changed && !sessionStorage.getItem(BOOT_FLAG)){
+    sessionStorage.setItem(BOOT_FLAG,'1');
+    console.log('[PROCESOS] Config integrada aplicada. Recargando para activar Firestore...');
+    location.reload();
+  } else {
+    console.log("[PROCESOS] Nube integrada OK → Firestore(workspace='%s')", DEFAULT_WORKSPACE);
+  }
+})();
+</script>
+<!-- === /PROCESOS | Fin bootstrap universal === -->
