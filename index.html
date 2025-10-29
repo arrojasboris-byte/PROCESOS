@@ -1,339 +1,63 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>PROCESOS — Sync Ready (v9)</title>
-<style>
-  :root{--red1:#b3131d;--red2:#c1121f;--black:#111;--bg:#f6f6f8;--hdr:76px}
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;overflow:hidden}
-  /* Header */
-  .header{background:linear-gradient(180deg,#b3131d,#de1f28);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-  .header-inner{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:8px 12px;min-height:var(--hdr)}
-  .h-left{display:flex;gap:8px;align-items:center;justify-content:flex-start}
-  .h-center{display:flex;align-items:center;justify-content:center}
-  .h-right{display:flex;align-items:center;justify-content:flex-end}
-  .logo{height:40px;width:40px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:20px}
-  h1{margin:0;font-size:40px;letter-spacing:.5px;font-weight:900}
-  .btn{border:0;border-radius:12px;padding:8px 12px;background:rgba(255,255,255,.12);color:#fff;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap}
-  .btn:hover{background:rgba(255,255,255,.22)} .btn.dark{background:#00000055} .btn.dark:hover{background:#0000007a}
-  .btn .i{font-size:16px}
-  /* Main layout with fixed search row */
-  .main{height:calc(100vh - var(--hdr));display:flex;flex-direction:column;overflow:hidden}
-  .row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:10px 16px;background:linear-gradient(180deg,#ffffff,#f7f7f7);position:sticky;top:0;z-index:5;border-bottom:1px solid #eee}
-  .search{position:relative;min-width:240px} .search input{width:100%;padding:10px 12px 10px 34px;border:1px solid #ddd;border-radius:10px;background:#fff}
-  .search .icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.55}
-  .grid{flex:1;display:grid;grid-template-columns:380px 1fr;gap:16px;padding:12px 16px 12px 16px;min-height:0}
-  @media (max-width: 980px){ .grid{grid-template-columns:1fr} body{overflow:auto} .main{height:auto} }
-  /* Left panel: its own scroller */
-  .panel{background:#fff;border-radius:16px;border:2px solid var(--red2);box-shadow:0 10px 24px rgba(0,0,0,.06);overflow:hidden;display:flex;flex-direction:column;min-height:0}
-  .panel-h{padding:10px 14px;background:linear-gradient(90deg,#c1121f,#8B0000,#111);color:#fff;display:flex;justify-content:space-between;align-items:center}
-  .panel-h .title{font-weight:900;font-size:18px}
-  .panel-b{padding:12px;overflow:auto;min-height:0}
-  .card{background:#fff;border:1px solid #e5e5e5;border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-  .card.active{background:linear-gradient(90deg,#fff,#ffe5e5);border-color:#da3b3b;box-shadow:0 8px 20px rgba(209,43,43,.18)}
-  .handle{cursor:grab;color:#999;font-size:18px;padding-right:6px;user-select:none}
-  .btxt{font-size:17px;font-weight:800;color:#111}
-  .muted{font-size:12px;color:#666}
-  .iconbtn{border:1px solid #ddd;background:#fff;border-radius:12px;padding:8px 10px;cursor:pointer}
-  .iconbtn.grad{background:linear-gradient(135deg,#c1121f,#111); color:#fff; border:none; box-shadow:0 3px 10px rgba(0,0,0,.18)}
-  .iconbtn:disabled{opacity:.5;cursor:not-allowed}
-  /* Right: scroller; */
-  .right{display:flex;flex-direction:column;min-height:0}
-  .subband{background:linear-gradient(90deg,#c1121f,#8B0000,#111); color:#fff; border-radius:12px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
-  .right-title{font-size:26px;font-weight:900}
-  .right-list{flex:1;overflow:auto;min-height:0}
-  .sub-card{border:1px solid #e5e5e5;border-radius:14px;background:#fff;margin-bottom:10px}
-  .sub-h{padding:10px 12px;display:flex;gap:8px;align-items:center}
-  .sub-h input{flex:1;border:1px solid #ddd;border-radius:10px;padding:8px 10px}
-  .badge{padding:3px 8px;border-radius:999px;font-size:12px;color:#fff;white-space:nowrap}
-  .b-red{background:#c1121f} .b-black{background:#111} .b-grad{background:linear-gradient(90deg,#c1121f,#111)} .b-gray{background:#555}
-  .sub-b{border-top:1px solid #eee;padding:10px 12px}
-  .tools{display:flex;gap:6px;flex-wrap:wrap}
-  .tools .iconbtn{padding:6px 10px}
-  textarea{width:100%;min-height:110px;border:1px solid #ddd;border-radius:10px;padding:10px 12px;resize:vertical;max-height:40vh;overflow:auto}
-  .note{background:#fff1f1;border:1px solid #ffc9c9;color:#941313;border-radius:12px;padding:10px 12px;margin-bottom:8px}
-  .toast{position:fixed;right:16px;bottom:16px;background:#111;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-  .pill{font-size:12px;background:#00000015;padding:6px 10px;border-radius:999px;border:1px solid #00000022}
-</style>
-</head>
-<body>
-  <header class="header">
-    <div class="header-inner">
-      <div class="h-left">
-        <button class="btn" id="saveCloud" title="Guardar en nube"><span class="i">☁️⬆️</span><span>Guardar</span></button>
-        <button class="btn" id="loadCloud" title="Actualizar de nube"><span class="i">☁️🔄</span><span>Actualizar</span></button>
-        <button class="btn" id="downHtml" title="Archivo para enviar (HTML con datos)"><span class="i">📧</span><span>Archivo</span></button>
-        <button class="btn" id="downZip" title="Descargar ZIP"><span class="i">⬇️📦</span><span>ZIP</span></button>
-        <button class="btn" id="copyLink" title="Copiar enlace"><span class="i">🔗</span><span>Enlace</span></button>
-      </div>
-      <div class="h-center">
-        <div class="logo" title="PROCESOS">🎧</div>
-        <h1 style="margin-left:8px">PROCESOS</h1>
-      </div>
-      <div class="h-right">
-        <button class="btn dark" id="lockBtn" title="Bloquear/Desbloquear (PIN AR4321)">🔒</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="main">
-    <div class="row">
-      <div class="search">
-        <span class="icon">🔎</span>
-        <input id="q" placeholder="Buscar procesos y subprocesos"/>
-      </div>
-      <div class="pill" id="syncState">Nube: local</div>
-      <div style="text-align:right;font-size:12px;color:#666">Última actualización: <b id="last"></b></div>
-    </div>
-
-    <div class="grid">
-      <section class="panel">
-        <div class="panel-h">
-          <div class="title">Procesos</div>
-          <div><button class="btn" id="procAdd" style="padding:6px 10px">+ Añadir</button></div>
-        </div>
-        <div class="panel-b" id="procList"></div>
-      </section>
-
-      <section class="right">
-        <div class="subband">
-          <div class="right-title" id="rightTitle">—</div>
-          <div><button class="btn" id="subAdd" style="padding:8px 12px;background:linear-gradient(90deg,#c1121f,#8B0000,#111)">+ Añadir subproceso</button></div>
-        </div>
-        <div id="note" class="note" style="display:none"></div>
-        <div class="right-list" id="subList"></div>
-      </section>
-    </div>
-  </main>
-
-  <div id="toast" style="display:none" class="toast"></div>
-
+<!-- === PROCESOS | Bootstrap de nube integrado (Firestore + workspace) === -->
 <script>
-/* ===== Helper UI ===== */
-const toast=(m)=>{const t=document.getElementById('toast'); t.textContent=m; t.style.display='block'; clearTimeout(window.__t); window.__t=setTimeout(()=>t.style.display='none',1500)}
-const fmt=(t)=>new Date(t).toLocaleString();
-const uid=()=>Math.random().toString(36).slice(2);
+(function () {
+  var CFG_KEY   = 'FIREBASE_CFG_JSON';
+  var WS_KEY    = 'WORKSPACE_ID';
+  var LOCK_KEY  = 'CONFIG_LOCKED';
+  var BOOT_FLAG = 'PROCESOS_BOOTSTRAPPED';
 
-/* ===== PIN ===== */
-const PIN="AR4321";
+  // Tu firebaseConfig (SOLO JSON con llaves)
+  var FIREBASE_CONFIG = {
+    "apiKey": "AIzaSyD7k7IbzhXt0PXUP6YCy6ZAQGXQdIKRU_U",
+    "authDomain": "proceso-84254.firebaseapp.com",
+    "projectId": "proceso-84254",
+    "storageBucket": "proceso-84254.firebasestorage.app",
+    "messagingSenderId": "433589034329",
+    "appId": "1:433589034329:web:ad5d60d662c8beed9e0048",
+    "measurementId": "G-DTVJE8D3FG"
+  };
 
-/* ===== Local & simulated cloud keys ===== */
-const STORAGE="PROC_SYNC_V9"; const CLOUD_SIM="PROC_SYNC_V9_CLOUD";
+  // Workspace por defecto
+  var DEFAULT_WORKSPACE = "procesos";
 
-/* ===== Firestore cloud connector (lazy) ===== */
-window.cloud = {
-  enabled:false, db:null, docRef:null, unsub:null, wsId:null,
-  async sha256(s){const d=new TextEncoder().encode(s); const h=await crypto.subtle.digest("SHA-256",d); return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('')},
-  async initInteractive(){
-    const raw=prompt("Pega tu firebaseConfig JSON (desde Firebase Console > Project settings > SDK setup & configuration)");
-    if(!raw){toast("Cancelado");return}
-    let cfg; try{cfg=JSON.parse(raw)}catch{toast("JSON no válido");return}
-    const ws=prompt("Escribe un Workspace ID (ej: procesos)"); if(!ws){toast("Cancelado");return}
-    localStorage.setItem("FIREBASE_CFG_JSON", JSON.stringify(cfg));
-    localStorage.setItem("WORKSPACE_ID", ws);
-    await this.initFromLocal();
-  },
-  async initFromLocal(){
-    const str=localStorage.getItem("FIREBASE_CFG_JSON"); const ws=localStorage.getItem("WORKSPACE_ID");
-    if(!str||!ws){this.enabled=false; document.getElementById('syncState').textContent="Nube: local"; return}
-    const cfg=JSON.parse(str);
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js");
-    const { getFirestore, doc, setDoc, getDoc, onSnapshot, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js");
-    const app=initializeApp(cfg); const db=getFirestore(app);
-    this.db=db; this.wsId=ws; this.docRef=doc(db,"workspaces",ws);
-    this.enabled=true; document.getElementById('syncState').textContent="Nube: Firestore ("+ws+")";
-    if(this.unsub) this.unsub();
-    this.unsub=onSnapshot(this.docRef,(snap)=>{
-      if(!snap.exists()) return;
-      const data=snap.data();
-      if(window.__applyRemote){ window.__applyRemote(data) }
-    });
-    toast("Conectado a Firestore");
-  },
-  async save(procesos, open){
-    if(!this.enabled){ localStorage.setItem(CLOUD_SIM, JSON.stringify({when:Date.now(),procesos})); toast("Guardado en nube simulada"); return }
-    const pinHash = await this.sha256(PIN);
-    const { setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js");
-    await setDoc(this.docRef, { procesos, open, pinHash, updatedAt: serverTimestamp() }, { merge:true });
-    toast("Guardado en Firestore");
-  },
-  async load(){
-    if(!this.enabled){ const r=localStorage.getItem(CLOUD_SIM); return r?JSON.parse(r).procesos:null }
-    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js");
-    const snap=await getDoc(this.docRef); return snap.exists()? snap.data().procesos : null;
-  }
-};
-
-/* ===== Estado app ===== */
-const now=Date.now();
-const DEFAULT=[
-  {id:uid(),nombre:"PORTFOLIO",updatedAt:now,subprocesos:[{id:uid(),titulo:"Casos clínicos",descripcion:"- Seleccionar casos\n- Adjuntar informes",responsable:"Audiólogo y responsable",links:[],updatedAt:now}]},
-  {id:uid(),nombre:"FORMACIÓN",updatedAt:now,subprocesos:[
-    {id:uid(),titulo:"Acreditación",descripcion:"- Recoger diplomas\n- Comprobar caducidad",responsable:"Audiólogo",links:[],updatedAt:now},
-    {id:uid(),titulo:"Plan anual",descripcion:"1. Objetivos\n2. Calendario",responsable:"Responsable",links:[],updatedAt:now}]},
-];
-function loadLocal(){try{const r=localStorage.getItem(STORAGE);return r?JSON.parse(r):null}catch{return null}}
-function saveLocal(d){try{localStorage.setItem(STORAGE,JSON.stringify(d))}catch{}};
-
-const state={locked:true, procesos:loadLocal()||DEFAULT, sel:null, q:"", open:{}, dragging:null};
-state.sel=state.procesos[0]?.id||null;
-
-/* ===== Transform helpers ===== */
-function numbers(text){return (text||"").split("\n").map((l,i)=> (i+1)+". "+l.replace(/^\s*-\s*/,"").replace(/^\s*\d+\.\s*/,"")).join("\n")}
-function bullets(text){return (text||"").split("\n").map(l=> "- "+l.replace(/^\s*-\s*/,"").replace(/^\s*\d+\.\s*/,"")).join("\n")}
-function boldWrap(text,s,e){const sel=(text||"").slice(s,e)||"texto"; return (text||"").slice(0,s)+"**"+sel+"**"+(text||"").slice(e)}
-
-/* ===== CRUD ===== */
-function persist(){ saveLocal(state.procesos); document.getElementById('last').textContent=fmt(Math.max(...state.procesos.map(p=>p.updatedAt))) }
-function addProceso(){ if(state.locked){toast("Bloqueado");return} const p={id:uid(),nombre:"Nuevo proceso",updatedAt:Date.now(),subprocesos:[]}; state.procesos=[p,...state.procesos]; state.sel=p.id; persist(); render() }
-function renameProceso(id){ if(state.locked){toast("Bloqueado");return} const p=state.procesos.find(x=>x.id===id); const n=prompt("Renombrar proceso:",p.nombre); if(n&&n.trim()){p.nombre=n.trim(); p.updatedAt=Date.now(); persist(); render()} }
-function delProceso(id){ if(state.locked){toast("Bloqueado");return} if(!confirm("¿Eliminar proceso?"))return; state.procesos=state.procesos.filter(p=>p.id!==id); if(state.sel===id) state.sel=state.procesos[0]?.id||null; persist(); render() }
-function addSp(pid){ if(state.locked){toast("Bloqueado");return} const sp={id:uid(),titulo:"Nuevo subproceso",descripcion:"",responsable:"Audiólogo",links:[],updatedAt:Date.now()}; state.procesos=state.procesos.map(p=>p.id!==pid?p:{...p,updatedAt:Date.now(),subprocesos:[sp,...p.subprocesos]}); persist(); render() }
-function updSp(pid,sid,patch){ state.procesos=state.procesos.map(p=>{if(p.id!==pid)return p; return {...p,updatedAt:Date.now(),subprocesos:p.subprocesos.map(s=>s.id===sid?{...s,...patch,updatedAt:Date.now()}:s)} }); persist(); render() }
-function delSp(pid,sid){ if(state.locked){toast("Bloqueado");return} state.procesos=state.procesos.map(p=>p.id!==pid?p:{...p,updatedAt:Date.now(),subprocesos:p.subprocesos.filter(s=>s.id!==sid)}); persist(); render() }
-
-/* ===== Export (igual que v8) ===== */
-function buildEmbeddedHtml(){
-  const data={procesos:state.procesos, open:state.open};
-  const marker=`<script>window.__EMBEDDED_DATA__ = ${JSON.stringify(data)};<\/script>`;
-  return document.documentElement.outerHTML.replace("<body>", "<body>"+marker);
-}
-function downloadHTML(){
-  const html=buildEmbeddedHtml();
-  const url=URL.createObjectURL(new Blob([html],{type:"text/html"}));
-  const a=document.createElement("a"); a.href=url; a.download="PROCESOS_sync_ready_v9.html"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-  toast("Archivo con datos incrustados listo para enviar");
-}
-async function downloadZIP(){
-  const html=buildEmbeddedHtml(); const arr=new TextEncoder().encode(html);
-  const zip=createZip({"PROCESOS_sync_ready_v9.html":arr});
-  const url=URL.createObjectURL(new Blob([zip],{type:"application/zip"}));
-  const a=document.createElement("a"); a.href=url; a.download="PROCESOS_sync_ready_v9.zip"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-  toast("ZIP listo");
-}
-function createZip(files){function w16(n){return [n&255,(n>>8)&255]} function w32(n){return [n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255]} function crc32(a){let c=~0; for(let i=0;i<a.length;i++){c=(c>>>8)^tbl[(c^a[i])&255]} return ~c>>>0} const tbl=function(){let c,t=[],k; for(let n=0;n<256;n++){c=n; for(let j=0;j<8;j++){c=c&1?0xedb88320^(c>>>1):c>>>1} t[n]=c>>>0} return t }(); let filesArr=[], dirArr=[]; let off=0;
-  for(const [name,buf] of Object.entries(files)){const nameBytes=new TextEncoder().encode(name); const crc=crc32(buf); const size=buf.length; const h=[0x50,0x4b,3,4,20,0,0,0,0,0,0,0,...w16(0),...w16(0),...w32(crc),...w32(size),...w32(size),...w16(nameBytes.length),0, ...nameBytes]; const rec=new Uint8Array(h.length+size); rec.set(h,0); rec.set(buf,h.length); filesArr.push(rec); const dh=[0x50,0x4b,1,2,20,3,20,0,0,0,0,0,0,0,...w16(0),...w16(0),...w32(crc),...w32(size),...w32(size),...w16(nameBytes.length),0,0,0,0,0,0,0,0,...w32(off),...nameBytes]; dirArr.push(new Uint8Array(dh)); off+=rec.length }
-  const centralOff=off; const dirLen=dirArr.reduce((s,a)=>s+a.length,0); const end=[0x50,0x4b,5,6,0,0,...w16(dirArr.length),...w16(dirArr.length),...w32(dirLen),...w32(centralOff),0,0]; return new Uint8Array([...filesArr.flat(),...dirArr.flat(),...end]) }
-
-/* ===== Render ===== */
-function render(){
-  document.getElementById('last').textContent = state.procesos.length? fmt(Math.max(...state.procesos.map(p=>p.updatedAt))) : fmt(Date.now());
-  const list=document.getElementById('procList'); list.innerHTML="";
-  const q=(state.q||"").toLowerCase(); const filtered=(q? state.procesos.map(p=>({...p,subprocesos:p.subprocesos.filter(sp=>p.nombre.toLowerCase().includes(q)||sp.titulo.toLowerCase().includes(q)||sp.descripcion.toLowerCase().includes(q))})).filter(p=>p.nombre.toLowerCase().includes(q)||p.subprocesos.length>0) : state.procesos);
-
-  filtered.forEach(p=>{
-    const row=document.createElement('div'); row.className='card'+(state.sel===p.id?' active':'');
-    const handle=document.createElement('div'); handle.className='handle'; handle.textContent='≡'; handle.title="Arrastra para ordenar";
-    handle.setAttribute("draggable","true");
-    handle.addEventListener("dragstart",e=>{state.dragging={type:'proc',id:p.id}; row.style.opacity=.5});
-    handle.addEventListener("dragend",e=>{state.dragging=null; row.style.opacity=1});
-
-    row.appendChild(handle);
-    row.addEventListener('dragover',e=>{ if(state.dragging?.type!=='proc')return; e.preventDefault(); const src=state.dragging.id; if(src===p.id)return; const arr=[...state.procesos]; const si=arr.findIndex(x=>x.id===src); const di=arr.findIndex(x=>x.id===p.id); const [it]=arr.splice(si,1); arr.splice(di,0,it); state.procesos=arr; persist(); render() });
-    const txt=document.createElement('div'); txt.style.flex='1'; txt.style.cursor='pointer'; txt.onclick=()=>{state.sel=p.id; render()};
-    const t1=document.createElement('div'); t1.className='btxt'; t1.textContent=p.nombre; const t2=document.createElement('div'); t2.className='muted'; t2.textContent=p.subprocesos.length+' subprocesos'; txt.appendChild(t1); txt.appendChild(t2);
-    row.appendChild(txt);
-    const edit=document.createElement('button'); edit.className='iconbtn grad'; edit.textContent='✏️'; edit.disabled=state.locked; edit.title='Editar'; edit.onclick=()=>renameProceso(p.id);
-    const del=document.createElement('button'); del.className='iconbtn grad'; del.textContent='−'; del.disabled=state.locked; del.title='Eliminar'; del.onclick=()=>delProceso(p.id);
-    row.appendChild(edit); row.appendChild(del);
-    list.appendChild(row);
-  });
-  if(filtered.length===0){ const empty=document.createElement('div'); empty.className='muted'; empty.textContent='Sin resultados.'; list.appendChild(empty) }
-
-  const proc=state.procesos.find(p=>p.id===state.sel);
-  document.getElementById('rightTitle').textContent=proc?proc.nombre:'—';
-  const note=document.getElementById('note'); note.style.display = state.locked? 'block':'none'; note.textContent='Modo lectura: puedes BUSCAR, SELECCIONAR y DESPLEGAR subprocesos (enlaces activos). Para editar usa el PIN.';
-  const sub=document.getElementById('subList'); sub.innerHTML="";
-  if(!proc){ sub.innerHTML='<div class="card">Selecciona un proceso.</div>'; return }
-
-  proc.subprocesos.forEach(sp=>{
-    const card=document.createElement('div'); card.className='sub-card';
-    const sh=document.createElement('div'); sh.className='sub-h';
-    const handle=document.createElement('div'); handle.className='handle'; handle.textContent='≡'; handle.title="Arrastra para ordenar";
-    handle.setAttribute("draggable","true");
-    handle.addEventListener("dragstart",e=>{state.dragging={type:'sub',pid:proc.id,sid:sp.id}; sh.style.opacity=.5});
-    handle.addEventListener("dragend",e=>{state.dragging=null; sh.style.opacity=1});
-    sh.appendChild(handle);
-    sh.addEventListener('dragover',e=>{ const d=state.dragging; if(!d||d.type!=='sub'||d.pid!==proc.id) return; e.preventDefault(); const list=[...proc.subprocesos]; const si=list.findIndex(x=>x.id===d.sid); const di=list.findIndex(x=>x.id===sp.id); if(si===di)return; list.splice(di,0,list.splice(si,1)[0]); state.procesos=state.procesos.map(p=>p.id!==proc.id?p:{...p,subprocesos:list}); persist(); render() });
-    const title=document.createElement('input'); title.value=sp.titulo; title.disabled=state.locked; title.oninput=e=>updSp(proc.id,sp.id,{titulo:e.target.value}); sh.appendChild(title);
-    const badge=document.createElement('span'); badge.className='badge '+(sp.responsable==="Audiólogo"?"b-red":sp.responsable==="Responsable"?"b-black":sp.responsable==="Audiólogo y responsable"?"b-grad":"b-gray"); badge.textContent=sp.responsable; sh.appendChild(badge);
-    const del=document.createElement('button'); del.className='iconbtn'; del.textContent='−'; del.disabled=state.locked; del.onclick=()=>delSp(proc.id,sp.id); sh.appendChild(del);
-    const tog=document.createElement('button'); tog.className='iconbtn'; tog.textContent=state.open[sp.id]?'▲':'▼'; tog.title='Desplegar/plegar'; tog.onclick=()=>{state.open[sp.id]=!state.open[sp.id]; render()}; sh.appendChild(tog);
-    card.appendChild(sh);
-
-    if(state.open[sp.id]){
-      const sb=document.createElement('div'); sb.className='sub-b';
-      const inline=document.createElement('div'); inline.style.display='grid'; inline.style.gridTemplateColumns='minmax(180px,260px) auto auto auto'; inline.style.gap='8px'; inline.style.alignItems='center';
-      const lab=document.createElement('div'); lab.textContent='Persona responsable'; lab.style.fontWeight='600'; lab.style.fontSize='13px'; inline.appendChild(lab);
-      const sel=document.createElement('select'); ["Audiólogo","Responsable","Audiólogo y responsable","Todo el equipo"].forEach(o=>{const op=document.createElement('option'); op.value=o; op.textContent=o; if(sp.responsable===o) op.selected=true; sel.appendChild(op)}); sel.disabled=state.locked; sel.onchange=e=>updSp(proc.id,sp.id,{responsable:e.target.value}); inline.appendChild(sel);
-      const tools=document.createElement('div'); tools.className='tools';
-      const bB=document.createElement('button'); bB.className='iconbtn'; bB.title='Negrita'; bB.textContent='B'; bB.disabled=state.locked; tools.appendChild(bB);
-      const b1=document.createElement('button'); b1.className='iconbtn'; b1.title='Numeración'; b1.textContent='1.'; b1.disabled=state.locked; tools.appendChild(b1);
-      const bBul=document.createElement('button'); bBul.className='iconbtn'; bBul.title='Viñetas'; bBul.textContent='•'; bBul.disabled=state.locked; tools.appendChild(bBul);
-      inline.appendChild(tools);
-      const addL=document.createElement('button'); addL.className='iconbtn'; addL.textContent='Adjuntar enlace'; addL.disabled=state.locked; inline.appendChild(addL);
-      sb.appendChild(inline);
-
-      const ta=document.createElement('textarea'); ta.value=sp.descripcion; ta.disabled=state.locked; ta.oninput=e=>updSp(proc.id,sp.id,{descripcion:e.target.value}); sb.appendChild(ta);
-
-      (sp.links||[]).forEach(link=>{
-        const row=document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.margin='6px 0';
-        const l1=document.createElement('input'); l1.placeholder='Etiqueta'; l1.value=link.label||''; l1.disabled=state.locked; l1.oninput=e=>updSp(proc.id,sp.id,{links:sp.links.map(l=>l.id===link.id?{...l,label:e.target.value}:l)});
-        const l2=document.createElement('input'); l2.placeholder='https://...'; l2.style.flex='1'; l2.value=link.url||''; l2.disabled=state.locked; l2.oninput=e=>updSp(proc.id,sp.id,{links:sp.links.map(l=>l.id===link.id?{...l,url:e.target.value}:l)});
-        const open=document.createElement('a'); open.href=link.url||'#'; open.target='_blank'; open.textContent='Abrir';
-        const rm=document.createElement('button'); rm.className='iconbtn'; rm.textContent='−'; rm.disabled=state.locked; rm.onclick=()=>updSp(proc.id,sp.id,{links:sp.links.filter(l=>l.id!==link.id)});
-        row.appendChild(l1); row.appendChild(l2); row.appendChild(open); row.appendChild(rm); sb.appendChild(row);
-      });
-      addL.onclick=()=>updSp(proc.id,sp.id,{links:[...(sp.links||[]),{id:uid(),label:'Nuevo enlace',url:''}]})
-
-      const save=document.createElement('div'); save.style.textAlign='right'; save.style.marginTop='8px'; const bSave=document.createElement('button'); bSave.className='iconbtn'; bSave.style.background='#111'; bSave.style.color='#fff'; bSave.textContent='Guardar'; bSave.disabled=state.locked; bSave.onclick=()=>{state.open[sp.id]=false; render()}; save.appendChild(bSave); sb.appendChild(save);
-      card.appendChild(sb);
+  // Devuelve true si se modificó algo
+  function seedIfNeeded() {
+    var changed = false;
+    try {
+      var currentCfg = localStorage.getItem(CFG_KEY);
+      var desiredCfg = JSON.stringify(FIREBASE_CONFIG);
+      if (currentCfg !== desiredCfg) {
+        localStorage.setItem(CFG_KEY, desiredCfg);
+        changed = true;
+      }
+      if (localStorage.getItem(WS_KEY) !== DEFAULT_WORKSPACE) {
+        localStorage.setItem(WS_KEY, DEFAULT_WORKSPACE);
+        changed = true;
+      }
+      // Señal opcional para ocultar la UI de configuración si la app lo soporta
+      localStorage.setItem(LOCK_KEY, "1");
+    } catch (e) {
+      console.warn("[PROCESOS] No se pudo inicializar configuración de nube:", e);
     }
-    sub.appendChild(card);
-  });
-}
-
-/* ===== Events ===== */
-document.getElementById('procAdd').onclick=addProceso;
-document.getElementById('q').oninput=e=>{state.q=(e.target.value||'').toLowerCase().trim(); render()}
-document.getElementById('downHtml').onclick=downloadHTML;
-document.getElementById('downZip').onclick=downloadZIP;
-document.getElementById('copyLink').onclick=()=>{navigator.clipboard.writeText(location.href).then(()=>toast('Copiado'))};
-document.getElementById('subAdd').onclick=()=>{const p=state.procesos.find(x=>x.id===state.sel); if(p) addSp(p.id)};
-document.getElementById('saveCloud').onclick=()=>{ window.cloud.save(state.procesos, state.open) };
-document.getElementById('loadCloud').onclick=async()=>{ const d=await window.cloud.load(); if(d){ state.procesos=d; saveLocal(d); toast("Actualizado"); render()} else toast("Sin datos remotos") };
-document.getElementById('lockBtn').onclick=()=>{
-  if(!state.locked){ state.locked=true; render(); return }
-  const pin=prompt('Introduce PIN para editar (AR4321)'); if(pin===PIN){ state.locked=false; render()} else if(pin!==null){ toast('PIN incorrecto') }
-};
-
-/* ===== Remote apply (onSnapshot) ===== */
-window.__applyRemote = (data)=>{
-  if(!data) return;
-  if(Array.isArray(data.procesos)){
-    state.procesos=data.procesos;
-    saveLocal(state.procesos);
+    return changed;
   }
-  if(data.open) state.open=data.open;
-  render();
-};
 
-/* ===== Boot ===== */
-(async()=>{
-  await window.cloud.initFromLocal(); // si está configurado, se conecta y escucha
-  render();
-  // si no hay configuración, ofrece hacerlo al primer clic de "Guardar" remoto
-  if(!window.cloud.enabled){
-    const pill=document.getElementById('syncState');
-    pill.textContent="Nube: local (clic para configurar)";
-    pill.style.cursor="pointer";
-    pill.onclick=async()=>{ await window.cloud.initInteractive(); };
+  var changed = seedIfNeeded();
+
+  // Si la app ya cargó sin config, fuerza una sola recarga para que la coja
+  if (changed && !sessionStorage.getItem(BOOT_FLAG)) {
+    sessionStorage.setItem(BOOT_FLAG, "1");
+    console.log("[PROCESOS] Config integrada aplicada. Recargando una vez para activar Firestore...");
+    location.reload();
+  } else {
+    console.log("[PROCESOS] Config integrada OK → Firestore(workspace='%s')", DEFAULT_WORKSPACE);
   }
 })();
-
 </script>
-</body>
-</html>
+<!-- === /PROCESOS | Fin bootstrap === -->
+
+<!-- (Opcional) Ocultar controles de configuración si siguen visibles en tu build -->
+<style>
+  /* Ajusta los selectores si tu build usa otros nombres */
+  .config-simulada, [data-role="config-pill"], .pill-config, .btn-config { display: none !important; }
+</style>
