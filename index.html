@@ -92,13 +92,13 @@
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos: flujo compacto con flecha gris ===== */
+  /* ===== Pasos: flujo compacto con flechas tipo circuito ===== */
   .steps{
     position:relative;
     display:flex;
     flex-wrap:wrap;
     gap:14px;
-    padding:10px 6px 18px;
+    padding:10px 6px 22px;
     justify-content:flex-start;
   }
 
@@ -121,7 +121,7 @@
       inset 0 1px 0 #fff,
       0 2px 0 rgba(15,23,42,.22),
       0 8px 16px rgba(15,23,42,.14);
-    width:180px;          /* más pequeña para ver más pasos */
+    width:180px;
     min-height:60px;
     border:1px solid rgba(148,163,184,.7);
   }
@@ -145,37 +145,74 @@
     z-index:1;
   }
 
-  /* Flecha gris más gruesa con cabeza clara */
+  /* Flecha base: de una caja a la siguiente (horizontal) */
   .step::before{
     content:"";
     position:absolute;
-    right:-30px;
+    right:-18px;
     top:50%;
     transform:translateY(-50%);
-    width:26px;
-    height:6px;
-    background:#d1d5db;          /* gris claro */
+    width:18px;
+    height:3px;
+    background:#d1d5db;
     border-radius:999px;
     box-shadow:0 1px 0 rgba(15,23,42,.25);
   }
   .step::after{
     content:"";
     position:absolute;
-    right:-30px;
+    right:-18px;
     top:50%;
-    transform:translate(7px,-50%);
-    border-left:11px solid #d1d5db;
-    border-top:7px solid transparent;
-    border-bottom:7px solid transparent;
+    transform:translate(4px,-50%);
+    border-left:7px solid #d1d5db;
+    border-top:4px solid transparent;
+    border-bottom:4px solid transparent;
   }
 
-  /* La última caja ya no dibuja flecha (fin del camino antes de la meta) */
-  .steps .step:last-child::before,
-  .steps .step:last-child::after{
-    content:none;
+  /* Paso 4: flecha vertical hacia abajo para enlazar con 5 */
+  .steps > div:nth-child(4) .step::before{
+    right:50%;
+    top:100%;
+    transform:none;
+    width:3px;
+    height:26px;
+    background:#d1d5db;
+    border-radius:999px;
+    box-shadow:0 1px 0 rgba(15,23,42,.25);
+  }
+  .steps > div:nth-child(4) .step::after{
+    right:50%;
+    top:100%;
+    transform:translate(50%,6px) rotate(90deg);
+    border-left:7px solid #d1d5db;
+    border-top:4px solid transparent;
+    border-bottom:4px solid transparent;
   }
 
-  /* Meta visual al final del recorrido */
+  /* Último paso: flecha en L que “baja y gira” hacia la meta */
+  .steps > div:last-child .step::before{
+    right:-22px;
+    top:auto;
+    bottom:-20px;
+    width:40px;
+    height:32px;
+    background:none;
+    border:3px solid #d1d5db;
+    border-left:none;
+    border-top:none;
+    border-radius:0 0 26px 0;
+    box-shadow:none;
+  }
+  .steps > div:last-child .step::after{
+    right:-22px;
+    top:auto;
+    bottom:-20px;
+    transform:translate(40px,6px);
+    border-left:7px solid #d1d5db;
+    border-top:4px solid transparent;
+    border-bottom:4px solid transparent;
+  }
+
   .steps::after{
     content:"🎯 META";
     position:absolute;
@@ -232,9 +269,8 @@
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
-    margin:6px 0 0 54px; /* por defecto */
+    margin:6px 0 0 54px;
   }
-  /* Cuando están al lado de la caja */
   .steps > div > .branches{
     margin:0 0 0 12px;
   }
@@ -618,7 +654,7 @@ document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.process
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
 
-/* ====== MATCHERS PARA BUSCADOR GLOBAL (procesos, subprocesos y pasos) ====== */
+/* ===== MATCHERS PARA BUSCADOR GLOBAL ===== */
 function stepMatches(st, q){
   if(!q) return true;
   const ql = q.toLowerCase();
@@ -807,13 +843,11 @@ document.getElementById('q').addEventListener('input',e=>{
     a.download=`PROCESOS-AUDIO_${fileStamp()}.html`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-    toast('HTML descargado');
   }
 
   function saveToCloud(){
     try{
       localStorage.setItem(SNAP_KEY, JSON.stringify({when:Date.now(), html: currentHTML()}));
-      toast('Guardado en nube (local)');
     }catch(e){ console.error(e); toast('No se pudo guardar'); }
   }
 
@@ -838,7 +872,6 @@ document.getElementById('q').addEventListener('input',e=>{
     }else{
       const v=prompt('Introduce PIN para editar:');
       if(v===PIN_CODE){ sessionStorage.setItem('PA_PIN_OK','1'); pinBtn.classList.add('locked'); applyPinLockUI(); toast('Edición habilitada'); }
-      else if(v!==null){ toast('PIN incorrecto'); }
     }
   }
 
