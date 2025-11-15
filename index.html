@@ -92,20 +92,21 @@
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos: cajas compactas + flecha entre cajas ===== */
+  /* ===== Pasos: cajas compactas ===== */
   .steps{
     position:relative;
     display:flex;
     flex-wrap:wrap;
     gap:14px;
-    padding:10px 6px 22px;
+    padding:10px 6px 26px;
     justify-content:flex-start;
   }
 
   .steps > div{
     display:flex;
+    flex-direction:column;
     align-items:flex-start;
-    gap:8px;
+    gap:4px;
     flex-wrap:nowrap;
   }
 
@@ -126,7 +127,7 @@
     border:1px solid rgba(148,163,184,.7);
   }
 
-  /* quitamos las flechas antiguas */
+  /* SIN flechas por ::before/::after; todo va por SVG */
   .step::before,
   .step::after{
     content:none!important;
@@ -151,46 +152,11 @@
     z-index:1;
   }
 
-  /* Flecha genérica entre cajas */
-  .flow-arrow{
-    flex:0 0 34px;
-    height:14px;
-    position:relative;
-    align-self:center;
-  }
-  .flow-arrow::before{
-    content:"";
-    position:absolute;
-    left:0;
-    right:7px;
-    top:50%;
-    transform:translateY(-50%);
-    height:3px;
-    background:#d1d5db;
-    border-radius:999px;
-    box-shadow:0 1px 0 rgba(15,23,42,.2);
-  }
-  .flow-arrow::after{
-    content:"";
-    position:absolute;
-    right:0;
-    top:50%;
-    transform:translateY(-50%);
-    border-left:7px solid #d1d5db;
-    border-top:4px solid transparent;
-    border-bottom:4px solid transparent;
-  }
-
-  /* Último paso: flecha algo más larga hacia META */
-  .steps > div:last-child .flow-arrow{
-    flex-basis:60px;
-  }
-
   .steps::after{
     content:"🎯 META";
     position:absolute;
     right:4px;
-    bottom:-4px;
+    bottom:0;
     font-size:11px;
     font-weight:700;
     color:#0f172a;
@@ -236,6 +202,23 @@
   .mini:active{transform:translateY(1px)}
 
   .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
+
+  /* Flechas SVG sobre los pasos */
+  .flow-svg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    overflow:visible;
+  }
+  .flow-meta-anchor{
+    position:absolute;
+    right:26px;
+    bottom:10px;
+    width:1px;
+    height:1px;
+  }
 
   /* ===== Si / No ===== */
   .branches{
@@ -416,7 +399,74 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Si/No ===== */
+/* ===== DIBUJO DE FLECHAS (SVG) ===== */
+function drawFlowForSteps(container){
+  const steps = Array.from(container.querySelectorAll('.step'));
+  if(!steps.length) return;
+
+  const old = container.querySelector('.flow-svg');
+  if(old) old.remove();
+
+  const rect = container.getBoundingClientRect();
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS,'svg');
+  svg.classList.add('flow-svg');
+  svg.setAttribute('viewBox',`0 0 ${rect.width} ${rect.height}`);
+
+  const defs=document.createElementNS(svgNS,'defs');
+  const marker=document.createElementNS(svgNS,'marker');
+  marker.setAttribute('id','arrowHead');
+  marker.setAttribute('markerWidth','8');
+  marker.setAttribute('markerHeight','8');
+  marker.setAttribute('refX','7');
+  marker.setAttribute('refY','4');
+  marker.setAttribute('orient','auto');
+  marker.setAttribute('markerUnits','strokeWidth');
+  const headPath=document.createElementNS(svgNS,'path');
+  headPath.setAttribute('d','M0,0 L8,4 L0,8 Z');
+  headPath.setAttribute('fill','#d1d5db');
+  marker.appendChild(headPath);
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+
+  function addArrow(fromRect,toRect){
+    const startX = fromRect.right - rect.left;
+    const startY = fromRect.top + fromRect.height/2 - rect.top;
+    const endX   = toRect.left - rect.left;
+    const endY   = toRect.top + toRect.height/2 - rect.top;
+
+    const path=document.createElementNS(svgNS,'path');
+    let d;
+    if(Math.abs(startY-endY) < 30){
+      d = `M ${startX} ${startY} L ${endX} ${endY}`;
+    }else{
+      const midX = (startX + endX) / 2;
+      d = `M ${startX} ${startY} L ${midX} ${startY} L ${midX} ${endY} L ${endX} ${endY}`;
+    }
+    path.setAttribute('d',d);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','#d1d5db');
+    path.setAttribute('stroke-width','3');
+    path.setAttribute('marker-end','url(#arrowHead)');
+    svg.appendChild(path);
+  }
+
+  for(let i=0;i<steps.length-1;i++){
+    addArrow(steps[i].getBoundingClientRect(),steps[i+1].getBoundingClientRect());
+  }
+
+  const anchor = container.querySelector('.flow-meta-anchor');
+  if(anchor){
+    addArrow(steps[steps.length-1].getBoundingClientRect(),anchor.getBoundingClientRect());
+  }
+
+  container.appendChild(svg);
+}
+function drawAllFlows(){
+  document.querySelectorAll('.steps').forEach(drawFlowForSteps);
+}
+
+/* ===== Si / No ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
@@ -513,14 +563,10 @@ function stepRow(p,m,st,index){
   sc.querySelectorAll('.mini')[2].onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
   sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
 
-  const arrow=document.createElement('span');
-  arrow.className='flow-arrow';
-
   const branches=document.createElement('div'); branches.className='branches'+(st._openBranches?'':' hide');
   sc.querySelectorAll('.mini')[1].onclick=()=>{ st._openBranches=!st._openBranches; save(); toggleBlock(branches,st._openBranches); };
 
   row.appendChild(sc);
-  row.appendChild(arrow);
 
   if(st.link?.pid){
     const dest=state.processes.find(x=>x.id===st.link.pid);
@@ -580,6 +626,11 @@ function modCard(p,m){
   const steps=document.createElement('div'); steps.className='steps';
   steps.style.setProperty('--proc',p.color);
   m.steps.forEach((st,idx)=> steps.appendChild(stepRow(p,m,st,idx)));
+
+  const metaAnchor=document.createElement('div');
+  metaAnchor.className='flow-meta-anchor';
+  steps.appendChild(metaAnchor);
+
   card.appendChild(steps);
 
   if(m.completed){
@@ -594,6 +645,8 @@ function renderModules(){
   const box=document.getElementById('modules'); box.innerHTML='';
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
   p.modules.forEach(m=> box.appendChild(modCard(p,m)));
+
+  requestAnimationFrame(drawAllFlows);
 }
 
 /* ===== Acciones globales ===== */
@@ -630,6 +683,9 @@ document.getElementById('btnAddProcess').onclick=addProcess;
 document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p){alert('Crea un proceso');return;} createModuleForProcess(p.id,'Nuevo subproceso'); };
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
+
+/* ===== Recalcular flechas al redimensionar ===== */
+window.addEventListener('resize',()=>requestAnimationFrame(drawAllFlows));
 
 /* ===== MATCHERS PARA BUSCADOR GLOBAL ===== */
 function stepMatches(st, q){
