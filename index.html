@@ -92,7 +92,7 @@
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos: flujo compacto con flechas tipo circuito ===== */
+  /* ===== Pasos: cajas compactas + flecha entre cajas ===== */
   .steps{
     position:relative;
     display:flex;
@@ -105,7 +105,7 @@
   .steps > div{
     display:flex;
     align-items:flex-start;
-    gap:12px;
+    gap:8px;
     flex-wrap:nowrap;
   }
 
@@ -124,6 +124,12 @@
     width:180px;
     min-height:60px;
     border:1px solid rgba(148,163,184,.7);
+  }
+
+  /* quitamos las flechas antiguas */
+  .step::before,
+  .step::after{
+    content:none!important;
   }
 
   .bubble{
@@ -145,72 +151,39 @@
     z-index:1;
   }
 
-  /* Flecha base: de una caja a la siguiente (horizontal) */
-  .step::before{
+  /* Flecha genérica entre cajas */
+  .flow-arrow{
+    flex:0 0 34px;
+    height:14px;
+    position:relative;
+    align-self:center;
+  }
+  .flow-arrow::before{
     content:"";
     position:absolute;
-    right:-18px;
+    left:0;
+    right:7px;
     top:50%;
     transform:translateY(-50%);
-    width:18px;
     height:3px;
     background:#d1d5db;
     border-radius:999px;
-    box-shadow:0 1px 0 rgba(15,23,42,.25);
+    box-shadow:0 1px 0 rgba(15,23,42,.2);
   }
-  .step::after{
+  .flow-arrow::after{
     content:"";
     position:absolute;
-    right:-18px;
+    right:0;
     top:50%;
-    transform:translate(4px,-50%);
+    transform:translateY(-50%);
     border-left:7px solid #d1d5db;
     border-top:4px solid transparent;
     border-bottom:4px solid transparent;
   }
 
-  /* Paso 4: flecha vertical hacia abajo para enlazar con 5 */
-  .steps > div:nth-child(4) .step::before{
-    right:50%;
-    top:100%;
-    transform:none;
-    width:3px;
-    height:26px;
-    background:#d1d5db;
-    border-radius:999px;
-    box-shadow:0 1px 0 rgba(15,23,42,.25);
-  }
-  .steps > div:nth-child(4) .step::after{
-    right:50%;
-    top:100%;
-    transform:translate(50%,6px) rotate(90deg);
-    border-left:7px solid #d1d5db;
-    border-top:4px solid transparent;
-    border-bottom:4px solid transparent;
-  }
-
-  /* Último paso: flecha en L que “baja y gira” hacia la meta */
-  .steps > div:last-child .step::before{
-    right:-22px;
-    top:auto;
-    bottom:-20px;
-    width:40px;
-    height:32px;
-    background:none;
-    border:3px solid #d1d5db;
-    border-left:none;
-    border-top:none;
-    border-radius:0 0 26px 0;
-    box-shadow:none;
-  }
-  .steps > div:last-child .step::after{
-    right:-22px;
-    top:auto;
-    bottom:-20px;
-    transform:translate(40px,6px);
-    border-left:7px solid #d1d5db;
-    border-top:4px solid transparent;
-    border-bottom:4px solid transparent;
+  /* Último paso: flecha algo más larga hacia META */
+  .steps > div:last-child .flow-arrow{
+    flex-basis:60px;
   }
 
   .steps::after{
@@ -540,10 +513,14 @@ function stepRow(p,m,st,index){
   sc.querySelectorAll('.mini')[2].onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
   sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
 
+  const arrow=document.createElement('span');
+  arrow.className='flow-arrow';
+
   const branches=document.createElement('div'); branches.className='branches'+(st._openBranches?'':' hide');
   sc.querySelectorAll('.mini')[1].onclick=()=>{ st._openBranches=!st._openBranches; save(); toggleBlock(branches,st._openBranches); };
 
   row.appendChild(sc);
+  row.appendChild(arrow);
 
   if(st.link?.pid){
     const dest=state.processes.find(x=>x.id===st.link.pid);
@@ -848,7 +825,7 @@ document.getElementById('q').addEventListener('input',e=>{
   function saveToCloud(){
     try{
       localStorage.setItem(SNAP_KEY, JSON.stringify({when:Date.now(), html: currentHTML()}));
-    }catch(e){ console.error(e); toast('No se pudo guardar'); }
+    }catch(e){ console.error(e); }
   }
 
   function loadFromCloud(){
