@@ -146,22 +146,33 @@
     z-index:1;
   }
 
-  /* Guía/“flecha” entre cajas */
+  /* Guía azul entre cajas: línea + cabeza de flecha */
   .step::before{
     content:"";
     position:absolute;
-    right:-26px;
+    right:-28px;
     top:50%;
     transform:translateY(-50%);
-    width:22px;
-    height:3px;
-    background:linear-gradient(90deg,var(--proc,#2563eb) 0%,#f97316 100%);
+    width:24px;
+    height:4px;
+    background:#2563eb;
     border-radius:999px;
     box-shadow:0 1px 0 rgba(15,23,42,.35);
   }
+  .step::after{
+    content:"";
+    position:absolute;
+    right:-28px;
+    top:50%;
+    transform:translate(6px,-50%);
+    border-left:10px solid #2563eb;
+    border-top:6px solid transparent;
+    border-bottom:6px solid transparent;
+  }
 
   /* Última caja sin guía (fin del camino, meta) */
-  .steps .step:last-child::before{
+  .steps .step:last-child::before,
+  .steps .step:last-child::after{
     content:none;
   }
 
@@ -185,14 +196,6 @@
       0 0 0 2px rgba(37,99,235,.4),
       0 3px 0 rgba(15,23,42,.35),
       0 12px 24px rgba(15,23,42,.3);
-  }
-  .step.selected::after{
-    content:"";
-    position:absolute;
-    inset:-4px;
-    border-radius:16px;
-    border:2px solid rgba(37,99,235,.35);
-    pointer-events:none;
   }
 
   .step input.title{
@@ -230,10 +233,9 @@
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
-    margin:6px 0 0 54px; /* valor por defecto, luego lo sobreescribimos al ir al lado */
+    margin:6px 0 0 54px;
   }
-
-  /* Cuando las ramas van junto a la caja (layout amigable lateral) */
+  /* Al lado de la caja (layout amigable lateral) */
   .steps > div > .branches{
     margin:0 0 0 12px;
   }
@@ -268,13 +270,12 @@
   <div class="topbar">
     <div class="title"><span class="ear">🎧</span> PROCESOS AUDIO</div>
 
-    <!-- Botones en el orden solicitado -->
+    <!-- Botones -->
     <button id="btnAddProcess" class="btn3d">+ Procesos</button>
     <button id="btnAddSubprocPaso" class="btn3d">+ Subproceso + Paso</button>
     <button id="btnAddStepGlobal" class="btn3d" title="Añadir paso al subproceso abierto">+ Paso</button>
 
     <div class="bar-right">
-      <!-- Utilidades -->
       <button id="paPinBtn" class="btn3d pa-tools-hide" title="PIN (AR4321)">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 8V7a5 5 0 10-10 0v1M6 8h12v12H6V8z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         PIN
@@ -320,7 +321,7 @@
   </div>
 
 <script>
-/* ===== Utilidades de visibilidad seguras para Detalle ===== */
+/* ===== Utilidades de visibilidad ===== */
 function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
 function hideBlock(el){ if(!el) return; el.classList.add('hide'); el.style.display='none'; el.setAttribute('aria-hidden','true'); }
 function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
@@ -617,7 +618,7 @@ document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.process
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
 
-/* ====== MATCHERS PARA BUSCADOR GLOBAL (procesos, subprocesos y pasos) ====== */
+/* ===== Buscador global (procesos, subprocesos y pasos) ===== */
 function stepMatches(st, q){
   if(!q) return true;
   const ql = q.toLowerCase();
@@ -668,7 +669,6 @@ function processMatches(p, q){
   return false;
 }
 
-/* ===== Buscador global ===== */
 document.getElementById('q').addEventListener('input',e=>{
   const q = e.target.value.trim().toLowerCase();
 
@@ -693,7 +693,7 @@ document.getElementById('q').addEventListener('input',e=>{
 });
 
 /* =======================================================================
-   UTILIDADES (PIN, PDF/Imprimir, Descargar HTML, Guardar / Cargar nube)
+   UTILIDADES (PIN, PDF, HTML, nube)
    ======================================================================= */
 (function(){
   const PIN_CODE = 'AR4321';
@@ -827,6 +827,8 @@ document.getElementById('q').addEventListener('input',e=>{
       setTimeout(()=>URL.revokeObjectURL(url),10000);
     }catch(e){ console.error(e); toast('Copia dañada'); }
   }
+
+  function printOrSave(){}
 
   function togglePin(){
     if(sessionStorage.getItem('PA_PIN_OK')==='1'){
