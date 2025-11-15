@@ -1,37 +1,98 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<title>Preview pasos estilo diagrama</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PROCESOS AUDIO</title>
 <style>
-  body{
-    margin:0;
-    padding:20px;
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;
-    background:#f5f6f8;
+  :root{
+    --bg:#f5f6f8; --surface:#ffffff; --ink:#1b1d24;
+    --muted:#667085; --soft:#eceff3;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --ring:0 0 0 2px rgba(59,130,246,.15);
+    --grad:linear-gradient(90deg,#6f1d1b 0%,#b23a3a 50%,#6f1d1b 100%);
+    --pillGrad:linear-gradient(180deg,#ffffff 0%,#f2f4f8 100%);
   }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
 
-  /* SIMULACIÓN DE SUBPROCESO (module) */
-  .module{
-    position:relative;
-    background:linear-gradient(180deg,#fff7eb 0%,#ffe4c7 100%);
-    border-radius:14px;
-    box-shadow:0 10px 24px rgba(0,0,0,.08);
-    padding:14px;
-    max-width:980px;
-    margin:0 auto;
-    --proc:#2563eb; /* color azul de referencia */
+  /* ===== Top bar ===== */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:30;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:.75rem;
+    padding:.65rem .9rem .75rem;
+    background:var(--grad);
+    color:#fff;
+    box-shadow:var(--shadow)
   }
-  .mod-head{
+  .title{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    margin-bottom:10px;
+    gap:.5rem;
     font-weight:900;
-    font-size:18px;
+    font-size:22px;
+    flex:1 1 100%;     /* título ocupa fila completa */
   }
+  .title .ear{font-size:30px;line-height:1;display:inline-block;transform:translateY(2px)}
+  .search{
+    flex:1 1 100%;    /* ocupa todo el ancho disponible */
+    order:2;          /* fila inferior del faldón */
+    display:flex;
+    align-items:center;
+    background:rgba(255,255,255,.18);
+    padding:.4rem .6rem;
+    border-radius:9999px;
+    margin-top:.25rem;
+  }
+  .search input{width:100%;border:0;background:transparent;outline:0;color:#fff;font-weight:600}
+  .btn3d{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border:0;border-radius:9999px;color:#fff;
+    background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.28),0 12px 24px rgba(0,0,0,.2);cursor:pointer}
+  .btn3d:active{transform:translateY(1px)}
+  .bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+  .stamp{color:#fff;opacity:.9;font-size:12px;background:rgba(255,255,255,.14);border-radius:9999px;padding:.35rem .75rem}
+  .bar-right .btn3d svg{width:14px;height:14px}
 
-  /* === ESTILO NUEVO PARA LOS PASOS (preview) === */
+  /* ===== Layout ===== */
+  .wrap{display:grid;grid-template-columns:360px 1fr;gap:14px;padding:14px;min-height:calc(100dvh - 64px)}
+  .left,.right{background:var(--surface);border-radius:14px;box-shadow:var(--shadow)}
+  .left{padding:10px}
+  .right{padding:10px;display:flex;flex-direction:column;gap:12px}
+  @media (max-width:1020px){ .wrap{grid-template-columns:1fr} }
+
+  /* ===== Lista de procesos (izquierda) ===== */
+  .proc-item{display:flex;flex-direction:column;gap:.45rem;background:var(--pillGrad);border-radius:14px;
+    padding:.55rem .7rem;margin:.45rem 0;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);border:2px solid transparent}
+  .proc-item.activo{border-color:rgba(59,130,246,.35);box-shadow:var(--ring),0 1px 0 rgba(0,0,0,.06)}
+  .proc-row{display:flex;align-items:center;gap:.55rem;cursor:pointer}
+  .dot{width:10px;height:10px;border-radius:50%;background:#ddd;box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
+  .proc-name{flex:1;font-weight:800}
+  .proc-acts{display:flex;align-items:center;gap:.35rem}
+  .icon-btn{width:28px;height:28px;border-radius:12px;border:0;background:#f2f4f8;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);cursor:pointer}
+  .icon-btn:active{transform:translateY(1px)}
+  .proc-detail{display:none}
+  .proc-detail textarea{width:100%;min-height:72px;border-radius:10px;border:1px solid #e6e8ec;padding:.5rem;background:#fff}
+
+  /* ===== Subproceso (módulo) derecha ===== */
+  .module{position:relative;background:var(--pillGrad);border-radius:14px;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);display:flex;flex-direction:column;gap:8px;padding:10px}
+  .module::before{display:none}
+  .mod-head{display:flex;align-items:center;gap:.5rem;background:var(--proc,#333);color:#111;border-radius:12px;padding:.5rem .7rem}
+  .mod-title{flex:1;font-weight:900;border:0;background:transparent;color:#111;outline:0}
+  .sel{border:1px solid #e6e8ec;background:#fff;border-radius:10px;padding:.35rem .5rem}
+  .pill{height:34px;padding:0 .75rem;background:#222;border-radius:9999px;color:#fff;border:0;cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 0 rgba(0,0,0,.3),0 12px 24px rgba(0,0,0,.2)}
+  .pill:active{transform:translateY(1px)}
+  .badge-diana{margin-left:.25rem}
+
+  .mod-detail{display:none}
+  .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
+
+  /* ===== Pasos: estilo diagrama tipo imagen ===== */
   .steps{
     display:flex;
     flex-wrap:wrap;
@@ -49,7 +110,7 @@
     border-radius:12px;
     padding:12px 14px 14px 14px;
     box-shadow:0 4px 12px rgba(0,0,0,.06);
-    width:260px;
+    width:260px;           /* ancho tipo tarjeta */
     min-height:90px;
     border:2px solid var(--proc,#2563eb);
   }
@@ -66,8 +127,10 @@
     font-size:13px;
     margin-bottom:4px;
     box-shadow:0 2px 0 rgba(0,0,0,.2);
+    z-index:1;
   }
 
+  /* Flecha horizontal entre tarjetas */
   .step::before{
     content:"";
     position:absolute;
@@ -80,6 +143,7 @@
     border-radius:999px;
   }
 
+  /* Última tarjeta sin flecha */
   .steps .step:last-child::before{
     content:none;
   }
@@ -103,13 +167,6 @@
     outline:0;
     width:100%;
     margin-top:2px;
-    font-size:15px;
-  }
-
-  .desc{
-    font-size:13px;
-    color:#4b5563;
-    margin-top:4px;
   }
 
   .minis{
@@ -118,93 +175,624 @@
     margin-top:8px;
     margin-left:auto;
   }
-  .mini{
-    width:30px;
-    height:30px;
-    border-radius:10px;
-    border:0;
-    background:#f2f4f8;
-    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);
-    cursor:pointer;
-  }
+
+  .mini{width:30px;height:30px;border-radius:10px;border:0;background:#f2f4f8;cursor:pointer;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1)}
+
+  .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
+
+  /* ===== Si / No ===== */
+  .branches{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 0 54px}
+  .branch{background:#fff;border:1px solid #ececec;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
+  .branch.yes .bh-label{font-size:12px;font-weight:700;opacity:.8}
+  .branch.no .bh-label{font-size:14px;font-weight:900}
+  .bh-top{display:flex;align-items:center;gap:.35rem;margin-bottom:.35rem}
+  .plist{display:flex;flex-direction:column;gap:.35rem}
+  .point{display:flex;align-items:center;gap:.4rem}
+  .point .num{min-width:44px;font-weight:900;opacity:.7}
+  .pt-input{flex:1;border:1px solid #e6e8ec;border-radius:8px;padding:.25rem .45rem}
+  .p-mini{width:24px;height:24px;border-radius:8px;border:0;background:#f2f4f8;cursor:pointer;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1)}
+  .p-mini:active{transform:translateY(1px)}
+  .children{margin-left:44px;display:flex;flex-direction:column;gap:.2rem}
+
+  .hide{display:none!important}
+
+  /* ===== Toast pequeño ===== */
+  .pa-toast{position:fixed;right:14px;bottom:16px;background:#111;color:#fff;padding:.6rem .8rem;border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);opacity:0;transform:translateY(6px);transition:all .2s;z-index:99999;font:14px system-ui}
+  .pa-toast.show{opacity:1;transform:translateY(0)}
+  @media print{ .pa-tools-hide{display:none!important} }
+
+  /* ===== Modo bloqueado por PIN ===== */
+  body.pa-locked .is-readonly{opacity:.6;filter:saturate(.6)}
+  body.pa-locked .lock-block{ pointer-events:none !important; opacity:.6; }
+  body.pa-locked input[readonly], body.pa-locked textarea[readonly]{background:#f7f7f7}
 </style>
 </head>
 <body>
+  <div class="topbar">
+    <div class="title"><span class="ear">🎧</span> PROCESOS AUDIO</div>
 
-<div class="module">
-  <div class="mod-head">
-    <span>Subproceso de ejemplo</span>
-    <span style="font-size:13px;font-weight:600;color:#374151">Responsable: Audiólogo</span>
+    <!-- Botones en el orden solicitado -->
+    <button id="btnAddProcess" class="btn3d">+ Procesos</button>
+    <button id="btnAddSubprocPaso" class="btn3d">+ Subproceso + Paso</button>
+    <button id="btnAddStepGlobal" class="btn3d" title="Añadir paso al subproceso abierto">+ Paso</button>
+
+    <div class="bar-right">
+      <!-- Utilidades -->
+      <button id="paPinBtn" class="btn3d pa-tools-hide" title="PIN (AR4321)">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 8V7a5 5 0 10-10 0v1M6 8h12v12H6V8z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        PIN
+      </button>
+      <button id="paPdfBtn" class="btn3d pa-tools-hide" title="Imprimir / Guardar PDF">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9V4h12v5M6 18h12M6 14h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        PDF
+      </button>
+      <button id="paHtmlBtn" class="btn3d pa-tools-hide" title="Descargar HTML idéntico">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        HTML
+      </button>
+      <button id="paSaveCloud" class="btn3d pa-tools-hide" title="Guardar copia en nube (local)">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 18a4 4 0 110-8 0 5 5 0 119.9 1H18a3 3 0 110 6H7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Nube
+      </button>
+      <button id="paLoadCloud" class="btn3d pa-tools-hide" title="Abrir copia guardada">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6M20 8a8 8 0 10-3.17 6.34" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Actualizar
+      </button>
+
+      <span id="stamp" class="stamp">—</span>
+      <button id="btnSave" class="btn3d">💾 Guardar</button>
+    </div>
+
+    <!-- Buscador -->
+    <div class="search"><input id="q" placeholder="Buscar…"></div>
   </div>
 
-  <div class="steps">
-    <div class="step selected">
-      <div class="bubble">1</div>
-      <input class="title" value="Análisis de la realidad">
-      <div class="desc">Se recoge información inicial del paciente y su contexto.</div>
-      <div class="minis">
-        <button class="mini">🚩</button>
-        <button class="mini">❓</button>
-        <button class="mini">–</button>
-      </div>
-    </div>
+  <div class="wrap">
+    <div class="left"><div id="processList"></div></div>
+    <div class="right" id="modules"></div>
+  </div>
 
-    <div class="step">
-      <div class="bubble">2</div>
-      <input class="title" value="Validación del problema">
-      <div class="desc">Se contrasta la información con pruebas audiológicas.</div>
-      <div class="minis">
-        <button class="mini">🚩</button>
-        <button class="mini">❓</button>
-        <button class="mini">–</button>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="bubble">3</div>
-      <input class="title" value="Diseñar la solución">
-      <div class="desc">Propuesta de estrategia audioprotésica o de seguimiento.</div>
-      <div class="minis">
-        <button class="mini">🚩</button>
-        <button class="mini">❓</button>
-        <button class="mini">–</button>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="bubble">4</div>
-      <input class="title" value="Implementar la solución">
-      <div class="desc">Colocación, ajustes iniciales y educación al paciente.</div>
-      <div class="minis">
-        <button class="mini">🚩</button>
-        <button class="mini">❓</button>
-        <button class="mini">–</button>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="bubble">5</div>
-      <input class="title" value="Seguimiento y ajustes">
-      <div class="desc">Revisión de resultados, reajustes y recomendaciones.</div>
-      <div class="minis">
-        <button class="mini">🚩</button>
-        <button class="mini">❓</button>
-        <button class="mini">–</button>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="bubble">6</div>
-      <input class="title" value="Resultado final">
-      <div class="desc">Valoración global de la solución y cierre del proceso.</div>
-      <div class="minis">
-        <button class="mini">🚩</button>
-        <button class="mini">❓</button>
-        <button class="mini">–</button>
+  <div id="procModal" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;z-index:50">
+    <div style="background:#fff;border-radius:14px;min-width:320px;max-width:92vw;padding:10px;box-shadow:0 20px 40px rgba(0,0,0,.2)">
+      <div style="font-weight:800;margin:.2rem .2rem .6rem">Selecciona proceso destino</div>
+      <div id="procModalList" style="display:flex;flex-direction:column;gap:.35rem"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:.6rem">
+        <button id="pmCancel" class="btn3d" style="background:#ddd;color:#111">Cancelar</button>
       </div>
     </div>
   </div>
-</div>
 
+<script>
+/* ===== Utilidades de visibilidad seguras para Detalle ===== */
+function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
+function hideBlock(el){ if(!el) return; el.classList.add('hide'); el.style.display='none'; el.setAttribute('aria-hidden','true'); }
+function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
+
+/* ===== Estado / Persistencia ===== */
+const LSKEY='pa_v3_connectors_3d';
+const RESPONSABLES=['Audiólogo','Responsable','Otros'];
+const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6ff','#a0e7e5','#c7f9cc','#fbcfe8','#fde68a','#bbf7d0'];
+const uid=()=>'p'+Math.random().toString(36).slice(2,9);
+const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/${p(d.getMonth()+1)}/${p(d.getFullYear())}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`};
+
+const state={processes:[]};
+let activePid=null;
+
+function save(){ localStorage.setItem(LSKEY,JSON.stringify(state)); document.getElementById('stamp').textContent='Última actualización '+stamp(); }
+function load(){
+  const raw=localStorage.getItem(LSKEY);
+  if(!raw){
+    state.processes.push({id:uid(),name:'Revisión auditiva',color:colors[0],detail:'',modules:[],_openDetail:false});
+    save();
+  }else{ try{ Object.assign(state,JSON.parse(raw)); }catch{} }
+  if(!activePid && state.processes[0]) activePid=state.processes[0].id;
+}
+
+/* ===== Izquierda: procesos ===== */
+function procRow(p){
+  const wrap=document.createElement('div'); wrap.className='proc-item'+(p.id===activePid?' activo':'');
+  wrap.dataset.pid = p.id;
+  const row=document.createElement('div'); row.className='proc-row';
+  row.innerHTML=`<span class="dot" style="background:${p.color}"></span>
+    <span class="proc-name">${p.name}</span>
+    <div class="proc-acts">
+      <button class="icon-btn" title="Detalle">▾</button>
+      <button class="icon-btn" title="Renombrar">✏️</button>
+      <button class="icon-btn" title="Eliminar" style="box-shadow:inset 0 0 0 #fff">🗑️</button>
+    </div>`;
+  row.onclick=e=>{ if(e.target.closest('.icon-btn')) return; activePid=p.id; render(); };
+
+  const det=document.createElement('div'); 
+  det.className='proc-detail'+(p._openDetail?'':' hide');
+  det.setAttribute('aria-hidden', p._openDetail ? 'false':'true');
+  det.innerHTML=`<textarea placeholder="Detalle del proceso…">${p.detail||''}</textarea>`;
+  const ta=det.querySelector('textarea');
+  ta.oninput=e=>{ p.detail=e.target.value; save(); };
+
+  const [bDet,bRen,bDel]=row.querySelectorAll('.icon-btn');
+  bDet.onclick=e=>{
+    e.stopPropagation();
+    p._openDetail=!p._openDetail;
+    toggleBlock(det,p._openDetail);
+    if(p._openDetail) setTimeout(()=>ta.focus(),0);
+    save();
+  };
+  bRen.onclick=e=>{ e.stopPropagation(); const nn=prompt('Nombre del proceso',p.name); if(nn){p.name=nn;save();render();} };
+  bDel.onclick=e=>{ e.stopPropagation(); if(confirm('¿Eliminar proceso y sus módulos?')){ const i=state.processes.findIndex(x=>x.id===p.id); if(i>-1){ state.processes.splice(i,1); activePid=state.processes[0]?.id||null; save(); render(); } } };
+
+  wrap.appendChild(row); wrap.appendChild(det);
+  return wrap;
+}
+function renderProcesses(){
+  const box=document.getElementById('processList'); box.innerHTML='';
+  state.processes.forEach(p=>box.appendChild(procRow(p)));
+}
+
+/* ===== Modal bandera ===== */
+function openProcPicker(onPick){
+  const modal=document.getElementById('procModal');
+  const list=document.getElementById('procModalList'); list.innerHTML='';
+  state.processes.forEach(p=>{
+    const b=document.createElement('button');
+    b.className='btn3d'; b.style.cssText='justify-content:flex-start;color:#111;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06);border-radius:12px';
+    b.innerHTML=`<span class="dot" style="background:${p.color}"></span> <strong>${p.name}</strong>`;
+    b.onclick=()=>{ modal.classList.add('hide'); onPick(p.id); };
+    list.appendChild(b);
+  });
+  document.getElementById('pmCancel').onclick=()=>modal.classList.add('hide');
+  modal.classList.remove('hide');
+}
+
+/* ===== helpers ===== */
+function makeStep(){ return {id:uid(),title:'Nuevo paso',link:null,yes:[],no:[],_openBranches:false}; }
+function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
+function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
+function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
+
+/* ===== Si/No ===== */
+function branchBox(p,m,st,kind,idx){
+  const isYes=kind==='yes';
+  const arr = st[kind] || (st[kind]=[]);
+  const wrap=document.createElement('div'); wrap.className='branch '+(isYes?'yes':'no');
+
+  const top=document.createElement('div'); top.className='bh-top';
+  const label=document.createElement('div'); label.className='bh-label'; label.textContent=isYes?'SÍ':'NO';
+  const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
+  const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
+  add.onclick=()=>{ st._openBranches=true; pushPoint(arr); save(); renderModules(); };
+  flag.onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
+  top.appendChild(label); top.appendChild(add); top.appendChild(flag);
+
+  if(st[kind+'Link']?.pid){
+    const dest=state.processes.find(x=>x.id===st[kind+'Link'].pid);
+    if(dest){
+      const chip=document.createElement('span'); chip.className='chip'; chip.style.background=dest.color; chip.style.marginLeft='.35rem';
+      chip.innerHTML=`→ <small>Proceso:</small> <strong>${dest.name}</strong>`;
+      top.appendChild(chip);
+    }
+  }
+  wrap.appendChild(top);
+
+  const list=document.createElement('div'); list.className='plist';
+  arr.forEach((pt,i)=>{
+    const li=document.createElement('div'); li.className='point';
+    const num=`${idx+1}.${i+1}`;
+    li.innerHTML=`<span class="num">${num}</span>
+      <input class="pt-input" placeholder="Escribe…" value="${pt.text||''}">
+      <button class="p-mini" title="Subpunto">＋</button>
+      <button class="p-mini" title="Bandera">🚩</button>
+      <button class="p-mini" title="Borrar">🗑</button>`;
+    li.querySelector('.pt-input').oninput=e=>{ pt.text=e.target.value; save(); };
+    li.querySelectorAll('.p-mini')[0].onclick=()=>{ st._openBranches=true; pushSubPoint(pt); save(); renderModules(); };
+    li.querySelectorAll('.p-mini')[1].onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ pt.link={pid}; save(); renderModules(); }); };
+    li.querySelectorAll('.p-mini')[2].onclick=()=>{ st._openBranches=true; delFromArray(arr,pt.id); save(); renderModules(); };
+
+    if(pt.link?.pid){
+      const dest=state.processes.find(x=>x.id===pt.link.pid);
+      if(dest){
+        const pc=document.createElement('span'); pc.className='chip'; pc.style.background=dest.color; pc.style.marginLeft='.35rem';
+        pc.innerHTML=`→ <small>${dest.name}</small>`;
+        li.appendChild(pc);
+      }
+    }
+
+    const kids=document.createElement('div'); kids.className='children';
+    pt.children.forEach((ch,j)=>{
+      const cli=document.createElement('div'); cli.className='point';
+      const cnum=`${num}.${j+1}`;
+      cli.innerHTML=`<span class="num">${cnum}</span>
+        <input class="pt-input" placeholder="Subpunto…" value="${ch.text||''}">
+        <button class="p-mini" title="Bandera">🚩</button>
+        <button class="p-mini" title="Borrar">🗑</button>`;
+      cli.querySelector('.pt-input').oninput=e=>{ ch.text=e.target.value; save(); };
+      cli.querySelectorAll('.p-mini')[0].onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ ch.link={pid}; save(); renderModules(); }); };
+      cli.querySelectorAll('.p-mini')[1].onclick=()=>{ st._openBranches=true; const k=pt.children.indexOf(ch); if(k>-1){ pt.children.splice(k,1); save(); renderModules(); } };
+
+      if(ch.link?.pid){
+        const dest=state.processes.find(x=>x.id===ch.link.pid);
+        if(dest){
+          const cc=document.createElement('span'); cc.className='chip'; cc.style.background=dest.color; cc.innerHTML=`→ <small>${dest.name}</small>`;
+          cli.appendChild(cc);
+        }
+      }
+      kids.appendChild(cli);
+    });
+
+    list.appendChild(li); list.appendChild(kids);
+  });
+  wrap.appendChild(list);
+  return wrap;
+}
+
+function stepRow(p,m,st,index){
+  const row=document.createElement('div');
+  const sc=document.createElement('div'); sc.className='step';
+  sc.innerHTML=`
+    <div class="bubble">${index+1}</div>
+    <input class="title" value="${st.title}">
+    <div class="minis">
+      <button class="mini" title="Bandera paso">🚩</button>
+      <button class="mini" title="Si / No">❓</button>
+      <button class="mini" title="Eliminar">–</button>
+    </div>`;
+  sc.style.setProperty('--proc',p.color);
+  sc.addEventListener('click', (e)=>{
+    if(e.target.closest('.mini') || e.target.classList.contains('title')) return;
+    sc.closest('.steps').querySelectorAll('.step').forEach(s=>s.classList.remove('selected'));
+    sc.classList.add('selected');
+  });
+
+  sc.querySelector('.title').oninput=e=>{ st.title=e.target.value; save(); };
+  sc.querySelectorAll('.mini')[2].onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
+  sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
+
+  const branches=document.createElement('div'); branches.className='branches'+(st._openBranches?'':' hide');
+  sc.querySelectorAll('.mini')[1].onclick=()=>{ st._openBranches=!st._openBranches; save(); toggleBlock(branches,st._openBranches); };
+
+  row.appendChild(sc);
+
+  if(st.link?.pid){
+    const dest=state.processes.find(x=>x.id===st.link.pid);
+    if(dest){
+      const chip=document.createElement('div');
+      chip.className='chip'; chip.style.background=dest.color; chip.style.margin='4px 0 0 54px';
+      chip.innerHTML=`→ <small>Ir al proceso:</small> <strong>${dest.name}</strong>`;
+      row.appendChild(chip);
+    }
+  }
+
+  branches.appendChild(branchBox(p,m,st,'no',index));
+  branches.appendChild(branchBox(p,m,st,'yes',index));
+  row.appendChild(branches);
+  return row;
+}
+
+/* ===== Subproceso (módulo) ===== */
+function modCard(p,m){
+  const card=document.createElement('div'); card.className='module';
+  card.style.setProperty('--proc',p.color);
+  card.dataset.mid = m.id;
+  card.dataset.pid = p.id;
+
+  const head=document.createElement('div'); head.className='mod-head';
+  head.style.setProperty('--proc',p.color);
+  head.innerHTML=`<input class="mod-title" value="${m.title}">
+    <select class="sel">${RESPONSABLES.map(r=>`<option ${m.responsable===r?'selected':''}>${r}</option>`).join('')}</select>
+    <button class="pill" data-act="toggle-detail" aria-expanded="${m._openDetail?'true':'false'}">▾ Detalle</button>
+    <button class="pill" data-act="add-step">+ Paso</button>
+    <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
+    <button class="pill" data-act="del">–</button>`;
+  const titleEl=head.querySelector('.mod-title');
+  titleEl.oninput=e=>{ m.title=e.target.value; save(); };
+  titleEl.ondblclick=()=>{ m._openDetail=!m._openDetail; toggleBlock(det,m._openDetail); if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
+  head.querySelector('select').onchange=e=>{ m.responsable=e.target.value; save(); };
+  head.querySelector('[data-act="add-step"]').onclick=()=>{ m.steps.push(makeStep()); save(); renderModules(); };
+  head.querySelector('[data-act="toggle-detail"]').onclick=(ev)=>{
+    m._openDetail=!m._openDetail;
+    ev.currentTarget.setAttribute('aria-expanded', m._openDetail?'true':'false');
+    toggleBlock(det,m._openDetail);
+    if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0); }
+    save();
+  };
+  head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
+  head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
+  card.appendChild(head);
+
+  const det=document.createElement('div'); 
+  det.className='mod-detail'+(m._openDetail?'':' hide');
+  det.setAttribute('aria-hidden', m._openDetail ? 'false':'true');
+  det.innerHTML=`<textarea placeholder="Descripción del subproceso…">${m.detail||''}</textarea>`;
+  const mta=det.querySelector('textarea');
+  mta.oninput=e=>{ m.detail=e.target.value; save(); };
+  card.appendChild(det);
+
+  const steps=document.createElement('div'); steps.className='steps';
+  steps.style.setProperty('--proc',p.color);
+  m.steps.forEach((st,idx)=> steps.appendChild(stepRow(p,m,st,idx)));
+  card.appendChild(steps);
+
+  if(m.completed){
+    const d=document.createElement('span'); d.className='badge-diana'; d.textContent='🎯';
+    head.appendChild(d);
+  }
+  return card;
+}
+
+/* ===== Render derecha ===== */
+function renderModules(){
+  const box=document.getElementById('modules'); box.innerHTML='';
+  const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
+  p.modules.forEach(m=> box.appendChild(modCard(p,m)));
+}
+
+/* ===== Acciones globales ===== */
+function createModuleForProcess(pid,titleOverride){
+  const p=state.processes.find(x=>x.id===pid); if(!p) return null;
+  const m={id:uid(),title:titleOverride||'Nuevo subproceso',responsable:RESPONSABLES[0],detail:'',steps:[makeStep()],completed:false,_openDetail:false};
+  p.modules.push(m); save(); renderModules(); return m;
+}
+function addProcess(){
+  const color=colors[state.processes.length%colors.length];
+  const p={id:uid(),name:'Nuevo proceso',color,detail:'',modules:[],_openDetail:false};
+  state.processes.push(p); activePid=p.id; save(); render();
+}
+function addStepGlobal(){
+  const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
+  if(!p){ alert('Primero crea un proceso'); return; }
+  let m=p.modules[p.modules.length-1];
+  if(!m) m=createModuleForProcess(p.id,'Pasos');   /* título Pasos si nace desde +Paso */
+  m.steps.push(makeStep()); save(); renderModules();
+}
+
+/* ===== Render maestro ===== */
+function render(){
+  renderProcesses();
+  renderModules();
+  if (window.applyPinLockUI) window.applyPinLockUI();
+}
+
+/* ===== Boot ===== */
+load(); document.getElementById('stamp').textContent='Última actualización '+stamp();
+window.applyPinLockUI = window.applyPinLockUI || function(){};
+render();
+document.getElementById('btnAddProcess').onclick=addProcess;
+document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p){alert('Crea un proceso');return;} createModuleForProcess(p.id,'Nuevo subproceso'); };
+document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
+document.getElementById('btnSave').onclick=save;
+
+/* ====== MATCHERS PARA BUSCADOR GLOBAL (procesos, subprocesos y pasos) ====== */
+function stepMatches(st, q){
+  if(!q) return true;
+  const ql = q.toLowerCase();
+  if((st.title||'').toLowerCase().includes(ql)) return true;
+
+  const checkPoints = (list=[])=>{
+    for(const pt of list){
+      if((pt.text||'').toLowerCase().includes(ql)) return true;
+      if(Array.isArray(pt.children)){
+        for(const ch of pt.children){
+          if((ch.text||'').toLowerCase().includes(ql)) return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  if(checkPoints(st.yes||[])) return true;
+  if(checkPoints(st.no||[])) return true;
+  return false;
+}
+
+function moduleMatches(m, q){
+  if(!q) return true;
+  const ql = q.toLowerCase();
+  if((m.title||'').toLowerCase().includes(ql)) return true;
+  if((m.detail||'').toLowerCase().includes(ql)) return true;
+
+  if(Array.isArray(m.steps)){
+    for(const st of m.steps){
+      if(stepMatches(st, ql)) return true;
+    }
+  }
+  return false;
+}
+
+function processMatches(p, q){
+  if(!q) return true;
+  const ql = q.toLowerCase();
+  if((p.name||'').toLowerCase().includes(ql)) return true;
+  if((p.detail||'').toLowerCase().includes(ql)) return true;
+
+  if(Array.isArray(p.modules)){
+    for(const m of p.modules){
+      if(moduleMatches(m, ql)) return true;
+    }
+  }
+  return false;
+}
+
+/* ===== Buscador global ===== */
+document.getElementById('q').addEventListener('input',e=>{
+  const q = e.target.value.trim().toLowerCase();
+
+  document.querySelectorAll('.proc-item').forEach(el=>{
+    const pid = el.dataset.pid;
+    const p = state.processes.find(x=>x.id===pid);
+    const visible = !q || (p && processMatches(p, q));
+    el.classList.toggle('hide', !visible);
+  });
+
+  const pActive = state.processes.find(x=>x.id===activePid) || state.processes[0];
+  if(!pActive){
+    return;
+  }
+
+  document.querySelectorAll('#modules .module').forEach(el=>{
+    const mid = el.dataset.mid;
+    const m = pActive.modules.find(x=>x.id===mid);
+    const visible = !q || (m && moduleMatches(m, q));
+    el.classList.toggle('hide', !visible);
+  });
+});
+
+/* =======================================================================
+   UTILIDADES (PIN, PDF/Imprimir, Descargar HTML, Guardar / Cargar nube)
+   ======================================================================= */
+(function(){
+  const PIN_CODE = 'AR4321';
+  const SNAP_KEY = 'PA_SNAPSHOT_V1';
+
+  const toast = (() => {
+    const n = document.createElement('div');
+    n.className='pa-toast'; n.id='paToast';
+    document.body.appendChild(n);
+    return (msg)=>{ n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2200); };
+  })();
+
+  const fileStamp = () => { const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}-${p(d.getSeconds())}`; };
+
+  const pinBtn  = document.getElementById('paPinBtn');
+  const pdfBtn  = document.getElementById('paPdfBtn');
+  const htmlBtn = document.getElementById('paHtmlBtn');
+  const saveBtn = document.getElementById('paSaveCloud');
+  const loadBtn = document.getElementById('paLoadCloud');
+
+  window.applyPinLockUI = function applyPinLockUI(){
+    const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
+    document.body.classList.toggle('pa-locked', locked);
+
+    ['#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso'].forEach(sel=>{
+      const b=document.querySelector(sel);
+      if(b){ b.classList.toggle('lock-block', locked); b.toggleAttribute('disabled', locked); }
+    });
+
+    document.querySelectorAll('.proc-item .icon-btn[title="Renombrar"], .proc-item .icon-btn[title="Eliminar"]').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+
+    document.querySelectorAll('input.title, .mod-title, textarea, .pt-input').forEach(el=>{
+      el.toggleAttribute('readonly', locked);
+      el.classList.toggle('is-readonly', locked);
+    });
+    document.querySelectorAll('select.sel').forEach(s=>{
+      s.toggleAttribute('disabled', locked);
+      s.classList.toggle('is-readonly', locked);
+    });
+
+    document.querySelectorAll('[data-act="add-step"], [data-act="close"], [data-act="del"]').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+
+    document.querySelectorAll('.step .mini[title="Eliminar"], .step .mini[title="Bandera paso"]').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+
+    document.querySelectorAll('.branch .p-mini').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+  };
+
+  function cancelIfLocked(e){
+    const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
+    if(!locked) return;
+    const t = e.target.closest('button, input, textarea, select');
+    if(!t) return;
+    const denySel = [
+      '#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso',
+      '.proc-item .icon-btn[title="Renombrar"]',
+      '.proc-item .icon-btn[title="Eliminar"]',
+      '[data-act="add-step"]','[data-act="close"]','[data-act="del"]',
+      '.step .mini[title="Eliminar"]','.step .mini[title="Bandera paso"]',
+      '.branch .p-mini'
+    ].join(',');
+    if(t.matches(denySel) || (t.tagName==='SELECT') || (t.tagName==='INPUT' && t.classList.contains('title')) ||
+       (t.tagName==='TEXTAREA') || t.classList.contains('pt-input')){
+      e.stopPropagation(); e.preventDefault();
+      toast('Modo lectura: bloqueado por PIN');
+    }
+  }
+  document.addEventListener('click', cancelIfLocked, true);
+  document.addEventListener('input', cancelIfLocked, true);
+  document.addEventListener('change', cancelIfLocked, true);
+
+  const mo = new MutationObserver(()=>applyPinLockUI());
+  mo.observe(document.body,{childList:true,subtree:true});
+
+  function printAll(){
+    const opened=[];
+    document.querySelectorAll('.proc-detail, .mod-detail, .branches, details').forEach(b=>{
+      const wasHidden = (b.classList && (b.classList.contains('hide') || b.style.display==='none')) || (b.tagName==='DETAILS' && !b.open);
+      if(wasHidden){
+        if(b.tagName==='DETAILS') b.open=true; else showBlock(b);
+        opened.push(b);
+      }
+    });
+    const restore=()=>{ opened.forEach(h=>{ if(h.tagName==='DETAILS') h.open=false; else hideBlock(h); }); window.removeEventListener('afterprint',restore); };
+    window.addEventListener('afterprint',restore);
+    window.print();
+  }
+
+  function currentHTML(){
+    const clone=document.documentElement.cloneNode(true);
+    clone.querySelectorAll('#paToast').forEach(el=>el?.parentNode?.removeChild(el));
+    return '<!DOCTYPE html>\n'+clone.outerHTML;
+  }
+
+  function downloadHTML(){
+    const blob = new Blob([currentHTML()],{type:'text/html'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`PROCESOS-AUDIO_${fileStamp()}.html`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    toast('HTML descargado');
+  }
+
+  function saveToCloud(){
+    try{
+      localStorage.setItem(SNAP_KEY, JSON.stringify({when:Date.now(), html: currentHTML()}));
+      toast('Guardado en nube (local)');
+    }catch(e){ console.error(e); toast('No se pudo guardar'); }
+  }
+
+  function loadFromCloud(){
+    const raw=localStorage.getItem(SNAP_KEY);
+    if(!raw){ toast('No hay copia en nube'); return; }
+    try{
+      const {html}=JSON.parse(raw)||{};
+      if(!html){ toast('Copia inválida'); return; }
+      const url = URL.createObjectURL(new Blob([html],{type:'text/html'}));
+      window.open(url,'_blank','noopener');
+      setTimeout(()=>URL.revokeObjectURL(url),10000);
+    }catch(e){ console.error(e); toast('Copia dañada'); }
+  }
+
+  function togglePin(){
+    if(sessionStorage.getItem('PA_PIN_OK')==='1'){
+      sessionStorage.removeItem('PA_PIN_OK');
+      pinBtn.classList.remove('locked');
+      applyPinLockUI();
+      toast('Edición bloqueada');
+    }else{
+      const v=prompt('Introduce PIN para editar:');
+      if(v===PIN_CODE){ sessionStorage.setItem('PA_PIN_OK','1'); pinBtn.classList.add('locked'); applyPinLockUI(); toast('Edición habilitada'); }
+      else if(v!==null){ toast('PIN incorrecto'); }
+    }
+  }
+
+  pinBtn?.addEventListener('click', togglePin);
+  pdfBtn?.addEventListener('click',  printAll);
+  htmlBtn?.addEventListener('click', downloadHTML);
+  saveBtn?.addEventListener('click', saveToCloud);
+  loadBtn?.addEventListener('click', loadFromCloud);
+
+  if(sessionStorage.getItem('PA_PIN_OK')!=='1'){ applyPinLockUI(); }
+})();
+</script>
 </body>
 </html>
