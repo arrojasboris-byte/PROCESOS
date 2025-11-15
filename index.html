@@ -401,7 +401,6 @@ function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
 
-  // Reset para medir alturas reales (incluyendo SÍ/NO)
   wrappers.forEach(w=>{
     w.style.position='';
     w.style.left='';
@@ -417,13 +416,10 @@ function layoutStepsSerpentine(container){
   const innerWidth = container.clientWidth || (cardW + gapX);
   const cols = Math.max(1, Math.floor((innerWidth + gapX) / (cardW + gapX)));
 
-  // Alturas de cada wrapper
   const heights = wrappers.map(w => w.offsetHeight);
 
-  // Calcular alturas por fila
   const rowHeights = [];
   const rowsIndex = [];
-  let row = 0;
   for(let i=0;i<wrappers.length;i++){
     const r = Math.floor(i / cols);
     rowsIndex[i] = r;
@@ -432,7 +428,6 @@ function layoutStepsSerpentine(container){
   }
   const totalRows = rowHeights.length;
 
-  // Posicionar absolutas
   let y = 0;
   for(let r=0;r<totalRows;r++){
     const dirRight = r % 2 === 0; // pares →, impares ←
@@ -460,7 +455,6 @@ function layoutStepsSerpentine(container){
   container.style.height = y + 20 + 'px';
 }
 
-/* aplicar layout a todos los módulos */
 function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
@@ -479,7 +473,6 @@ function drawFlowForSteps(container){
   svg.classList.add('flow-svg');
   svg.setAttribute('viewBox',`0 0 ${cRect.width} ${cRect.height}`);
 
-  // Marcador flecha
   const defs=document.createElementNS(svgNS,'defs');
   const marker=document.createElementNS(svgNS,'marker');
   marker.setAttribute('id','arrowHead');
@@ -531,7 +524,6 @@ function drawFlowForSteps(container){
     const rowA = parseInt(stepA.dataset.row || '0',10);
     const rowB = parseInt(stepB.dataset.row || '0',10);
     const dirA = parseInt(stepA.dataset.rowDir || '1',10); // 1 →, -1 ←
-    const dirB = parseInt(stepB.dataset.rowDir || '1',10);
 
     let start,end,d;
 
@@ -554,40 +546,57 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
-      // CAMBIO DE FILA: salimos por el lateral y bajamos por fuera
+      /* CAMBIO DE FILA
+         - Salimos por el lateral exterior de la fila
+         - Bajamos en vertical por un “pasillo” fuera de las cajas
+         - Entramos suavemente por arriba en la siguiente caja
+      */
       const fromSide = dirA === 1 ? 'right' : 'left';
-      const toSide   = dirB === 1 ? 'left'  : 'right';
-      start = anchor(a, fromSide);
-      end   = anchor(b, toSide);
+      const startSide = anchor(a, fromSide);
+      const sign = dirA === 1 ? 1 : -1;
 
-      const corridorX = dirA === 1 ? (cRect.width - 16) : 16; // pasillo exterior
-      const midY = (start.y + end.y)/2;
+      // un poco por debajo del borde para que parezca que sale desde la mitad baja
+      start = {x:startSide.x, y:startSide.y + 4};
+
+      const topB = anchor(b,'top');
+      end = {x:topB.x, y:topB.y - 6};
+
+      // pasillo vertical justo por fuera de la caja origen
+      const offset = 26;
+      const corridorX = fromSide === 'right'
+        ? (a.right - cRect.left + offset)
+        : (a.left  - cRect.left - offset);
 
       d = `M ${start.x} ${start.y}
            L ${corridorX} ${start.y}
-           L ${corridorX} ${midY}
-           L ${end.x} ${midY}
+           L ${corridorX} ${end.y}
            L ${end.x} ${end.y}`;
     }
     addPath(d);
   }
 
-  // Último paso → META por el lateral, sin cruzar nada
+  // Último paso → META (solo la señala, no la toca)
   const metaAnchor = container.querySelector('.flow-meta-anchor');
   if(metaAnchor && rects.length){
     const lastRect = rects[rects.length-1];
     const lastStep = steps[steps.length-1];
     const dirLast  = parseInt(lastStep.dataset.rowDir || '1',10);
     const fromSide = dirLast === 1 ? 'right' : 'left';
-    const start = anchor(lastRect, fromSide);
+    const startSide = anchor(lastRect, fromSide);
+    const start = {x:startSide.x, y:startSide.y};
 
     const mRect = metaAnchor.getBoundingClientRect();
+    // unos píxeles antes del botón META, mismo eje vertical
     const end = {
-      x: mRect.left - cRect.left,
-      y: mRect.top - cRect.top
+      x: mRect.left - cRect.left - 10,
+      y: mRect.top - cRect.top + 2
     };
 
-    const corridorX = dirLast === 1 ? (cRect.width - 16) : 16;
+    const offset = 26;
+    const corridorX = fromSide === 'right'
+      ? (lastRect.right - cRect.left + offset)
+      : (lastRect.left  - cRect.left - offset);
+
     const midY = (start.y + end.y)/2;
 
     const d = `M ${start.x} ${start.y}
@@ -605,7 +614,7 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
-/* ===== Si / No (sin cambios de lógica) ===== */
+/* ===== Si / No (misma lógica) ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
