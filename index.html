@@ -37,12 +37,12 @@
     gap:.5rem;
     font-weight:900;
     font-size:22px;
-    flex:1 1 100%;     /* título ocupa fila completa */
+    flex:1 1 100%;
   }
   .title .ear{font-size:30px;line-height:1;display:inline-block;transform:translateY(2px)}
   .search{
-    flex:1 1 100%;    /* ocupa todo el ancho disponible */
-    order:2;          /* fila inferior del faldón */
+    flex:1 1 100%;
+    order:2;
     display:flex;
     align-items:center;
     background:rgba(255,255,255,.18);
@@ -92,12 +92,12 @@
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos: estilo diagrama tipo imagen ===== */
+  /* ===== Pasos: cajas pequeñas con efecto 3D ===== */
   .steps{
     display:flex;
     flex-wrap:wrap;
-    gap:18px;
-    padding:14px 10px;
+    gap:14px;
+    padding:10px 6px 12px;
     justify-content:flex-start;
   }
 
@@ -106,27 +106,34 @@
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    background:#fff;
-    border-radius:12px;
-    padding:12px 14px 14px 14px;
-    box-shadow:0 4px 12px rgba(0,0,0,.06);
-    width:260px;           /* ancho tipo tarjeta */
-    min-height:90px;
-    border:2px solid var(--proc,#2563eb);
+    background:linear-gradient(180deg,#ffffff 0%,#f3f4f6 100%);
+    border-radius:14px;
+    padding:9px 11px 11px;
+    box-shadow:
+      inset 0 1px 0 #fff,
+      0 3px 0 rgba(15,23,42,.28),
+      0 10px 20px rgba(15,23,42,.18);
+    width:210px;          /* más pequeña */
+    min-height:70px;
+    border:1px solid rgba(148,163,184,.75);
   }
 
   .bubble{
-    min-width:28px;
-    height:28px;
+    min-width:24px;
+    height:24px;
     border-radius:9999px;
-    background:var(--proc,#2563eb);
+    background:linear-gradient(180deg,var(--proc,#2563eb) 0%,#1d4ed8 100%);
     color:#fff;
     display:grid;
     place-items:center;
     font-weight:900;
-    font-size:13px;
-    margin-bottom:4px;
-    box-shadow:0 2px 0 rgba(0,0,0,.2);
+    font-size:12px;
+    margin-bottom:3px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.6),
+      0 2px 0 rgba(15,23,42,.35),
+      0 6px 10px rgba(15,23,42,.4);
+    padding:0 2px;
     z-index:1;
   }
 
@@ -134,29 +141,32 @@
   .step::before{
     content:"";
     position:absolute;
-    right:-32px;
+    right:-26px;
     top:50%;
     transform:translateY(-50%);
-    width:24px;
-    height:4px;
+    width:20px;
+    height:3px;
     background:var(--proc,#2563eb);
     border-radius:999px;
+    box-shadow:0 1px 0 rgba(15,23,42,.35);
   }
 
-  /* Última tarjeta sin flecha */
   .steps .step:last-child::before{
     content:none;
   }
 
   .step.selected{
-    box-shadow:0 0 0 3px rgba(37,99,235,.3),0 10px 24px rgba(0,0,0,.12);
+    box-shadow:
+      0 0 0 2px rgba(37,99,235,.4),
+      0 3px 0 rgba(15,23,42,.35),
+      0 12px 24px rgba(15,23,42,.3);
   }
   .step.selected::after{
     content:"";
     position:absolute;
-    inset:-6px;
-    border-radius:14px;
-    border:2px solid rgba(37,99,235,.4);
+    inset:-4px;
+    border-radius:16px;
+    border:2px solid rgba(37,99,235,.35);
     pointer-events:none;
   }
 
@@ -166,17 +176,27 @@
     background:transparent;
     outline:0;
     width:100%;
-    margin-top:2px;
+    margin-top:1px;
+    font-size:13px;
   }
 
   .minis{
     display:flex;
-    gap:.35rem;
-    margin-top:8px;
+    gap:.25rem;
+    margin-top:6px;
     margin-left:auto;
   }
 
-  .mini{width:30px;height:30px;border-radius:10px;border:0;background:#f2f4f8;cursor:pointer;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1)}
+  .mini{
+    width:26px;
+    height:26px;
+    border-radius:10px;
+    border:0;
+    background:#f2f4f8;
+    cursor:pointer;
+    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.18);
+  }
+  .mini:active{transform:translateY(1px)}
 
   .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
 
@@ -541,7 +561,7 @@ function addStepGlobal(){
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
   if(!p){ alert('Primero crea un proceso'); return; }
   let m=p.modules[p.modules.length-1];
-  if(!m) m=createModuleForProcess(p.id,'Pasos');   /* título Pasos si nace desde +Paso */
+  if(!m) m=createModuleForProcess(p.id,'Pasos');
   m.steps.push(makeStep()); save(); renderModules();
 }
 
