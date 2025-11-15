@@ -95,7 +95,7 @@
   /* ===== Pasos ===== */
   .steps{
     position:relative;
-    display:block;              /* ahora lo controlamos por JS, no flex */
+    display:block;
     padding:10px 6px 26px;
   }
 
@@ -108,7 +108,7 @@
 
   .step{
     position:relative;
-    z-index:2; /* encima de flechas */
+    z-index:2;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
@@ -396,46 +396,76 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout en serpentina (1ª fila →, 2ª ←, 3ª →, etc.) ===== */
+/* ===== Layout en serpentina que respeta la altura de SÍ/NO ===== */
 function layoutStepsSerpentine(container){
-  const wrappers = Array.from(container.querySelectorAll(':scope > div'));
+  const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
+
+  // Reset para medir alturas reales (incluyendo SÍ/NO)
+  wrappers.forEach(w=>{
+    w.style.position='';
+    w.style.left='';
+    w.style.top='';
+  });
 
   const firstStep = wrappers[0].querySelector('.step');
   if(!firstStep) return;
 
   const cardW = firstStep.offsetWidth;
-  const cardH = firstStep.offsetHeight;
   const gapX = 24;
   const gapY = 40;
   const innerWidth = container.clientWidth || (cardW + gapX);
   const cols = Math.max(1, Math.floor((innerWidth + gapX) / (cardW + gapX)));
-  const rowsCount = Math.ceil(wrappers.length / cols);
 
-  container.style.position='relative';
+  // Alturas de cada wrapper
+  const heights = wrappers.map(w => w.offsetHeight);
 
-  wrappers.forEach((wrap, index)=>{
-    const row = Math.floor(index / cols);
-    const idxInRow = index % cols;
-    const dirRight = row % 2 === 0; // filas pares →, impares ←
-    const col = dirRight ? idxInRow : (cols - 1 - idxInRow);
+  // Calcular alturas por fila
+  const rowHeights = [];
+  const rowsIndex = [];
+  let row = 0;
+  for(let i=0;i<wrappers.length;i++){
+    const r = Math.floor(i / cols);
+    rowsIndex[i] = r;
+    if(!rowHeights[r]) rowHeights[r]=0;
+    rowHeights[r] = Math.max(rowHeights[r], heights[i]);
+  }
+  const totalRows = rowHeights.length;
 
-    const left = col * (cardW + gapX);
-    const top  = row * (cardH + gapY);
+  // Posicionar absolutas
+  let y = 0;
+  for(let r=0;r<totalRows;r++){
+    const dirRight = r % 2 === 0; // pares →, impares ←
+    const rowStartIndex = r*cols;
+    const rowEndIndex = Math.min(rowStartIndex+cols, wrappers.length);
+    for(let k=rowStartIndex;k<rowEndIndex;k++){
+      const wrap = wrappers[k];
+      const idxInRow = k - rowStartIndex;
+      const col = dirRight ? idxInRow : (cols - 1 - idxInRow);
+      const left = col * (cardW + gapX);
 
-    wrap.style.position='absolute';
-    wrap.style.left = left + 'px';
-    wrap.style.top  = top + 'px';
-  });
+      wrap.style.position='absolute';
+      wrap.style.left = left + 'px';
+      wrap.style.top  = y + 'px';
 
-  container.style.height = rowsCount * (cardH + gapY) + 20 + 'px';
+      const step = wrap.querySelector('.step');
+      if(step){
+        step.dataset.row = r;
+        step.dataset.rowDir = dirRight ? '1' : '-1';
+      }
+    }
+    y += rowHeights[r] + gapY;
+  }
+
+  container.style.height = y + 20 + 'px';
 }
 
+/* aplicar layout a todos los módulos */
 function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ===== Dibujo de flechas siguiendo esa serpentina ===== */
+/* ===== Dibujo de flechas siguiendo la serpentina y rodeando SÍ/NO ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
@@ -496,16 +526,21 @@ function drawFlowForSteps(container){
   for(let i=0;i<rects.length-1;i++){
     const a = rects[i];
     const b = rects[i+1];
-    const sameRow = Math.abs(a.top - b.top) < 25;
+    const stepA = steps[i];
+    const stepB = steps[i+1];
+    const rowA = parseInt(stepA.dataset.row || '0',10);
+    const rowB = parseInt(stepB.dataset.row || '0',10);
+    const dirA = parseInt(stepA.dataset.rowDir || '1',10); // 1 →, -1 ←
+    const dirB = parseInt(stepB.dataset.rowDir || '1',10);
 
     let start,end,d;
-    if(sameRow){
+
+    if(rowA === rowB){
+      // MISMA FILA
       if(a.left < b.left){
-        // izquierda -> derecha
         start = anchor(a,'right');
         end   = anchor(b,'left');
       }else{
-        // derecha -> izquierda
         start = anchor(a,'left');
         end   = anchor(b,'right');
       }
@@ -518,35 +553,46 @@ function drawFlowForSteps(container){
              L ${end.x} ${midY}
              L ${end.x} ${end.y}`;
       }
-      addPath(d);
     }else{
-      // Cambio de fila: bajamos por un pequeño codo, sin cruzar cajas
-      start = anchor(a,'bottom');
-      end   = anchor(b,'top');
-      const midY = (start.y + end.y) / 2;
-      const midX = (start.x + end.x) / 2;
+      // CAMBIO DE FILA: salimos por el lateral y bajamos por fuera
+      const fromSide = dirA === 1 ? 'right' : 'left';
+      const toSide   = dirB === 1 ? 'left'  : 'right';
+      start = anchor(a, fromSide);
+      end   = anchor(b, toSide);
+
+      const corridorX = dirA === 1 ? (cRect.width - 16) : 16; // pasillo exterior
+      const midY = (start.y + end.y)/2;
+
       d = `M ${start.x} ${start.y}
-           L ${start.x} ${midY}
-           L ${midX} ${midY}
+           L ${corridorX} ${start.y}
+           L ${corridorX} ${midY}
            L ${end.x} ${midY}
            L ${end.x} ${end.y}`;
-      addPath(d);
     }
+    addPath(d);
   }
 
-  // Último paso → META
+  // Último paso → META por el lateral, sin cruzar nada
   const metaAnchor = container.querySelector('.flow-meta-anchor');
-  if(metaAnchor){
+  if(metaAnchor && rects.length){
     const lastRect = rects[rects.length-1];
-    const start = anchor(lastRect,'bottom');
+    const lastStep = steps[steps.length-1];
+    const dirLast  = parseInt(lastStep.dataset.rowDir || '1',10);
+    const fromSide = dirLast === 1 ? 'right' : 'left';
+    const start = anchor(lastRect, fromSide);
+
     const mRect = metaAnchor.getBoundingClientRect();
     const end = {
       x: mRect.left - cRect.left,
       y: mRect.top - cRect.top
     };
-    const midY = (start.y + end.y) / 2;
+
+    const corridorX = dirLast === 1 ? (cRect.width - 16) : 16;
+    const midY = (start.y + end.y)/2;
+
     const d = `M ${start.x} ${start.y}
-               L ${start.x} ${midY}
+               L ${corridorX} ${start.y}
+               L ${corridorX} ${midY}
                L ${end.x} ${midY}
                L ${end.x} ${end.y}`;
     addPath(d);
@@ -559,7 +605,7 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
-/* ===== Si / No (idéntico a tu lógica original) ===== */
+/* ===== Si / No (sin cambios de lógica) ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
@@ -739,7 +785,6 @@ function renderModules(){
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
   p.modules.forEach(m=> box.appendChild(modCard(p,m)));
 
-  // 1º colocamos las cajas en serpentina, luego dibujamos flechas
   requestAnimationFrame(()=>{
     layoutAllSteps();
     drawAllFlows();
