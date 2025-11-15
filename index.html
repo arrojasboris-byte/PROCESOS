@@ -92,7 +92,7 @@
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos: cajas compactas ===== */
+  /* ===== Pasos ===== */
   .steps{
     position:relative;
     display:flex;
@@ -112,6 +112,7 @@
 
   .step{
     position:relative;
+    z-index:2; /* sobre las flechas */
     display:flex;
     flex-direction:column;
     align-items:flex-start;
@@ -202,7 +203,7 @@
 
   .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
 
-  /* Flechas SVG sobre los pasos */
+  /* Flechas SVG sobre los pasos (por detrás) */
   .flow-svg{
     position:absolute;
     inset:0;
@@ -210,6 +211,7 @@
     height:100%;
     pointer-events:none;
     overflow:visible;
+    z-index:1;
   }
   .flow-meta-anchor{
     position:absolute;
@@ -398,7 +400,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== DIBUJO DE FLECHAS (SVG) ===== */
+/* ===== DIBUJO DE FLECHAS SENCILLAS ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
@@ -415,93 +417,69 @@ function drawFlowForSteps(container){
   const defs=document.createElementNS(svgNS,'defs');
   const marker=document.createElementNS(svgNS,'marker');
   marker.setAttribute('id','arrowHead');
-  marker.setAttribute('markerWidth','8');
-  marker.setAttribute('markerHeight','8');
-  marker.setAttribute('refX','7');
-  marker.setAttribute('refY','4');
+  marker.setAttribute('markerWidth','7');
+  marker.setAttribute('markerHeight','7');
+  marker.setAttribute('refX','6');
+  marker.setAttribute('refY','3.5');
   marker.setAttribute('orient','auto');
   marker.setAttribute('markerUnits','strokeWidth');
   const headPath=document.createElementNS(svgNS,'path');
-  headPath.setAttribute('d','M0,0 L8,4 L0,8 Z');
-  headPath.setAttribute('fill','#d1d5db');
+  headPath.setAttribute('d','M0,0 L7,3.5 L0,7 Z');
+  headPath.setAttribute('fill','#cbd5e1');
   marker.appendChild(headPath);
   defs.appendChild(marker);
   svg.appendChild(defs);
-
-  const rects = steps.map(s=>s.getBoundingClientRect());
-  const centers = rects.map(r=>r.top + r.height/2);
-  const minC = Math.min(...centers);
-  const maxC = Math.max(...centers);
-  const threshold = (minC + maxC) / 2 + 1;
-
-  const rows = centers.map(c => c < threshold ? 0 : 1); // 0 = fila superior, 1 = fila inferior
-
-  const minTop = Math.min(...rects.map(r=>r.top));
-  const maxBottom = Math.max(...rects.map(r=>r.bottom));
-  const laneTop = (minTop - rect.top) - 18;      // carril por encima de todas las cajas
-  const laneBottom = (maxBottom - rect.top) + 18; // carril por debajo de todas las cajas
-  const sideRight = rect.width - 20;              // carril vertical derecho
 
   function addPath(d){
     const path=document.createElementNS(svgNS,'path');
     path.setAttribute('d',d);
     path.setAttribute('fill','none');
-    path.setAttribute('stroke','#d1d5db');
+    path.setAttribute('stroke','#cbd5e1');
     path.setAttribute('stroke-width','3');
     path.setAttribute('marker-end','url(#arrowHead)');
     svg.appendChild(path);
   }
 
-  function addArrowIndex(i,j,forceBottom){
-    const a = rects[i];
-    const b = rects[j];
-    const rowA = rows[i];
-    const rowB = rows[j];
+  function addArrow(fromRect,toRect){
+    const startX = fromRect.right - rect.left;
+    const startY = fromRect.top + fromRect.height/2 - rect.top;
+    const endX   = toRect.left - rect.left;
+    const endY   = toRect.top + toRect.height/2 - rect.top;
 
-    const startX = a.right - rect.left;
-    const startY = a.top + a.height/2 - rect.top;
-    const endX   = b.left - rect.left;
-    const endY   = b.top + b.height/2 - rect.top;
-
-    // Misma fila → usamos carril superior o inferior según fila
-    if(rowA === rowB && !forceBottom){
-      const laneY = rowA === 0 ? laneTop : laneBottom;
-      const d = `M ${startX} ${startY}
-                 L ${startX} ${laneY}
-                 L ${endX} ${laneY}
-                 L ${endX} ${endY}`;
-      addPath(d);
-      return;
+    let d;
+    if(Math.abs(startY - endY) < 30){
+      // Mismo nivel: flecha corta recta
+      d = `M ${startX} ${startY} L ${endX} ${endY}`;
+    }else{
+      // Distinta fila: pequeña L entre ambas cajas
+      const midY = (startY + endY)/2;
+      d = `M ${startX} ${startY}
+           L ${startX} ${midY}
+           L ${endX} ${midY}
+           L ${endX} ${endY}`;
     }
-
-    // Cambio de fila (ej. 4 → 5): bajamos por el lado derecho y volvemos
-    const d = `M ${startX} ${startY}
-               L ${sideRight} ${startY}
-               L ${sideRight} ${laneBottom}
-               L ${endX} ${laneBottom}
-               L ${endX} ${endY}`;
     addPath(d);
   }
 
-  // Flechas entre pasos en orden
-  for(let i=0;i<steps.length-1;i++){
-    addArrowIndex(i,i+1,false);
+  const rects = steps.map(s=>s.getBoundingClientRect());
+
+  // Flechas entre pasos consecutivos
+  for(let i=0;i<rects.length-1;i++){
+    addArrow(rects[i],rects[i+1]);
   }
 
-  // Flecha del último paso hacia META usando carril inferior
+  // Último paso -> META
   const anchor = container.querySelector('.flow-meta-anchor');
   if(anchor){
-    const lastIndex = steps.length-1;
-    const a = rects[lastIndex];
-    const anchorRect = anchor.getBoundingClientRect();
-    const jRect = {
-      left:  anchorRect.left,
-      top:   anchorRect.top,
+    const aRect = rects[rects.length-1];
+    const bRect = anchor.getBoundingClientRect();
+    const fake = {
+      left: bRect.left,
+      top:  bRect.top,
+      right: bRect.left,
       height: 0
     };
-    rects.push(jRect);
-    rows.push(1); // meta siempre en "fila inferior"
-    addArrowIndex(lastIndex,rects.length-1,true);
+    addArrow(aRect,fake);
   }
 
   container.appendChild(svg);
