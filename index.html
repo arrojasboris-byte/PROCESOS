@@ -92,13 +92,22 @@
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos: cajas pequeñas con efecto 3D ===== */
+  /* ===== Pasos: cajas pequeñas 3D + guía con flechas hasta la meta ===== */
   .steps{
+    position:relative;
     display:flex;
     flex-wrap:wrap;
     gap:14px;
-    padding:10px 6px 12px;
+    padding:10px 6px 18px;
     justify-content:flex-start;
+  }
+
+  /* Cada fila de la lista de pasos (step + ramas si/no) */
+  .steps > div{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    flex-wrap:nowrap;
   }
 
   .step{
@@ -113,7 +122,7 @@
       inset 0 1px 0 #fff,
       0 3px 0 rgba(15,23,42,.28),
       0 10px 20px rgba(15,23,42,.18);
-    width:210px;          /* más pequeña */
+    width:210px;
     min-height:70px;
     border:1px solid rgba(148,163,184,.75);
   }
@@ -137,22 +146,38 @@
     z-index:1;
   }
 
-  /* Flecha horizontal entre tarjetas */
+  /* Guía/“flecha” entre cajas */
   .step::before{
     content:"";
     position:absolute;
     right:-26px;
     top:50%;
     transform:translateY(-50%);
-    width:20px;
+    width:22px;
     height:3px;
-    background:var(--proc,#2563eb);
+    background:linear-gradient(90deg,var(--proc,#2563eb) 0%,#f97316 100%);
     border-radius:999px;
     box-shadow:0 1px 0 rgba(15,23,42,.35);
   }
 
+  /* Última caja sin guía (fin del camino, meta) */
   .steps .step:last-child::before{
     content:none;
+  }
+
+  /* Meta visual al final del recorrido */
+  .steps::after{
+    content:"🎯 META";
+    position:absolute;
+    right:4px;
+    bottom:-4px;
+    font-size:11px;
+    font-weight:700;
+    color:#0f172a;
+    padding:2px 6px;
+    border-radius:999px;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 2px 6px rgba(15,23,42,.18);
   }
 
   .step.selected{
@@ -201,7 +226,18 @@
   .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
 
   /* ===== Si / No ===== */
-  .branches{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 0 54px}
+  .branches{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin:6px 0 0 54px; /* valor por defecto, luego lo sobreescribimos al ir al lado */
+  }
+
+  /* Cuando las ramas van junto a la caja (layout amigable lateral) */
+  .steps > div > .branches{
+    margin:0 0 0 12px;
+  }
+
   .branch{background:#fff;border:1px solid #ececec;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
   .branch.yes .bh-label{font-size:12px;font-weight:700;opacity:.8}
   .branch.no .bh-label{font-size:14px;font-weight:900}
@@ -670,7 +706,7 @@ document.getElementById('q').addEventListener('input',e=>{
     return (msg)=>{ n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2200); };
   })();
 
-  const fileStamp = () => { const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}-${p(d.getSeconds())}`; };
+  const fileStamp = () => { const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}`; };
 
   const pinBtn  = document.getElementById('paPinBtn');
   const pdfBtn  = document.getElementById('paPdfBtn');
