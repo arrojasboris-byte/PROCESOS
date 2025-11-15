@@ -112,7 +112,7 @@
 
   .step{
     position:relative;
-    z-index:2; /* sobre las flechas */
+    z-index:2; /* encima de flechas */
     display:flex;
     flex-direction:column;
     align-items:flex-start;
@@ -203,7 +203,7 @@
 
   .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
 
-  /* Flechas SVG sobre los pasos (por detrás) */
+  /* Flechas SVG (detrás de las cajas) */
   .flow-svg{
     position:absolute;
     inset:0;
@@ -314,7 +314,7 @@
   </div>
 
 <script>
-/* ===== Utilidades de visibilidad seguras para Detalle ===== */
+/* ===== Utilidades de visibilidad ===== */
 function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
 function hideBlock(el){ if(!el) return; el.classList.add('hide'); el.style.display='none'; el.setAttribute('aria-hidden','true'); }
 function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
@@ -400,90 +400,167 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== DIBUJO DE FLECHAS SENCILLAS ===== */
+/* ===== DIBUJO DE FLECHAS EN SERPIENTE ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
-  if(!steps.length) return;
+  if (!steps.length) return;
 
   const old = container.querySelector('.flow-svg');
-  if(old) old.remove();
+  if (old) old.remove();
 
-  const rect = container.getBoundingClientRect();
+  const cRect = container.getBoundingClientRect();
   const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS,'svg');
+  const svg = document.createElementNS(svgNS, 'svg');
   svg.classList.add('flow-svg');
-  svg.setAttribute('viewBox',`0 0 ${rect.width} ${rect.height}`);
+  svg.setAttribute('viewBox', `0 0 ${cRect.width} ${cRect.height}`);
 
-  const defs=document.createElementNS(svgNS,'defs');
-  const marker=document.createElementNS(svgNS,'marker');
-  marker.setAttribute('id','arrowHead');
-  marker.setAttribute('markerWidth','7');
-  marker.setAttribute('markerHeight','7');
-  marker.setAttribute('refX','6');
-  marker.setAttribute('refY','3.5');
-  marker.setAttribute('orient','auto');
-  marker.setAttribute('markerUnits','strokeWidth');
-  const headPath=document.createElementNS(svgNS,'path');
-  headPath.setAttribute('d','M0,0 L7,3.5 L0,7 Z');
-  headPath.setAttribute('fill','#cbd5e1');
+  // Definir marcador de punta de flecha
+  const defs = document.createElementNS(svgNS, 'defs');
+  const marker = document.createElementNS(svgNS, 'marker');
+  marker.setAttribute('id', 'arrowHead');
+  marker.setAttribute('markerWidth', '7');
+  marker.setAttribute('markerHeight', '7');
+  marker.setAttribute('refX', '6');
+  marker.setAttribute('refY', '3.5');
+  marker.setAttribute('orient', 'auto');
+  marker.setAttribute('markerUnits', 'strokeWidth');
+  const headPath = document.createElementNS(svgNS, 'path');
+  headPath.setAttribute('d', 'M0,0 L7,3.5 L0,7 Z');
+  headPath.setAttribute('fill', '#cbd5e1');
   marker.appendChild(headPath);
   defs.appendChild(marker);
   svg.appendChild(defs);
 
   function addPath(d){
-    const path=document.createElementNS(svgNS,'path');
-    path.setAttribute('d',d);
-    path.setAttribute('fill','none');
-    path.setAttribute('stroke','#cbd5e1');
-    path.setAttribute('stroke-width','3');
-    path.setAttribute('marker-end','url(#arrowHead)');
+    const path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '#cbd5e1');
+    path.setAttribute('stroke-width', '3');
+    path.setAttribute('marker-end', 'url(#arrowHead)');
     svg.appendChild(path);
   }
 
-  function addArrow(fromRect,toRect){
-    const startX = fromRect.right - rect.left;
-    const startY = fromRect.top + fromRect.height/2 - rect.top;
-    const endX   = toRect.left - rect.left;
-    const endY   = toRect.top + toRect.height/2 - rect.top;
+  // Datos de cada paso
+  const items = steps.map((el, idx) => ({
+    el,
+    idx,
+    rect: el.getBoundingClientRect()
+  }));
 
-    let d;
-    if(Math.abs(startY - endY) < 30){
-      // Mismo nivel: flecha corta recta
-      d = `M ${startX} ${startY} L ${endX} ${endY}`;
-    }else{
-      // Distinta fila: pequeña L entre ambas cajas
-      const midY = (startY + endY)/2;
-      d = `M ${startX} ${startY}
-           L ${startX} ${midY}
-           L ${endX} ${midY}
-           L ${endX} ${endY}`;
+  // Ordenar verticalmente
+  items.sort((a, b) => a.rect.top - b.rect.top);
+
+  // Agrupar en filas según Y
+  const rows = [];
+  const rowOfIndex = {};
+  const rowDir = {}; // 0: →, 1: ←
+  const ROW_THRESHOLD = 40;
+
+  let currentRow = [items[0]];
+  rows.push(currentRow);
+  rowOfIndex[items[0].idx] = 0;
+
+  for (let i = 1; i < items.length; i++) {
+    const prevTop = currentRow[0].rect.top;
+    if (items[i].rect.top - prevTop > ROW_THRESHOLD) {
+      currentRow = [items[i]];
+      rows.push(currentRow);
+    } else {
+      currentRow.push(items[i]);
     }
-    addPath(d);
+    rowOfIndex[items[i].idx] = rows.length - 1;
   }
 
-  const rects = steps.map(s=>s.getBoundingClientRect());
+  // Construir orden serpenteante fila a fila
+  const serpentOrder = [];
+  rows.forEach((row, rIndex) => {
+    row.sort((a, b) => a.rect.left - b.rect.left);
+    const dir = rIndex % 2 === 0 ? 0 : 1; // fila 0 →, fila 1 ←, fila 2 → ...
+    rowDir[rIndex] = dir;
+    const ordered = dir === 0 ? row : [...row].reverse();
+    serpentOrder.push(...ordered);
+  });
 
-  // Flechas entre pasos consecutivos
-  for(let i=0;i<rects.length-1;i++){
-    addArrow(rects[i],rects[i+1]);
+  // Anchors en lados / arriba / abajo
+  function anchor(rect, side){
+    const xLeft = rect.left - cRect.left;
+    const xRight = rect.right - cRect.left;
+    const yTop = rect.top - cRect.top;
+    const yBottom = rect.bottom - cRect.top;
+    const yMid = yTop + (yBottom - yTop) / 2;
+    const xMid = xLeft + (xRight - xLeft) / 2;
+    switch(side){
+      case 'left':   return { x:xLeft,  y:yMid };
+      case 'right':  return { x:xRight, y:yMid };
+      case 'top':    return { x:xMid,   y:yTop };
+      case 'bottom': return { x:xMid,   y:yBottom };
+    }
   }
 
-  // Último paso -> META
-  const anchor = container.querySelector('.flow-meta-anchor');
-  if(anchor){
-    const aRect = rects[rects.length-1];
-    const bRect = anchor.getBoundingClientRect();
-    const fake = {
-      left: bRect.left,
-      top:  bRect.top,
-      right: bRect.left,
-      height: 0
+  function addArrow(fromRect, toRect, sameRow, rowIndex){
+    let start, end;
+
+    if (sameRow) {
+      const dir = rowDir[rowIndex]; // 0: →, 1: ←
+      if (dir === 0) { // fila hacia la derecha
+        start = anchor(fromRect, 'right');
+        end   = anchor(toRect,   'left');
+      } else {        // fila hacia la izquierda
+        start = anchor(fromRect, 'left');
+        end   = anchor(toRect,   'right');
+      }
+
+      if (Math.abs(start.y - end.y) < 26) {
+        addPath(`M ${start.x} ${start.y} L ${end.x} ${end.y}`);
+      } else {
+        const midY = (start.y + end.y) / 2;
+        addPath(
+          `M ${start.x} ${start.y}
+           L ${start.x} ${midY}
+           L ${end.x} ${midY}
+           L ${end.x} ${end.y}`
+        );
+      }
+    } else {
+      // Cambio de fila: de bottom de una a top de la siguiente
+      start = anchor(fromRect, 'bottom');
+      end   = anchor(toRect,   'top');
+      const midY = (start.y + end.y) / 2;
+      addPath(
+        `M ${start.x} ${start.y}
+         L ${start.x} ${midY}
+         L ${end.x} ${midY}
+         L ${end.x} ${end.y}`
+      );
+    }
+  }
+
+  // Flechas entre pasos en orden serpenteante
+  for (let i = 0; i < serpentOrder.length - 1; i++) {
+    const a = serpentOrder[i];
+    const b = serpentOrder[i + 1];
+    const sameRow = rowOfIndex[a.idx] === rowOfIndex[b.idx];
+    addArrow(a.rect, b.rect, sameRow, rowOfIndex[a.idx]);
+  }
+
+  // Último paso → META
+  const anchorMeta = container.querySelector('.flow-meta-anchor');
+  if (anchorMeta) {
+    const last = serpentOrder[serpentOrder.length - 1];
+    const mRect = anchorMeta.getBoundingClientRect();
+    const fakeRect = {
+      left:   mRect.left,
+      right:  mRect.left,
+      top:    mRect.top,
+      bottom: mRect.top
     };
-    addArrow(aRect,fake);
+    addArrow(last.rect, fakeRect, false, rows.length);
   }
 
   container.appendChild(svg);
 }
+
 function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
@@ -709,7 +786,7 @@ document.getElementById('btnSave').onclick=save;
 /* ===== Recalcular flechas al redimensionar ===== */
 window.addEventListener('resize',()=>requestAnimationFrame(drawAllFlows));
 
-/* ===== MATCHERS PARA BUSCADOR GLOBAL ===== */
+/* ===== MATCHERS PARA BUSCADOR ===== */
 function stepMatches(st, q){
   if(!q) return true;
   const ql = q.toLowerCase();
@@ -772,9 +849,7 @@ document.getElementById('q').addEventListener('input',e=>{
   });
 
   const pActive = state.processes.find(x=>x.id===activePid) || state.processes[0];
-  if(!pActive){
-    return;
-  }
+  if(!pActive) return;
 
   document.querySelectorAll('#modules .module').forEach(el=>{
     const mid = el.dataset.mid;
@@ -785,7 +860,7 @@ document.getElementById('q').addEventListener('input',e=>{
 });
 
 /* =======================================================================
-   UTILIDADES (PIN, PDF/Imprimir, HTML, Guardar / Cargar nube)
+   UTILIDADES (PIN, PDF, HTML, NUBE)
    ======================================================================= */
 (function(){
   const PIN_CODE = 'AR4321';
