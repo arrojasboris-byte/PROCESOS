@@ -209,10 +209,12 @@
     overflow:visible;
     z-index:1;
   }
+
+  /* 🔹 Ancla de META desplazada a la izquierda para no tapar el botón */
   .flow-meta-anchor{
     position:absolute;
-    right:26px;
-    bottom:10px;
+    right:130px;
+    bottom:26px;
     width:1px;
     height:1px;
   }
@@ -523,7 +525,6 @@ function drawFlowForSteps(container){
     const stepB = steps[i+1];
     const rowA = parseInt(stepA.dataset.row || '0',10);
     const rowB = parseInt(stepB.dataset.row || '0',10);
-    const dirA = parseInt(stepA.dataset.rowDir || '1',10); // 1 →, -1 ←
 
     let start,end,d;
 
@@ -547,34 +548,37 @@ function drawFlowForSteps(container){
       }
     }else{
       /* CAMBIO DE FILA
-         → aquí ajusto para que la flecha salga desde
-           la MITAD INFERIOR del lateral de la caja de origen
+         - Sale desde la mitad inferior de la caja superior
+         - Se desplaza hacia el lateral izquierdo por debajo de la caja
+         - Baja por ese lateral (fuera del área de ramas SÍ/NO)
+         - Luego va en horizontal hasta el centro de la caja inferior
       */
-      const fromSide = dirA === 1 ? 'right' : 'left';
-      const baseSide = anchor(a, fromSide);
+      const bottomCenter = anchor(a,'bottom');
+      const topCenter    = anchor(b,'top');
 
-      const hA = a.height || (a.bottom - a.top);
-      const lowerMidY = a.bottom - cRect.top - hA*0.25; // 75% de la altura
+      // y de salida un poco por debajo del borde
+      const startDropY = bottomCenter.y + 8;
 
-      start = {x: baseSide.x, y: lowerMidY};
+      // lateral izquierdo, ligeramente dentro pero antes de las ramas (que empiezan ~+12)
+      const lateralX = (a.left - cRect.left) + 6;
 
-      const topB = anchor(b,'top');
-      end = {x:topB.x, y:topB.y - 6};
+      // punto justo encima de la caja inferior
+      const endY = topCenter.y - 8;
 
-      const offset = 26;
-      const corridorX = fromSide === 'right'
-        ? (a.right - cRect.left + offset)
-        : (a.left  - cRect.left - offset);
+      const midY = (startDropY + endY) / 2;
 
-      d = `M ${start.x} ${start.y}
-           L ${corridorX} ${start.y}
-           L ${corridorX} ${end.y}
-           L ${end.x} ${end.y}`;
+      d = `M ${bottomCenter.x} ${bottomCenter.y}
+           L ${bottomCenter.x} ${startDropY}
+           L ${lateralX} ${startDropY}
+           L ${lateralX} ${midY}
+           L ${topCenter.x} ${midY}
+           L ${topCenter.x} ${endY}
+           L ${topCenter.x} ${topCenter.y}`;
     }
     addPath(d);
   }
 
-  // Último paso → META (salida también desde mitad inferior del lateral)
+  // Último paso → META
   const metaAnchor = container.querySelector('.flow-meta-anchor');
   if(metaAnchor && rects.length){
     const lastRect = rects[rects.length-1];
@@ -590,14 +594,21 @@ function drawFlowForSteps(container){
 
     const mRect = metaAnchor.getBoundingClientRect();
     const end = {
-      x: mRect.left - cRect.left - 10,
+      x: mRect.left - cRect.left + 2,
       y: mRect.top - cRect.top + 2
     };
 
     const offset = 26;
-    const corridorX = fromSide === 'right'
+    const corridorRaw = fromSide === 'right'
       ? (lastRect.right - cRect.left + offset)
       : (lastRect.left  - cRect.left - offset);
+
+    let corridorX = corridorRaw;
+    if(fromSide === 'right'){
+      corridorX = Math.min(corridorRaw, end.x - 30);
+    }else{
+      corridorX = Math.max(corridorRaw, end.x + 30);
+    }
 
     const midY = (start.y + end.y)/2;
 
@@ -1058,6 +1069,8 @@ document.getElementById('q').addEventListener('input',e=>{
       if(v===PIN_CODE){ sessionStorage.setItem('PA_PIN_OK','1'); pinBtn.classList.add('locked'); applyPinLockUI(); toast('Edición habilitada'); }
     }
   }
+
+  const toast = document.getElementById('paToast');
 
   pinBtn?.addEventListener('click', togglePin);
   pdfBtn?.addEventListener('click',  printAll);
