@@ -460,28 +460,46 @@ function drawFlowForSteps(container){
   svg.setAttribute('viewBox',`0 0 ${cRect.width} ${cRect.height}`);
 
   const defs=document.createElementNS(svgNS,'defs');
-  const marker=document.createElementNS(svgNS,'marker');
-  marker.setAttribute('id','arrowHead');
-  marker.setAttribute('markerWidth','7');
-  marker.setAttribute('markerHeight','7');
-  marker.setAttribute('refX','6');
-  marker.setAttribute('refY','3.5');
-  marker.setAttribute('orient','auto');
-  marker.setAttribute('markerUnits','strokeWidth');
-  const headPath=document.createElementNS(svgNS,'path');
-  headPath.setAttribute('d','M0,0 L7,3.5 L0,7 Z');
-  headPath.setAttribute('fill','#cbd5e1');
-  marker.appendChild(headPath);
-  defs.appendChild(marker);
+
+  // Flecha normal
+  const markerSmall=document.createElementNS(svgNS,'marker');
+  markerSmall.setAttribute('id','arrowHead');
+  markerSmall.setAttribute('markerWidth','7');
+  markerSmall.setAttribute('markerHeight','7');
+  markerSmall.setAttribute('refX','6');
+  markerSmall.setAttribute('refY','3.5');
+  markerSmall.setAttribute('orient','auto');
+  markerSmall.setAttribute('markerUnits','strokeWidth');
+  const headSmall=document.createElementNS(svgNS,'path');
+  headSmall.setAttribute('d','M0,0 L7,3.5 L0,7 Z');
+  headSmall.setAttribute('fill','#cbd5e1');
+  markerSmall.appendChild(headSmall);
+
+  // Flecha grande hacia META
+  const markerMeta=document.createElementNS(svgNS,'marker');
+  markerMeta.setAttribute('id','arrowHeadMeta');
+  markerMeta.setAttribute('markerWidth','11');
+  markerMeta.setAttribute('markerHeight','11');
+  markerMeta.setAttribute('refX','9');
+  markerMeta.setAttribute('refY','5.5');
+  markerMeta.setAttribute('orient','auto');
+  markerMeta.setAttribute('markerUnits','strokeWidth');
+  const headMeta=document.createElementNS(svgNS,'path');
+  headMeta.setAttribute('d','M0,0 L11,5.5 L0,11 Z');
+  headMeta.setAttribute('fill','#cbd5e1');
+  markerMeta.appendChild(headMeta);
+
+  defs.appendChild(markerSmall);
+  defs.appendChild(markerMeta);
   svg.appendChild(defs);
 
-  function addPath(d){
+  function addPath(d,isMeta){
     const path=document.createElementNS(svgNS,'path');
     path.setAttribute('d',d);
     path.setAttribute('fill','none');
     path.setAttribute('stroke','#cbd5e1');
-    path.setAttribute('stroke-width','3');
-    path.setAttribute('marker-end','url(#arrowHead)');
+    path.setAttribute('stroke-width', isMeta ? '4.5' : '3');
+    path.setAttribute('marker-end', isMeta ? 'url(#arrowHeadMeta)' : 'url(#arrowHead)');
     svg.appendChild(path);
   }
 
@@ -502,6 +520,7 @@ function drawFlowForSteps(container){
     }
   }
 
+  // Conexiones entre pasos
   for(let i=0;i<rects.length-1;i++){
     const a = rects[i];
     const b = rects[i+1];
@@ -513,6 +532,7 @@ function drawFlowForSteps(container){
     let start,end,d;
 
     if(rowA === rowB){
+      // Misma fila
       if(a.left < b.left){
         start = anchor(a,'right');
         end   = anchor(b,'left');
@@ -530,26 +550,24 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
+      // Cambio de fila: bajada limpia sin cruzar la segunda fila
       const bottomCenter = anchor(a,'bottom');
       const topCenter    = anchor(b,'top');
 
-      const startDropY = bottomCenter.y + 8;
-      const lateralX = (a.left - cRect.left) + 6;
-      const endY = topCenter.y - 8;
-      const midY = (startDropY + endY) / 2;
+      const yStart = bottomCenter.y + 8;
+      const yEnd   = topCenter.y - 8;
+      const midY   = (yStart + yEnd) / 2;
 
       d = `M ${bottomCenter.x} ${bottomCenter.y}
-           L ${bottomCenter.x} ${startDropY}
-           L ${lateralX} ${startDropY}
-           L ${lateralX} ${midY}
+           L ${bottomCenter.x} ${yStart}
            L ${topCenter.x} ${midY}
-           L ${topCenter.x} ${endY}
+           L ${topCenter.x} ${yEnd}
            L ${topCenter.x} ${topCenter.y}`;
     }
-    addPath(d);
+    addPath(d,false);
   }
 
-  // Último paso → META
+  // Último paso → META (flecha grande)
   const metaAnchor = container.querySelector('.flow-meta-anchor');
   if(metaAnchor && rects.length){
     const lastRect = rects[rects.length-1];
@@ -564,31 +582,25 @@ function drawFlowForSteps(container){
     const start = {x: baseSide.x, y: lowerMidY};
 
     const mRect = metaAnchor.getBoundingClientRect();
-    const end = {
+    const metaPoint = {
       x: mRect.left - cRect.left + 2,
       y: mRect.top - cRect.top + 2
     };
 
-    const offset = 26;
-    const corridorRaw = fromSide === 'right'
-      ? (lastRect.right - cRect.left + offset)
-      : (lastRect.left  - cRect.left - offset);
+    // Dejar un pequeño margen para no tocar el botón META
+    const metaGap = 10;
+    const endX = metaPoint.x - metaGap;
+    const endY = metaPoint.y;
 
-    let corridorX = corridorRaw;
-    if(fromSide === 'right'){
-      corridorX = Math.min(corridorRaw, end.x - 30);
-    }else{
-      corridorX = Math.max(corridorRaw, end.x + 30);
-    }
-
-    const midY = (start.y + end.y)/2;
+    const corridorX = endX; // horizontal limpio hacia META
+    const midY = (start.y + endY) / 2;
 
     const d = `M ${start.x} ${start.y}
                L ${corridorX} ${start.y}
                L ${corridorX} ${midY}
-               L ${end.x} ${midY}
-               L ${end.x} ${end.y}`;
-    addPath(d);
+               L ${endX} ${midY}
+               L ${endX} ${endY}`;
+    addPath(d,true);
   }
 
   container.appendChild(svg);
