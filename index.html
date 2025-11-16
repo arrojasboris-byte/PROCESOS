@@ -37,26 +37,25 @@
     gap:.5rem;
     font-weight:900;
     font-size:22px;
-    flex:1 1 100%;
+    flex:1 1 auto;
   }
   .title .ear{font-size:30px;line-height:1;display:inline-block;transform:translateY(2px)}
-  .search{
-    flex:1 1 100%;
-    order:2;
-    display:flex;
-    align-items:center;
-    background:rgba(255,255,255,.18);
-    padding:.4rem .6rem;
-    border-radius:9999px;
-    margin-top:.25rem;
-  }
-  .search input{width:100%;border:0;background:transparent;outline:0;color:#fff;font-weight:600}
   .btn3d{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border:0;border-radius:9999px;color:#fff;
     background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.28),0 12px 24px rgba(0,0,0,.2);cursor:pointer}
   .btn3d:active{transform:translateY(1px)}
   .bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
   .stamp{color:#fff;opacity:.9;font-size:12px;background:rgba(255,255,255,.14);border-radius:9999px;padding:.35rem .75rem}
   .bar-right .btn3d svg{width:14px;height:14px}
+  .search{
+    flex:1 1 100%;
+    display:flex;
+    align-items:center;
+    background:rgba(255,255,255,.18);
+    padding:.4rem .6rem;
+    border-radius:9999px;
+    margin-top:.3rem;
+  }
+  .search input{width:100%;border:0;background:transparent;outline:0;color:#fff;font-weight:600}
 
   /* ===== Layout ===== */
   .wrap{display:grid;grid-template-columns:360px 1fr;gap:14px;padding:14px;min-height:calc(100dvh - 64px)}
@@ -80,7 +79,6 @@
 
   /* ===== Subproceso (módulo) derecha ===== */
   .module{position:relative;background:var(--pillGrad);border-radius:14px;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);display:flex;flex-direction:column;gap:8px;padding:10px}
-  .module::before{display:none}
   .mod-head{display:flex;align-items:center;gap:.5rem;background:var(--proc,#333);color:#111;border-radius:12px;padding:.5rem .7rem}
   .mod-title{flex:1;font-weight:900;border:0;background:transparent;color:#111;outline:0}
   .sel{border:1px solid #e6e8ec;background:#fff;border-radius:10px;padding:.35rem .5rem}
@@ -92,11 +90,11 @@
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos ===== */
+  /* ===== Pasos (cajas pequeñas 3D) ===== */
   .steps{
     position:relative;
     display:block;
-    padding:10px 6px 32px;
+    padding:10px 6px 40px;
   }
   .steps > div{
     display:flex;
@@ -121,10 +119,6 @@
     min-height:60px;
     border:1px solid rgba(148,163,184,.7);
   }
-  .step::before,
-  .step::after{
-    content:none!important;
-  }
   .bubble{
     min-width:22px;
     height:22px;
@@ -142,20 +136,6 @@
       0 5px 8px rgba(15,23,42,.35);
     padding:0 2px;
     z-index:1;
-  }
-  /* Botón META más grande */
-  .steps::after{
-    content:"🎯 META";
-    position:absolute;
-    right:10px;
-    bottom:4px;
-    font-size:13px;
-    font-weight:800;
-    color:#0f172a;
-    padding:5px 14px;
-    border-radius:999px;
-    background:rgba(255,255,255,.96);
-    box-shadow:0 3px 8px rgba(15,23,42,.25);
   }
   .step.selected{
     box-shadow:
@@ -188,7 +168,28 @@
     box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.18);
   }
   .mini:active{transform:translateY(1px)}
-  .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
+
+  /* META grande dentro del área de pasos */
+  .steps::after{
+    content:"🎯 META";
+    position:absolute;
+    right:12px;
+    bottom:8px;
+    font-size:15px;
+    font-weight:800;
+    color:#0f172a;
+    padding:7px 20px;
+    border-radius:999px;
+    background:rgba(255,255,255,.98);
+    box-shadow:0 4px 10px rgba(15,23,42,.3);
+  }
+  .flow-meta-anchor{
+    position:absolute;
+    right:72px;
+    bottom:26px;
+    width:1px;
+    height:1px;
+  }
 
   /* Flechas SVG (detrás de las cajas) */
   .flow-svg{
@@ -200,13 +201,8 @@
     overflow:visible;
     z-index:1;
   }
-  .flow-meta-anchor{
-    position:absolute;
-    right:130px;
-    bottom:32px;
-    width:1px;
-    height:1px;
-  }
+
+  .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
 
   /* ===== Si / No ===== */
   .branches{
@@ -218,7 +214,6 @@
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
   }
-  /* Línea de unión con el paso origen */
   .branches::before{
     content:"";
     position:absolute;
@@ -228,13 +223,11 @@
     height:12px;
     border-left:2px solid #cbd5e1;
   }
-
   .branches-inner{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
   }
-
   .branch{background:#fff;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
   .branch.yes .bh-label{font-size:12px;font-weight:700;opacity:.8}
   .branch.no .bh-label{font-size:14px;font-weight:900}
@@ -265,7 +258,6 @@
   <div class="topbar">
     <div class="title"><span class="ear">🎧</span> PROCESOS AUDIO</div>
 
-    <!-- Botones de creación -->
     <button id="btnAddProcess" class="btn3d">+ Procesos</button>
     <button id="btnAddSubprocPaso" class="btn3d">+ Subproceso + Paso</button>
     <button id="btnAddStepGlobal" class="btn3d" title="Añadir paso al subproceso abierto">+ Paso</button>
@@ -463,7 +455,7 @@ function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ===== Dibujo de flechas ===== */
+/* ===== Dibujo de flechas (sin atravesar cajas ni SÍ/NO) ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
@@ -478,7 +470,6 @@ function drawFlowForSteps(container){
   svg.setAttribute('viewBox',`0 0 ${cRect.width} ${cRect.height}`);
 
   const defs=document.createElementNS(svgNS,'defs');
-
   const markerSmall=document.createElementNS(svgNS,'marker');
   markerSmall.setAttribute('id','arrowHead');
   markerSmall.setAttribute('markerWidth','7');
@@ -491,7 +482,6 @@ function drawFlowForSteps(container){
   headSmall.setAttribute('d','M0,0 L7,3.5 L0,7 Z');
   headSmall.setAttribute('fill','#cbd5e1');
   markerSmall.appendChild(headSmall);
-
   defs.appendChild(markerSmall);
   svg.appendChild(defs);
 
@@ -521,8 +511,13 @@ function drawFlowForSteps(container){
       case 'bottom': return {x:xMid,y:yBottom};
     }
   }
+  function getBranchesRectForStep(stepEl){
+    if(!stepEl || !stepEl.parentElement) return null;
+    const br = stepEl.parentElement.querySelector('.branches:not(.hide)');
+    return br ? br.getBoundingClientRect() : null;
+  }
 
-  // Conexiones entre pasos
+  /* conexiones entre pasos */
   for(let i=0;i<rects.length-1;i++){
     const a = rects[i];
     const b = rects[i+1];
@@ -534,7 +529,7 @@ function drawFlowForSteps(container){
     let d;
 
     if(rowA === rowB){
-      // Misma fila izquierda-derecha o derecha-izquierda
+      // Misma fila: recto izq-der o der-izq
       let start,end;
       if(a.left < b.left){
         start = anchor(a,'right');
@@ -553,68 +548,64 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
-      // Cambio de fila: la flecha baja por el lateral, nunca por encima del área SÍ/NO
-      const dirA = parseInt(stepA.dataset.rowDir || '1',10);
-      const dirB = parseInt(stepB.dataset.rowDir || '1',10);
-
-      const sideA = dirA === 1 ? anchor(a,'right') : anchor(a,'left');
+      // Cambio de fila: salida desde mitad inferior, rodeando SÍ/NO
       const bottomA = anchor(a,'bottom');
-      const start = {
-        x: sideA.x,
-        y: (bottomA.y + sideA.y)/2   // mitad inferior, lateral
-      };
+      const topB    = anchor(b,'top');
+      const brRect  = getBranchesRectForStep(stepA);
 
-      const sideB = dirB === 1 ? anchor(b,'left') : anchor(b,'right');
-      const topB = anchor(b,'top');
-      const target = {
-        x: sideB.x,
-        y: (topB.y + sideB.y)/2
-      };
+      const start = {x:bottomA.x, y:bottomA.y};
 
-      const corridorX = start.x + (dirA * 32); // se despega un poco del lateral
-      const midY = (start.y + target.y) / 2;
+      let yDown = bottomA.y + 16; // baja recto desde borde inferior
+      if(brRect){
+        const brBottom = brRect.bottom - cRect.top;
+        if(brBottom + 16 > yDown) yDown = brBottom + 16; // pasa por debajo del SÍ/NO
+      }
+
+      let yUp = topB.y - 16;
+
+      // corredor lateral, fuera de las cajas
+      const allLefts  = rects.map(r => r.left - cRect.left);
+      const allRights = rects.map(r => r.right - cRect.left);
+      const minX = Math.min.apply(null,allLefts);
+      const maxX = Math.max.apply(null,allRights);
+      let corridorX = start.x - 80;
+      if(corridorX < minX - 40){
+        corridorX = minX - 40;
+      }
+      if(corridorX < 10){
+        corridorX = maxX + 40;
+      }
 
       d = `M ${start.x} ${start.y}
-           L ${corridorX} ${start.y}
-           L ${corridorX} ${midY}
-           L ${target.x} ${midY}
-           L ${target.x} ${target.y}`;
+           L ${start.x} ${yDown}
+           L ${corridorX} ${yDown}
+           L ${corridorX} ${yUp}
+           L ${topB.x} ${yUp}
+           L ${topB.x} ${topB.y}`;
     }
     addPath(d);
   }
 
-  // Último paso → META (flecha normal)
+  /* Último paso → META (flecha normal, sin tocarla) */
   const metaAnchor = container.querySelector('.flow-meta-anchor');
   if(metaAnchor && rects.length){
     const lastRect = rects[rects.length-1];
-    const lastStep = steps[steps.length-1];
-    const dirLast  = parseInt(lastStep.dataset.rowDir || '1',10);
-    const fromSide = dirLast === 1 ? 'right' : 'left';
-    const sideBase = anchor(lastRect, fromSide);
     const bottomLast = anchor(lastRect,'bottom');
-    const start = {
-      x: sideBase.x,
-      y: (bottomLast.y + sideBase.y)/2
-    };
+    const start = {x:bottomLast.x,y:bottomLast.y};
 
     const mRect = metaAnchor.getBoundingClientRect();
-    const metaPoint = {
-      x: mRect.left - cRect.left + 2,
-      y: mRect.top - cRect.top + 2
+    const meta = {
+      x: mRect.left - cRect.left,
+      y: mRect.top  - cRect.top
     };
 
-    const metaGap = 10;
-    const endX = metaPoint.x - metaGap;
-    const endY = metaPoint.y;
-
-    const corridorX = start.x + (dirLast * 32);
-    const midY = (start.y + endY)/2;
+    const yDown = Math.max(start.y + 32, meta.y - 24);
+    const endX  = meta.x - 14; // se queda un poco antes, no la toca
 
     const d = `M ${start.x} ${start.y}
-               L ${corridorX} ${start.y}
-               L ${corridorX} ${midY}
-               L ${endX} ${midY}
-               L ${endX} ${endY}`;
+               L ${start.x} ${yDown}
+               L ${endX} ${yDown}
+               L ${endX} ${meta.y}`;
     addPath(d);
   }
 
@@ -855,7 +846,7 @@ document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.process
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
 
-/* Recalcular layout + flechas al redimensionar */
+/* Recalcular al redimensionar */
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
 
 /* ===== MATCHERS PARA BUSCADOR ===== */
@@ -885,7 +876,6 @@ function moduleMatches(m, q){
   const ql = q.toLowerCase();
   if((m.title||'').toLowerCase().includes(ql)) return true;
   if((m.detail||'').toLowerCase().includes(ql)) return true;
-
   if(Array.isArray(m.steps)){
     for(const st of m.steps){
       if(stepMatches(st, ql)) return true;
@@ -898,7 +888,6 @@ function processMatches(p, q){
   const ql = q.toLowerCase();
   if((p.name||'').toLowerCase().includes(ql)) return true;
   if((p.detail||'').toLowerCase().includes(ql)) return true;
-
   if(Array.isArray(p.modules)){
     for(const m of p.modules){
       if(moduleMatches(m, ql)) return true;
