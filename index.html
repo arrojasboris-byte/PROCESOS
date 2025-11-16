@@ -491,7 +491,33 @@
     font:13px system-ui;
   }
   .pa-toast.show{opacity:1;transform:translateY(0)}
-  @media print{ .pa-tools-hide{display:none!important} }
+
+  /* Vista impresión: sólo proceso activo y sus módulos */
+  @media print{
+    .pa-tools-hide,
+    .topbar,
+    .left,
+    .search{
+      display:none!important;
+    }
+    body{
+      background:#fff;
+    }
+    .wrap{
+      grid-template-columns:1fr;
+      padding:0;
+      transform:none;
+    }
+    .right{
+      box-shadow:none;
+      border-radius:0;
+      padding:0;
+    }
+    .module{
+      page-break-inside:avoid;
+      margin-bottom:10mm;
+    }
+  }
 
   body.pa-locked .is-readonly{opacity:.6;filter:saturate(.6)}
   body.pa-locked .lock-block{ pointer-events:none !important; opacity:.6; }
@@ -649,12 +675,11 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina: 3 columnas, y pasos con SÍ/NO ocupan fila completa ===== */
+/* ===== Layout serpentina: 3 columnas, pasos con SÍ/NO ocupan fila completa ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
 
-  // reset
   wrappers.forEach(w=>{
     w.style.position='';
     w.style.left='';
@@ -669,10 +694,8 @@ function layoutStepsSerpentine(container){
   const gapY = 34;
   const maxCols = 3;
 
-  // alturas actuales de cada wrapper (con detalle + SÍ/NO)
   const heights = wrappers.map(w => w.offsetHeight);
 
-  // construir filas: si un wrapper tiene SÍ/NO visible, cierra fila
   const rows = [];
   let current = [];
   wrappers.forEach((w,idx)=>{
@@ -693,7 +716,6 @@ function layoutStepsSerpentine(container){
       if(heights[i]>maxH) maxH = heights[i];
       if(wrappers[i].querySelector('.branches:not(.hide)')) hasBranchesRow=true;
     });
-    // colchón vertical extra si hay SÍ/NO en esa fila
     rowHeights[r] = maxH + (hasBranchesRow ? 80 : 0);
   });
 
