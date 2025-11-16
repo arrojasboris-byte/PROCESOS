@@ -6,16 +6,34 @@
 <title>PROCESOS AUDIO</title>
 <style>
   :root{
-    --bg:#f5f6f8; --surface:#ffffff; --ink:#1b1d24;
-    --muted:#667085; --soft:#eceff3;
-    --shadow:0 10px 24px rgba(0,0,0,.08);
-    --ring:0 0 0 2px rgba(59,130,246,.15);
-    --grad:linear-gradient(90deg,#6f1d1b 0%,#b23a3a 50%,#6f1d1b 100%);
-    --pillGrad:linear-gradient(180deg,#ffffff 0%,#f2f4f8 100%);
+    /* Fondo general claro pero neutro */
+    --bg:#f3f4f6;
+    --surface:#ffffff;
+    --ink:#0b1120;
+    --muted:#6b7280;
+    --soft:#e5e7eb;
+
+    /* Sombras 3D suaves */
+    --shadow:0 10px 24px rgba(0,0,0,.12);
+    --ring:0 0 0 2px rgba(248,113,113,.18);
+
+    /* Cabecera gris metálica */
+    --grad:linear-gradient(90deg,#111827 0%,#4b5563 40%,#111827 100%);
+
+    /* Acentos rojos/negros */
+    --accent:#ef4444;       /* rojo principal */
+    --accent-dark:#b91c1c;  /* rojo profundo */
+    --accent-soft:#fee2e2;  /* fondo rojizo suave */
   }
+
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+  }
 
   /* ===== Top bar ===== */
   .topbar{
@@ -27,9 +45,10 @@
     align-items:center;
     gap:.75rem;
     padding:.65rem .9rem .75rem;
-    background:#e5e7eb;           /* gris */
-    color:#111827;                /* texto negro */
-    box-shadow:var(--shadow)
+    background:var(--grad);
+    color:#f9fafb;
+    box-shadow:0 8px 20px rgba(0,0,0,.45);
+    border-bottom:1px solid rgba(15,23,42,.8);
   }
   .title{
     display:flex;
@@ -38,9 +57,16 @@
     font-weight:900;
     font-size:22px;
     flex:1 1 auto;
-    color:#111827;                /* título negro */
+    letter-spacing:.03em;
+    text-shadow:0 1px 2px rgba(0,0,0,.6);
   }
-  .title .ear{font-size:30px;line-height:1;display:inline-block;transform:translateY(2px)}
+  .title .ear{
+    font-size:30px;
+    line-height:1;
+    display:inline-block;
+    transform:translateY(2px);
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
+  }
   .btn3d{
     display:inline-flex;
     align-items:center;
@@ -48,118 +74,238 @@
     padding:.6rem 1rem;
     border:0;
     border-radius:9999px;
-    color:#f97373;                /* texto / iconos rojo suave */
-    background:#111827;           /* botón negro */
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 3px 0 rgba(0,0,0,.32),0 12px 24px rgba(0,0,0,.35);
-    cursor:pointer
+    color:#f9fafb;
+    background:linear-gradient(180deg,var(--accent) 0%,var(--accent-dark) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.22),
+      0 3px 0 rgba(0,0,0,.6),
+      0 12px 24px rgba(0,0,0,.6);
+    cursor:pointer;
+    font-weight:700;
   }
-  .btn3d:active{transform:translateY(1px)}
+  .btn3d:active{
+    transform:translateY(1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.15),
+      0 1px 0 rgba(0,0,0,.5),
+      0 6px 12px rgba(0,0,0,.6);
+  }
   .bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
   .stamp{
-    color:#111827;
-    opacity:.9;
+    color:#f9fafb;
+    opacity:.85;
     font-size:12px;
-    background:#f9fafb;
+    background:rgba(15,23,42,.75);
     border-radius:9999px;
-    padding:.35rem .75rem
+    padding:.35rem .75rem;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);
   }
   .bar-right .btn3d svg{width:14px;height:14px}
-  /* iconos rojos en cabecera */
-  .topbar svg path{stroke:#ef4444!important;}
-
   .search{
     flex:1 1 100%;
     display:flex;
     align-items:center;
-    background:#ffffff;
-    border:1px solid #d1d5db;
+    background:rgba(15,23,42,.55);
     padding:.4rem .6rem;
     border-radius:9999px;
     margin-top:.3rem;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   }
   .search input{
     width:100%;
     border:0;
     background:transparent;
     outline:0;
-    color:#111827;
-    font-weight:600
+    color:#e5e7eb;
+    font-weight:600;
+  }
+  .search input::placeholder{
+    color:rgba(209,213,219,.8);
   }
 
   /* ===== Layout ===== */
-  .wrap{display:grid;grid-template-columns:360px 1fr;gap:14px;padding:14px;min-height:calc(100dvh - 64px)}
-  .left,.right{background:var(--surface);border-radius:14px;box-shadow:var(--shadow)}
+  .wrap{
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:14px;
+    padding:14px;
+    min-height:calc(100dvh - 64px);
+  }
+  .left,.right{
+    background:var(--surface);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+  }
   .left{padding:10px}
   .right{padding:10px;display:flex;flex-direction:column;gap:12px}
   @media (max-width:1020px){ .wrap{grid-template-columns:1fr} }
 
   /* ===== Lista de procesos (izquierda) ===== */
-  .proc-item{display:flex;flex-direction:column;gap:.45rem;background:var(--pillGrad);border-radius:14px;
-    padding:.55rem .7rem;margin:.45rem 0;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);border:2px solid transparent}
-  .proc-item.activo{border-color:rgba(59,130,246,.35);box-shadow:var(--ring),0 1px 0 rgba(0,0,0,.06)}
+  .proc-item{
+    display:flex;
+    flex-direction:column;
+    gap:.45rem;
+    background:linear-gradient(180deg,#f9fafb 0%,#e5e7eb 100%);
+    border-radius:14px;
+    padding:.55rem .7rem;
+    margin:.45rem 0;
+    box-shadow:
+      inset 0 1px 0 #fff,
+      0 1px 0 rgba(0,0,0,.06);
+    border:2px solid transparent;
+  }
+  .proc-item.activo{
+    border-color:rgba(248,113,113,.4);
+    box-shadow:var(--ring),0 1px 0 rgba(0,0,0,.06);
+  }
   .proc-row{display:flex;align-items:center;gap:.55rem;cursor:pointer}
-  .dot{width:10px;height:10px;border-radius:50%;background:#ddd;box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
+  .dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#ddd;
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.08);
+  }
   .proc-name{flex:1;font-weight:800}
   .proc-acts{display:flex;align-items:center;gap:.35rem}
-  .icon-btn{width:28px;height:28px;border-radius:12px;border:0;background:#f2f4f8;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);cursor:pointer}
+  .icon-btn{
+    width:28px;
+    height:28px;
+    border-radius:12px;
+    border:0;
+    background:#f2f4f8;
+    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);
+    cursor:pointer;
+  }
   .icon-btn:active{transform:translateY(1px)}
   .proc-detail{display:none}
-  .proc-detail textarea{width:100%;min-height:72px;border-radius:10px;border:1px solid #e6e8ec;padding:.5rem;background:#fff}
+  .proc-detail textarea{
+    width:100%;
+    min-height:72px;
+    border-radius:10px;
+    border:1px solid #e6e8ec;
+    padding:.5rem;
+    background:#fff;
+  }
 
   /* ===== Subproceso (módulo) derecha ===== */
-  .module{position:relative;background:var(--pillGrad);border-radius:14px;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);display:flex;flex-direction:column;gap:8px;padding:10px}
-  .mod-head{display:flex;align-items:center;gap:.5rem;background:var(--proc,#333);color:#111;border-radius:12px;padding:.5rem .7rem}
-  .mod-title{flex:1;font-weight:900;border:0;background:transparent;color:#111;outline:0}
-  .sel{border:1px solid #e6e8ec;background:#fff;border-radius:10px;padding:.35rem .5rem}
-  .pill{height:34px;padding:0 .75rem;background:#222;border-radius:9999px;color:#fff;border:0;cursor:pointer;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 0 rgba(0,0,0,.3),0 12px 24px rgba(0,0,0,.2)}
+  .module{
+    position:relative;
+    background:linear-gradient(180deg,#f9fafb 0%,#e5e7eb 100%);
+    border-radius:14px;
+    box-shadow:
+      inset 0 1px 0 #fff,
+      0 1px 0 rgba(0,0,0,.06);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:10px;
+  }
+  .mod-head{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    background:linear-gradient(135deg,#020617 0%,#1f2937 50%,#020617 100%);
+    color:#e5e7eb;
+    border-radius:12px;
+    padding:.5rem .7rem;
+    box-shadow:0 4px 10px rgba(0,0,0,.45);
+    border-left:4px solid var(--proc,#ef4444);
+  }
+  .mod-title{
+    flex:1;
+    font-weight:900;
+    border:0;
+    background:transparent;
+    color:#f9fafb;
+    outline:0;
+  }
+  .mod-title::placeholder{color:#9ca3af}
+  .sel{
+    border:1px solid #4b5563;
+    background:#0f172a;
+    color:#e5e7eb;
+    border-radius:10px;
+    padding:.35rem .5rem;
+    font-size:13px;
+    box-shadow:0 1px 0 rgba(255,255,255,.1);
+  }
+  .pill{
+    height:34px;
+    padding:0 .75rem;
+    background:#111827;
+    border-radius:9999px;
+    color:#f9fafb;
+    border:0;
+    cursor:pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 3px 0 rgba(0,0,0,.6),
+      0 12px 24px rgba(0,0,0,.6);
+    font-size:13px;
+    font-weight:700;
+  }
   .pill:active{transform:translateY(1px)}
-  .badge-diana{margin-left:.25rem}
+  .badge-diana{
+    margin-left:.25rem;
+    font-size:16px;
+  }
 
   .mod-detail{display:none}
-  .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
+  .mod-detail textarea{
+    width:100%;
+    min-height:60px;
+    border:1px solid #e6e8ec;
+    border-radius:10px;
+    padding:.5rem;
+    background:#fff;
+  }
 
-  /* ===== Pasos (circuito rectangular) ===== */
+  /* ===== Pasos (cajas pequeñas 3D estilo diagrama lineal) ===== */
   .steps{
     position:relative;
     z-index:0;
-    display:block;
-    padding:10px 6px 16px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px;
+    padding:14px 10px 20px;
+    justify-content:flex-start;
   }
   .steps > div{
+    position:relative;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    gap:4px;
+    gap:6px;
   }
   .step{
     position:relative;
-    z-index:2;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    background:linear-gradient(180deg,#ffffff 0%,#f3f4f6 100%);
-    border-radius:14px;
-    padding:8px 10px 10px;
+    background:#ffffff;
+    border-radius:12px;
+    padding:12px 14px 14px;
     box-shadow:
       inset 0 1px 0 #fff,
       0 2px 0 rgba(15,23,42,.22),
       0 8px 16px rgba(15,23,42,.14);
-    width:220px;
-    min-height:72px;
-    border:1px solid rgba(148,163,184,.7);
+    width:260px;
+    min-height:90px;
+    border:2px solid var(--proc,#ef4444);
   }
   .bubble{
-    min-width:22px;
-    height:22px;
+    min-width:28px;
+    height:28px;
     border-radius:9999px;
-    background:linear-gradient(180deg,var(--proc,#2563eb) 0%,#1d4ed8 100%);
+    background:var(--proc,#ef4444);
     color:#fff;
     display:grid;
     place-items:center;
     font-weight:900;
-    font-size:11px;
-    margin-bottom:2px;
+    font-size:13px;
+    margin-bottom:4px;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,.6),
       0 2px 0 rgba(15,23,42,.35),
@@ -167,25 +313,19 @@
     padding:0 2px;
     z-index:1;
   }
-  .step.selected{
-    box-shadow:
-      0 0 0 2px rgba(37,99,235,.35),
-      0 3px 0 rgba(15,23,42,.3),
-      0 10px 20px rgba(15,23,42,.26);
-  }
   .step input.title{
     font-weight:800;
     border:0;
     background:transparent;
     outline:0;
     width:100%;
-    margin-top:1px;
-    font-size:12.5px;
+    margin-top:2px;
+    font-size:13px;
   }
   .minis{
     display:flex;
-    gap:.25rem;
-    margin-top:5px;
+    gap:.35rem;
+    margin-top:8px;
     margin-left:auto;
   }
   .mini{
@@ -198,39 +338,58 @@
     box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.18);
   }
   .mini:active{transform:translateY(1px)}
-
-  /* Etiqueta META en esquina superior derecha del último paso */
+  /* Flecha horizontal entre pasos (solo fila) */
+  .step::before{
+    content:"";
+    position:absolute;
+    right:-32px;
+    top:50%;
+    transform:translateY(-50%);
+    width:24px;
+    height:4px;
+    background:var(--proc,#ef4444);
+    border-radius:999px;
+  }
+  /* Último paso sin flecha */
+  .steps .step:last-child::before{
+    content:none;
+  }
+  /* Destacado al seleccionar */
+  .step.selected{
+    box-shadow:
+      0 0 0 3px rgba(248,113,113,.35),
+      0 10px 24px rgba(0,0,0,.24);
+  }
+  /* Etiqueta META arriba derecha en el último paso */
   .step.is-meta-step::after{
     content:"🎯 META";
     position:absolute;
-    top:4px;
+    top:6px;
     right:8px;
     font-size:11px;
     font-weight:800;
-    color:#0f172a;
-    padding:2px 8px;
+    color:#111827;
+    padding:2px 9px;
     border-radius:999px;
-    background:rgba(255,255,255,.98);
-    box-shadow:0 2px 4px rgba(15,23,42,.3);
-    pointer-events:none;
+    background:linear-gradient(180deg,#ffffff 0%,#f3f4f6 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.9),
+      0 2px 4px rgba(15,23,42,.35);
   }
 
-  /* Flechas SVG (detrás de las cajas) */
-  .flow-svg{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-    overflow:visible;
-    z-index:0;
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    font-weight:800;
+    border-radius:9999px;
+    padding:.2rem .55rem;
+    color:#111;
   }
-
-  .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
 
   /* ===== Si / No ===== */
   .branches{
-    margin:8px 0 0 0;
+    margin:8px 0 0 24px;
     padding:10px 10px 8px;
     border-radius:12px;
     border:1px dashed #cbd5e1;
@@ -238,46 +397,83 @@
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
     z-index:2;
-    max-width:100%;
+    max-width:260px;
   }
   .branches::before{
     content:"";
     position:absolute;
-    top:-10px;
-    left:24px;
+    top:-12px;
+    left:40px;
     width:0;
-    height:10px;
+    height:12px;
     border-left:2px solid #cbd5e1;
   }
   .branches-inner{
     display:flex;
-    flex-direction:column;   /* NO arriba, SÍ debajo */
+    flex-direction:column;
     gap:8px;
   }
-  .branch{background:#fff;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
+  .branch{
+    background:#fff;
+    border-radius:10px;
+    padding:.45rem .5rem;
+    box-shadow:inset 0 1px 0 #fff;
+  }
   .branch.yes .bh-label{font-size:12px;font-weight:700;opacity:.8}
   .branch.no .bh-label{font-size:14px;font-weight:900}
   .bh-top{display:flex;align-items:center;gap:.35rem;margin-bottom:.35rem}
   .plist{display:flex;flex-direction:column;gap:.35rem}
   .point{display:flex;align-items:center;gap:.4rem}
   .point .num{min-width:44px;font-weight:900;opacity:.7}
-  .pt-input{flex:1;border:1px solid #e6e8ec;border-radius:8px;padding:.25rem .45rem}
-  .p-mini{width:24px;height:24px;border-radius:8px;border:0;background:#f2f4f8;cursor:pointer;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1)}
+  .pt-input{
+    flex:1;
+    border:1px solid #e6e8ec;
+    border-radius:8px;
+    padding:.25rem .45rem;
+  }
+  .p-mini{
+    width:24px;
+    height:24px;
+    border-radius:8px;
+    border:0;
+    background:#f2f4f8;
+    cursor:pointer;
+    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);
+  }
   .p-mini:active{transform:translateY(1px)}
-  .children{margin-left:44px;display:flex;flex-direction:column;gap:.2rem}
+  .children{
+    margin-left:44px;
+    display:flex;
+    flex-direction:column;
+    gap:.2rem;
+  }
 
   .hide{display:none!important}
 
   /* ===== Toast pequeño ===== */
-  .pa-toast{position:fixed;right:14px;bottom:16px;background:#111;color:#fff;padding:.6rem .8rem;border-radius:10px;
-    box-shadow:0 6px 18px rgba(0,0,0,.2);opacity:0;transform:translateY(6px);transition:all .2s;z-index:99999;font:14px system-ui}
+  .pa-toast{
+    position:fixed;
+    right:14px;
+    bottom:16px;
+    background:#111;
+    color:#fff;
+    padding:.6rem .8rem;
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);
+    opacity:0;
+    transform:translateY(6px);
+    transition:all .2s;
+    z-index:99999;
+    font:14px system-ui;
+  }
   .pa-toast.show{opacity:1;transform:translateY(0)}
   @media print{ .pa-tools-hide{display:none!important} }
 
   /* ===== Modo bloqueado por PIN ===== */
   body.pa-locked .is-readonly{opacity:.6;filter:saturate(.6)}
   body.pa-locked .lock-block{ pointer-events:none !important; opacity:.6; }
-  body.pa-locked input[readonly], body.pa-locked textarea[readonly]{background:#f7f7f7}
+  body.pa-locked input[readonly],
+  body.pa-locked textarea[readonly]{background:#f7f7f7}
 </style>
 </head>
 <body>
@@ -290,33 +486,23 @@
 
     <div class="bar-right">
       <button id="paPinBtn" class="btn3d pa-tools-hide" title="PIN (AR4321)">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M17 8V7a5 5 0 10-10 0v1M6 8h12v12H6V8z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 8V7a5 5 0 10-10 0v1M6 8h12v12H6V8z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         PIN
       </button>
       <button id="paPdfBtn" class="btn3d pa-tools-hide" title="Imprimir / Guardar PDF">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 9V4h12v5M6 18h12M6 14h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9V4h12v5M6 18h12M6 14h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         PDF
       </button>
       <button id="paHtmlBtn" class="btn3d pa-tools-hide" title="Descargar HTML idéntico">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         HTML
       </button>
       <button id="paSaveCloud" class="btn3d pa-tools-hide" title="Guardar copia en nube (local)">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 18a4 4 0 110-8 5 5 0 119.9 1H18a3 3 0 110 6H7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 18a4 4 0 110-8 5 5 0 119.9 1H18a3 3 0 110 6H7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Nube
       </button>
       <button id="paLoadCloud" class="btn3d pa-tools-hide" title="Abrir copia guardada">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 4v6h6M20 20v-6h-6M20 8a8 8 0 10-3.17 6.34" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6M20 8a8 8 0 10-3.17 6.34" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Actualizar
       </button>
 
@@ -337,7 +523,7 @@
       <div style="font-weight:800;margin:.2rem .2rem .6rem">Selecciona proceso destino</div>
       <div id="procModalList" style="display:flex;flex-direction:column;gap:.35rem"></div>
       <div style="display:flex;justify-content:flex-end;margin-top:.6rem">
-        <button id="pmCancel" class="btn3d" style="background:#ddd;color:#111">Cancelar</button>
+        <button id="pmCancel" class="btn3d" style="background:#ddd;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.25)">Cancelar</button>
       </div>
     </div>
   </div>
@@ -351,27 +537,47 @@ function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
 /* ===== Estado / Persistencia ===== */
 const LSKEY='pa_v3_connectors_3d';
 const RESPONSABLES=['Audiólogo','Responsable','Otros'];
-const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6ff','#a0e7e5','#c7f9cc','#fbcfe8','#fde68a','#bbf7d0'];
+const colors = [
+  '#fecaca', // rojo muy suave
+  '#fca5a5',
+  '#fee2e2',
+  '#e5e7eb', // gris claro
+  '#d1d5db',
+  '#9ca3af',
+  '#f97373',
+  '#ef4444', // rojo principal
+  '#b91c1c', // rojo oscuro
+  '#111827', // casi negro
+  '#4b5563',
+  '#6b7280'
+];
 const uid=()=>'p'+Math.random().toString(36).slice(2,9);
 const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/${p(d.getMonth()+1)}/${p(d.getFullYear())}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`};
 
 const state={processes:[]};
 let activePid=null;
 
-function save(){ localStorage.setItem(LSKEY,JSON.stringify(state)); document.getElementById('stamp').textContent='Última actualización '+stamp(); }
+function save(){
+  localStorage.setItem(LSKEY,JSON.stringify(state));
+  document.getElementById('stamp').textContent='Última actualización '+stamp();
+}
 function load(){
   const raw=localStorage.getItem(LSKEY);
   if(!raw){
     state.processes.push({id:uid(),name:'Revisión auditiva',color:colors[0],detail:'',modules:[],_openDetail:false});
     save();
-  }else{ try{ Object.assign(state,JSON.parse(raw)); }catch{} }
+  }else{
+    try{ Object.assign(state,JSON.parse(raw)); }catch{}
+  }
   if(!activePid && state.processes[0]) activePid=state.processes[0].id;
 }
 
 /* ===== Izquierda: procesos ===== */
 function procRow(p){
-  const wrap=document.createElement('div'); wrap.className='proc-item'+(p.id===activePid?' activo':'');
+  const wrap=document.createElement('div');
+  wrap.className='proc-item'+(p.id===activePid?' activo':'');
   wrap.dataset.pid = p.id;
+
   const row=document.createElement('div'); row.className='proc-row';
   row.innerHTML=`<span class="dot" style="background:${p.color}"></span>
     <span class="proc-name">${p.name}</span>
@@ -382,7 +588,7 @@ function procRow(p){
     </div>`;
   row.onclick=e=>{ if(e.target.closest('.icon-btn')) return; activePid=p.id; render(); };
 
-  const det=document.createElement('div'); 
+  const det=document.createElement('div');
   det.className='proc-detail'+(p._openDetail?'':' hide');
   det.setAttribute('aria-hidden', p._openDetail ? 'false':'true');
   det.innerHTML=`<textarea placeholder="Detalle del proceso…">${p.detail||''}</textarea>`;
@@ -397,10 +603,30 @@ function procRow(p){
     if(p._openDetail) setTimeout(()=>ta.focus(),0);
     save();
   };
-  bRen.onclick=e=>{ e.stopPropagation(); const nn=prompt('Nombre del proceso',p.name); if(nn){p.name=nn;save();render();} };
-  bDel.onclick=e=>{ e.stopPropagation(); if(confirm('¿Eliminar proceso y sus módulos?')){ const i=state.processes.findIndex(x=>x.id===p.id); if(i>-1){ state.processes.splice(i,1); activePid=state.processes[0]?.id||null; save(); render(); } } };
+  bRen.onclick=e=>{
+    e.stopPropagation();
+    const nn=prompt('Nombre del proceso',p.name);
+    if(nn){
+      p.name=nn;
+      save();
+      render();
+    }
+  };
+  bDel.onclick=e=>{
+    e.stopPropagation();
+    if(confirm('¿Eliminar proceso y sus módulos?')){
+      const i=state.processes.findIndex(x=>x.id===p.id);
+      if(i>-1){
+        state.processes.splice(i,1);
+        activePid=state.processes[0]?.id||null;
+        save();
+        render();
+      }
+    }
+  };
 
-  wrap.appendChild(row); wrap.appendChild(det);
+  wrap.appendChild(row);
+  wrap.appendChild(det);
   return wrap;
 }
 function renderProcesses(){
@@ -414,7 +640,8 @@ function openProcPicker(onPick){
   const list=document.getElementById('procModalList'); list.innerHTML='';
   state.processes.forEach(p=>{
     const b=document.createElement('button');
-    b.className='btn3d'; b.style.cssText='justify-content:flex-start;color:#f97373;background:#111827;box-shadow:0 1px 0 rgba(0,0,0,.3);border-radius:12px';
+    b.className='btn3d';
+    b.style.cssText='justify-content:flex-start;color:#111;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06);border-radius:12px';
     b.innerHTML=`<span class="dot" style="background:${p.color}"></span> <strong>${p.name}</strong>`;
     b.onclick=()=>{ modal.classList.add('hide'); onPick(p.id); };
     list.appendChild(b);
@@ -429,215 +656,6 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina rectangular (4 columnas) ===== */
-function layoutStepsSerpentine(container){
-  const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
-  if(!wrappers.length) return;
-
-  wrappers.forEach(w=>{
-    w.style.position='';
-    w.style.left='';
-    w.style.top='';
-  });
-
-  let cardW = 0;
-  wrappers.forEach(w=>{
-    const wWidth = w.offsetWidth;
-    if(wWidth > cardW) cardW = wWidth;
-  });
-  if(cardW <= 0) return;
-
-  const gapX = 32;
-  const gapY = 40;
-
-  const heights = wrappers.map(w => w.offsetHeight);
-
-  const rowHeights = [];
-  const rowsIndex = [];
-
-  const cols = Math.min(wrappers.length, 4);
-
-  for(let i=0;i<wrappers.length;i++){
-    const r = Math.floor(i / cols);
-    rowsIndex[i] = r;
-    if(!rowHeights[r]) rowHeights[r]=0;
-    rowHeights[r] = Math.max(rowHeights[r], heights[i]);
-  }
-  const totalRows = rowHeights.length;
-
-  let y = 0;
-  for(let r=0;r<totalRows;r++){
-    const dirRight = r % 2 === 0;
-    const rowStartIndex = r*cols;
-    const rowEndIndex = Math.min(rowStartIndex+cols, wrappers.length);
-    for(let k=rowStartIndex;k<rowEndIndex;k++){
-      const wrap = wrappers[k];
-      const idxInRow = k - rowStartIndex;
-      const col = dirRight ? idxInRow : (cols - 1 - idxInRow);
-      const left = col * (cardW + gapX);
-
-      wrap.style.position='absolute';
-      wrap.style.left = left + 'px';
-      wrap.style.top  = y + 'px';
-
-      const step = wrap.querySelector('.step');
-      if(step){
-        step.dataset.row = r;
-        step.dataset.rowDir = dirRight ? '1' : '-1';
-        step.dataset.col = col;
-        step.dataset.cols = cols;
-      }
-    }
-    y += rowHeights[r] + gapY;
-  }
-
-  container.style.height = y + 20 + 'px';
-}
-
-function layoutAllSteps(){
-  document.querySelectorAll('.steps').forEach(container=>{
-    layoutStepsSerpentine(container);
-  });
-}
-
-/* ===== Dibujo de flechas ===== */
-function drawFlowForSteps(container){
-  const steps = Array.from(container.querySelectorAll('.step'));
-  if(!steps.length) return;
-
-  steps.forEach(s=>s.classList.remove('is-meta-step'));
-
-  const old = container.querySelector('.flow-svg');
-  if(old) old.remove();
-
-  const cRect = container.getBoundingClientRect();
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS,'svg');
-  svg.classList.add('flow-svg');
-  svg.setAttribute('viewBox',`0 0 ${cRect.width} ${cRect.height}`);
-
-  const defs=document.createElementNS(svgNS,'defs');
-  const markerSmall=document.createElementNS(svgNS,'marker');
-  markerSmall.setAttribute('id','arrowHead');
-  markerSmall.setAttribute('markerWidth','7');
-  markerSmall.setAttribute('markerHeight','7');
-  markerSmall.setAttribute('refX','6');
-  markerSmall.setAttribute('refY','3.5');
-  markerSmall.setAttribute('orient','auto');
-  markerSmall.setAttribute('markerUnits','strokeWidth');
-  const headSmall=document.createElementNS(svgNS,'path');
-  headSmall.setAttribute('d','M0,0 L7,3.5 L0,7 Z');
-  headSmall.setAttribute('fill','#cbd5e1');
-  markerSmall.appendChild(headSmall);
-  defs.appendChild(markerSmall);
-  svg.appendChild(defs);
-
-  const rects = steps.map(s => s.getBoundingClientRect());
-
-  const lastStepEl = steps[steps.length-1];
-  lastStepEl.classList.add('is-meta-step');
-
-  function addPath(d){
-    const path=document.createElementNS(svgNS,'path');
-    path.setAttribute('d',d);
-    path.setAttribute('fill','none');
-    path.setAttribute('stroke','#cbd5e1');
-    path.setAttribute('stroke-width','3');
-    path.setAttribute('marker-end','url(#arrowHead)');
-    svg.appendChild(path);
-  }
-
-  function anchor(rect, side){
-    const xLeft = rect.left - cRect.left;
-    const xRight = rect.right - cRect.left;
-    const yTop = rect.top - cRect.top;
-    const yBottom = rect.bottom - cRect.top;
-    const yMid = (yTop + yBottom)/2;
-    const xMid = (xLeft + xRight)/2;
-    switch(side){
-      case 'left': return {x:xLeft,y:yMid};
-      case 'right': return {x:xRight,y:yMid};
-      case 'top': return {x:xMid,y:yTop};
-      case 'bottom': return {x:xMid,y:yBottom};
-    }
-  }
-  function getBranchesRectForStep(stepEl){
-    if(!stepEl || !stepEl.parentElement) return null;
-    const br = stepEl.parentElement.querySelector('.branches:not(.hide)');
-    return br ? br.getBoundingClientRect() : null;
-  }
-
-  for(let i=0;i<rects.length-1;i++){
-    const a = rects[i];
-    const b = rects[i+1];
-    const stepA = steps[i];
-    const stepB = steps[i+1];
-    const rowA = parseInt(stepA.dataset.row || '0',10);
-    const rowB = parseInt(stepB.dataset.row || '0',10);
-
-    let d;
-
-    if(rowA === rowB){
-      let start,end;
-      if(a.left < b.left){
-        start = anchor(a,'right');
-        end   = anchor(b,'left');
-      }else{
-        start = anchor(a,'left');
-        end   = anchor(b,'right');
-      }
-      if(Math.abs(start.y - end.y) < 8){
-        d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
-      }else{
-        const midY = (start.y + end.y) / 2;
-        d = `M ${start.x} ${start.y}
-             L ${start.x} ${midY}
-             L ${end.x} ${midY}
-             L ${end.x} ${end.y}`;
-      }
-    }else{
-      const bottomA = anchor(a,'bottom');
-      const topB    = anchor(b,'top');
-      const brRect  = getBranchesRectForStep(stepA);
-
-      const start = {x:bottomA.x, y:bottomA.y};
-
-      let yDown = bottomA.y + 16;
-      if(brRect){
-        const brBottom = brRect.bottom - cRect.top;
-        if(brBottom + 16 > yDown) yDown = brBottom + 16;
-      }
-
-      let yUp = topB.y - 16;
-
-      const allLefts  = rects.map(r => r.left - cRect.left);
-      const allRights = rects.map(r => r.right - cRect.left);
-      const minX = Math.min.apply(null,allLefts);
-      const maxX = Math.max.apply(null,allRights);
-      let corridorX = start.x - 80;
-      if(corridorX < minX - 40){
-        corridorX = minX - 40;
-      }
-      if(corridorX < 10){
-        corridorX = maxX + 40;
-      }
-
-      d = `M ${start.x} ${start.y}
-           L ${start.x} ${yDown}
-           L ${corridorX} ${yDown}
-           L ${corridorX} ${yUp}
-           L ${topB.x} ${yUp}
-           L ${topB.x} ${topB.y}`;
-    }
-    addPath(d);
-  }
-
-  container.appendChild(svg);
-}
-function drawAllFlows(){
-  document.querySelectorAll('.steps').forEach(drawFlowForSteps);
-}
-
 /* ===== Si / No ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
@@ -648,8 +666,20 @@ function branchBox(p,m,st,kind,idx){
   const label=document.createElement('div'); label.className='bh-label'; label.textContent=isYes?'SÍ':'NO';
   const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
   const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
-  add.onclick=()=>{ st._openBranches=true; pushPoint(arr); save(); renderModules(); };
-  flag.onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
+  add.onclick=()=>{
+    st._openBranches=true;
+    pushPoint(arr);
+    save();
+    renderModules();
+  };
+  flag.onclick=()=>{
+    st._openBranches=true;
+    openProcPicker(pid=>{
+      st[kind+'Link']={pid};
+      save();
+      renderModules();
+    });
+  };
   top.appendChild(label); top.appendChild(add); top.appendChild(flag);
 
   if(st[kind+'Link']?.pid){
@@ -672,9 +702,26 @@ function branchBox(p,m,st,kind,idx){
       <button class="p-mini" title="Bandera">🚩</button>
       <button class="p-mini" title="Borrar">🗑</button>`;
     li.querySelector('.pt-input').oninput=e=>{ pt.text=e.target.value; save(); };
-    li.querySelectorAll('.p-mini')[0].onclick=()=>{ st._openBranches=true; pushSubPoint(pt); save(); renderModules(); };
-    li.querySelectorAll('.p-mini')[1].onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ pt.link={pid}; save(); renderModules(); }); };
-    li.querySelectorAll('.p-mini')[2].onclick=()=>{ st._openBranches=true; delFromArray(arr,pt.id); save(); renderModules(); };
+    li.querySelectorAll('.p-mini')[0].onclick=()=>{
+      st._openBranches=true;
+      pushSubPoint(pt);
+      save();
+      renderModules();
+    };
+    li.querySelectorAll('.p-mini')[1].onclick=()=>{
+      st._openBranches=true;
+      openProcPicker(pid=>{
+        pt.link={pid};
+        save();
+        renderModules();
+      });
+    };
+    li.querySelectorAll('.p-mini')[2].onclick=()=>{
+      st._openBranches=true;
+      delFromArray(arr,pt.id);
+      save();
+      renderModules();
+    };
 
     if(pt.link?.pid){
       const dest=state.processes.find(x=>x.id===pt.link.pid);
@@ -694,8 +741,23 @@ function branchBox(p,m,st,kind,idx){
         <button class="p-mini" title="Bandera">🚩</button>
         <button class="p-mini" title="Borrar">🗑</button>`;
       cli.querySelector('.pt-input').oninput=e=>{ ch.text=e.target.value; save(); };
-      cli.querySelectorAll('.p-mini')[0].onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ ch.link={pid}; save(); renderModules(); }); };
-      cli.querySelectorAll('.p-mini')[1].onclick=()=>{ st._openBranches=true; const k=pt.children.indexOf(ch); if(k>-1){ pt.children.splice(k,1); save(); renderModules(); } };
+      cli.querySelectorAll('.p-mini')[0].onclick=()=>{
+        st._openBranches=true;
+        openProcPicker(pid=>{
+          ch.link={pid};
+          save();
+          renderModules();
+        });
+      };
+      cli.querySelectorAll('.p-mini')[1].onclick=()=>{
+        st._openBranches=true;
+        const k=pt.children.indexOf(ch);
+        if(k>-1){
+          pt.children.splice(k,1);
+          save();
+          renderModules();
+        }
+      };
 
       if(ch.link?.pid){
         const dest=state.processes.find(x=>x.id===ch.link.pid);
@@ -712,6 +774,7 @@ function branchBox(p,m,st,kind,idx){
   wrap.appendChild(list);
   return wrap;
 }
+
 function stepRow(p,m,st,index){
   const row=document.createElement('div');
   const sc=document.createElement('div'); sc.className='step';
@@ -731,10 +794,18 @@ function stepRow(p,m,st,index){
   });
 
   sc.querySelector('.title').oninput=e=>{ st.title=e.target.value; save(); };
-  sc.querySelectorAll('.mini')[2].onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
-  sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
+  sc.querySelectorAll('.mini')[2].onclick=()=>{
+    m.steps.splice(index,1);
+    save();
+    renderModules();
+  };
+  sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{
+    st.link={pid};
+    save();
+    renderModules();
+  });
 
-  const branchesWrapper=document.createElement('div'); 
+  const branchesWrapper=document.createElement('div');
   branchesWrapper.className='branches'+(st._openBranches?'':' hide');
 
   const branchesInner=document.createElement('div');
@@ -743,11 +814,11 @@ function stepRow(p,m,st,index){
   branchesInner.appendChild(branchBox(p,m,st,'yes',index));
   branchesWrapper.appendChild(branchesInner);
 
-  sc.querySelectorAll('.mini')[1].onclick=()=>{ 
-    st._openBranches=!st._openBranches; 
-    save(); 
-    toggleBlock(branchesWrapper,st._openBranches); 
-    requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
+  sc.querySelectorAll('.mini')[1].onclick=()=>{
+    st._openBranches=!st._openBranches;
+    save();
+    toggleBlock(branchesWrapper,st._openBranches);
+    requestAnimationFrame(updateMetaSteps);
   };
 
   row.appendChild(sc);
@@ -756,7 +827,9 @@ function stepRow(p,m,st,index){
     const dest=state.processes.find(x=>x.id===st.link.pid);
     if(dest){
       const chip=document.createElement('div');
-      chip.className='chip'; chip.style.background=dest.color; chip.style.margin='4px 0 0 54px';
+      chip.className='chip';
+      chip.style.background=dest.color;
+      chip.style.margin='4px 0 0 54px';
       chip.innerHTML=`→ <small>Ir al proceso:</small> <strong>${dest.name}</strong>`;
       row.appendChild(chip);
     }
@@ -783,9 +856,20 @@ function modCard(p,m){
     <button class="pill" data-act="del">–</button>`;
   const titleEl=head.querySelector('.mod-title');
   titleEl.oninput=e=>{ m.title=e.target.value; save(); };
-  titleEl.ondblclick=()=>{ m._openDetail=!m._openDetail; toggleBlock(det,m._openDetail); if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
+  titleEl.ondblclick=()=>{
+    m._openDetail=!m._openDetail;
+    toggleBlock(det,m._openDetail);
+    if(m._openDetail){
+      setTimeout(()=>det.querySelector('textarea').focus(),0);
+    }
+    save();
+  };
   head.querySelector('select').onchange=e=>{ m.responsable=e.target.value; save(); };
-  head.querySelector('[data-act="add-step"]').onclick=()=>{ m.steps.push(makeStep()); save(); renderModules(); };
+  head.querySelector('[data-act="add-step"]').onclick=()=>{
+    m.steps.push(makeStep());
+    save();
+    renderModules();
+  };
   head.querySelector('[data-act="toggle-detail"]').onclick=(ev)=>{
     m._openDetail=!m._openDetail;
     ev.currentTarget.setAttribute('aria-expanded', m._openDetail?'true':'false');
@@ -793,11 +877,24 @@ function modCard(p,m){
     if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0); }
     save();
   };
-  head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
-  head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
+  head.querySelector('[data-act="close"]').onclick=()=>{
+    m.completed=!m.completed;
+    save();
+    renderModules();
+  };
+  head.querySelector('[data-act="del"]').onclick=()=>{
+    if(confirm('¿Eliminar subproceso?')){
+      const i=p.modules.findIndex(x=>x.id===m.id);
+      if(i>-1){
+        p.modules.splice(i,1);
+        save();
+        renderModules();
+      }
+    }
+  };
   card.appendChild(head);
 
-  const det=document.createElement('div'); 
+  const det=document.createElement('div');
   det.className='mod-detail'+(m._openDetail?'':' hide');
   det.setAttribute('aria-hidden', m._openDetail ? 'false':'true');
   det.innerHTML=`<textarea placeholder="Descripción del subproceso…">${m.detail||''}</textarea>`;
@@ -817,16 +914,24 @@ function modCard(p,m){
   return card;
 }
 
+/* ===== Marca META (último paso) ===== */
+function updateMetaSteps(){
+  document.querySelectorAll('.steps').forEach(container=>{
+    const steps = Array.from(container.querySelectorAll('.step'));
+    steps.forEach(s=>s.classList.remove('is-meta-step'));
+    if(steps.length){
+      steps[steps.length-1].classList.add('is-meta-step');
+    }
+  });
+}
+
 /* ===== Render derecha ===== */
 function renderModules(){
   const box=document.getElementById('modules'); box.innerHTML='';
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
   p.modules.forEach(m=> box.appendChild(modCard(p,m)));
 
-  requestAnimationFrame(()=>{
-    layoutAllSteps();
-    drawAllFlows();
-  });
+  requestAnimationFrame(updateMetaSteps);
 }
 
 /* ===== Acciones globales ===== */
@@ -860,12 +965,13 @@ load(); document.getElementById('stamp').textContent='Última actualización '+s
 window.applyPinLockUI = window.applyPinLockUI || function(){};
 render();
 document.getElementById('btnAddProcess').onclick=addProcess;
-document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p){alert('Crea un proceso');return;} createModuleForProcess(p.id,'Nuevo subproceso'); };
+document.getElementById('btnAddSubprocPaso').onclick=()=>{
+  const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
+  if(!p){alert('Crea un proceso');return;}
+  createModuleForProcess(p.id,'Nuevo subproceso');
+};
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
-
-/* Recalcular al redimensionar */
-window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
 
 /* ===== MATCHERS PARA BUSCADOR ===== */
 function stepMatches(st, q){
@@ -1032,7 +1138,13 @@ document.getElementById('q').addEventListener('input',e=>{
         opened.push(b);
       }
     });
-    const restore=()=>{ opened.forEach(h=>{ if(h.tagName==='DETAILS') h.open=false; else hideBlock(h); }); window.removeEventListener('afterprint',restore); };
+    const restore=()=>{
+      opened.forEach(h=>{
+        if(h.tagName==='DETAILS') h.open=false;
+        else hideBlock(h);
+      });
+      window.removeEventListener('afterprint',restore);
+    };
     window.addEventListener('afterprint',restore);
     window.print();
   }
@@ -1079,8 +1191,14 @@ document.getElementById('q').addEventListener('input',e=>{
       toast('Edición bloqueada');
     }else{
       const v=prompt('Introduce PIN para editar:');
-      if(v===PIN_CODE){ sessionStorage.setItem('PA_PIN_OK','1'); pinBtn.classList.add('locked'); applyPinLockUI(); toast('Edición habilitada'); }
-      else if(v!==null){ toast('PIN incorrecto'); }
+      if(v===PIN_CODE){
+        sessionStorage.setItem('PA_PIN_OK','1');
+        pinBtn.classList.add('locked');
+        applyPinLockUI();
+        toast('Edición habilitada');
+      }else if(v!==null){
+        toast('PIN incorrecto');
+      }
     }
   }
 
