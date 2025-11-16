@@ -93,6 +93,7 @@
   /* ===== Pasos (cajas pequeñas 3D) ===== */
   .steps{
     position:relative;
+    z-index:0;            /* contexto para flechas detrás */
     display:block;
     padding:10px 6px 40px;
   }
@@ -104,7 +105,7 @@
   }
   .step{
     position:relative;
-    z-index:2;
+    z-index:2;            /* por encima de las flechas */
     display:flex;
     flex-direction:column;
     align-items:flex-start;
@@ -185,7 +186,7 @@
   }
   .flow-meta-anchor{
     position:absolute;
-    right:72px;
+    right:72px;   /* punto de referencia para la flecha */
     bottom:26px;
     width:1px;
     height:1px;
@@ -199,7 +200,7 @@
     height:100%;
     pointer-events:none;
     overflow:visible;
-    z-index:1;
+    z-index:0;       /* por detrás de step y branches */
   }
 
   .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
@@ -213,6 +214,7 @@
     background:rgba(255,255,255,.97);
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
+    z-index:2;        /* panel SI/NO por encima de flechas */
   }
   .branches::before{
     content:"";
@@ -455,7 +457,7 @@ function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ===== Dibujo de flechas (sin atravesar cajas ni SÍ/NO) ===== */
+/* ===== Dibujo de flechas ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
@@ -529,7 +531,7 @@ function drawFlowForSteps(container){
     let d;
 
     if(rowA === rowB){
-      // Misma fila: recto izq-der o der-izq
+      // Misma fila
       let start,end;
       if(a.left < b.left){
         start = anchor(a,'right');
@@ -548,22 +550,21 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
-      // Cambio de fila: salida desde mitad inferior, rodeando SÍ/NO
+      // Cambio de fila: flecha desde mitad inferior, rodeando SÍ/NO
       const bottomA = anchor(a,'bottom');
       const topB    = anchor(b,'top');
       const brRect  = getBranchesRectForStep(stepA);
 
       const start = {x:bottomA.x, y:bottomA.y};
 
-      let yDown = bottomA.y + 16; // baja recto desde borde inferior
+      let yDown = bottomA.y + 16;
       if(brRect){
         const brBottom = brRect.bottom - cRect.top;
-        if(brBottom + 16 > yDown) yDown = brBottom + 16; // pasa por debajo del SÍ/NO
+        if(brBottom + 16 > yDown) yDown = brBottom + 16;
       }
 
       let yUp = topB.y - 16;
 
-      // corredor lateral, fuera de las cajas
       const allLefts  = rects.map(r => r.left - cRect.left);
       const allRights = rects.map(r => r.right - cRect.left);
       const minX = Math.min.apply(null,allLefts);
@@ -599,13 +600,14 @@ function drawFlowForSteps(container){
       y: mRect.top  - cRect.top
     };
 
-    const yDown = Math.max(start.y + 32, meta.y - 24);
-    const endX  = meta.x - 14; // se queda un poco antes, no la toca
+    const metaCenterY = meta.y + 16; // punto medio aprox. de la pastilla META
+    const yDown = Math.max(start.y + 32, metaCenterY - 16);
+    const endX  = meta.x - 18;       // se queda un poco antes, no la toca
 
     const d = `M ${start.x} ${start.y}
                L ${start.x} ${yDown}
                L ${endX} ${yDown}
-               L ${endX} ${meta.y}`;
+               L ${endX} ${metaCenterY}`;
     addPath(d);
   }
 
