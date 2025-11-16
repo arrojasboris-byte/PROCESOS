@@ -201,7 +201,7 @@
 
   /* ===== Si / No ===== */
   .branches{
-    margin:8px 0 0 0;           /* debajo del paso, sin desplazamiento lateral */
+    margin:8px 0 0 24px;
     padding:10px 10px 8px;
     border-radius:12px;
     border:1px dashed #cbd5e1;
@@ -209,15 +209,15 @@
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
     z-index:2;
-    max-width:100%;             /* nunca más ancha que el paso */
+    max-width:260px;
   }
   .branches::before{
     content:"";
     position:absolute;
-    top:-10px;
-    left:24px;                  /* pequeña línea que une con el paso, sin cruzar otras cajas */
+    top:-12px;
+    left:40px;
     width:0;
-    height:10px;
+    height:12px;
     border-left:2px solid #cbd5e1;
   }
   .branches-inner{
@@ -416,6 +416,7 @@ function layoutStepsSerpentine(container){
   const rowHeights = [];
   const rowsIndex = [];
 
+  /* --- FORZAMOS HASTA 4 COLUMNAS, PARA UN RECTÁNGULO --- */
   const cols = Math.min(wrappers.length, 4);
 
   for(let i=0;i<wrappers.length;i++){
@@ -445,8 +446,6 @@ function layoutStepsSerpentine(container){
       if(step){
         step.dataset.row = r;
         step.dataset.rowDir = dirRight ? '1' : '-1';
-        step.dataset.col = col;
-        step.dataset.cols = cols;
       }
     }
     y += rowHeights[r] + gapY;
@@ -454,11 +453,8 @@ function layoutStepsSerpentine(container){
 
   container.style.height = y + 20 + 'px';
 }
-
 function layoutAllSteps(){
-  document.querySelectorAll('.steps').forEach(container=>{
-    layoutStepsSerpentine(container);
-  });
+  document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
 /* ===== Dibujo de flechas ===== */
