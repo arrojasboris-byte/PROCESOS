@@ -608,7 +608,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina ===== */
+/* ===== Layout serpentina con hasta 3 columnas ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -626,7 +626,10 @@ function layoutStepsSerpentine(container){
   const gapX = 40;
   const gapY = 40;
   const innerWidth = container.clientWidth || (cardW + gapX);
-  const cols = Math.max(1, Math.floor((innerWidth + gapX) / (cardW + gapX)));
+
+  const maxCols = 3;
+  const possible = Math.floor((innerWidth + gapX) / (cardW + gapX)) || 1;
+  const cols = Math.max(1, Math.min(maxCols, possible));
 
   const heights = wrappers.map(w => w.offsetHeight);
 
@@ -820,9 +823,19 @@ function branchBox(p,m,st,kind,idx){
   const label=document.createElement('div'); label.className='bh-label'; label.textContent=isYes?'SÍ':'NO';
   const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
   const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
+  const delBranch=document.createElement('button'); delBranch.className='p-mini'; delBranch.textContent='−'; delBranch.title='Borrar rama';
   add.onclick=()=>{ st._openBranches=true; pushPoint(arr); save(); renderModules(); };
   flag.onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
-  top.appendChild(label); top.appendChild(add); top.appendChild(flag);
+  delBranch.onclick=()=>{
+    if(!arr.length && !st[kind+'Link']) return;
+    if(confirm('¿Borrar todos los puntos de esta rama y su bandera?')){
+      st[kind]=[];
+      delete st[kind+'Link'];
+      save();
+      renderModules();
+    }
+  };
+  top.appendChild(label); top.appendChild(add); top.appendChild(flag); top.appendChild(delBranch);
 
   if(st[kind+'Link']?.pid){
     const dest=state.processes.find(x=>x.id===st[kind+'Link'].pid);
