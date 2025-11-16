@@ -95,7 +95,7 @@
     position:relative;
     z-index:0;            /* contexto para flechas detrás */
     display:block;
-    padding:10px 6px 40px;
+    padding:10px 6px 20px;
   }
   .steps > div{
     display:flex;
@@ -170,26 +170,19 @@
   }
   .mini:active{transform:translateY(1px)}
 
-  /* META grande dentro del área de pasos */
-  .steps::after{
+  /* Etiqueta META en el último paso */
+  .step.is-meta-step::after{
     content:"🎯 META";
     position:absolute;
-    right:12px;
-    bottom:8px;
-    font-size:15px;
+    right:6px;
+    bottom:6px;
+    font-size:11px;
     font-weight:800;
     color:#0f172a;
-    padding:7px 20px;
+    padding:2px 8px;
     border-radius:999px;
-    background:rgba(255,255,255,.98);
-    box-shadow:0 4px 10px rgba(15,23,42,.3);
-  }
-  .flow-meta-anchor{
-    position:absolute;
-    right:72px;   /* punto de referencia para la flecha */
-    bottom:26px;
-    width:1px;
-    height:1px;
+    background:rgba(255,255,255,.97);
+    box-shadow:0 2px 4px rgba(15,23,42,.25);
   }
 
   /* Flechas SVG (detrás de las cajas) */
@@ -207,7 +200,7 @@
 
   /* ===== Si / No ===== */
   .branches{
-    margin:8px 0 0 20px;
+    margin:8px 0 0 24px;
     padding:10px 10px 8px;
     border-radius:12px;
     border:1px dashed #cbd5e1;
@@ -215,19 +208,20 @@
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
     z-index:2;        /* panel SI/NO por encima de flechas */
+    max-width:260px;
   }
   .branches::before{
     content:"";
     position:absolute;
     top:-12px;
-    left:32px;
+    left:40px;
     width:0;
     height:12px;
     border-left:2px solid #cbd5e1;
   }
   .branches-inner{
-    display:grid;
-    grid-template-columns:1fr 1fr;
+    display:flex;
+    flex-direction:column;
     gap:8px;
   }
   .branch{background:#fff;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
@@ -462,6 +456,9 @@ function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
 
+  // limpiar etiqueta META previa
+  steps.forEach(s=>s.classList.remove('is-meta-step'));
+
   const old = container.querySelector('.flow-svg');
   if(old) old.remove();
 
@@ -487,6 +484,12 @@ function drawFlowForSteps(container){
   defs.appendChild(markerSmall);
   svg.appendChild(defs);
 
+  const rects = steps.map(s => s.getBoundingClientRect());
+
+  // marcar último paso con etiqueta META
+  const lastStepEl = steps[steps.length-1];
+  lastStepEl.classList.add('is-meta-step');
+
   function addPath(d){
     const path=document.createElementNS(svgNS,'path');
     path.setAttribute('d',d);
@@ -496,8 +499,6 @@ function drawFlowForSteps(container){
     path.setAttribute('marker-end','url(#arrowHead)');
     svg.appendChild(path);
   }
-
-  const rects = steps.map(s => s.getBoundingClientRect());
 
   function anchor(rect, side){
     const xLeft = rect.left - cRect.left;
@@ -531,7 +532,7 @@ function drawFlowForSteps(container){
     let d;
 
     if(rowA === rowB){
-      // Misma fila
+      // Misma fila: flecha lateral limpia
       let start,end;
       if(a.left < b.left){
         start = anchor(a,'right');
@@ -550,7 +551,7 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
-      // Cambio de fila: flecha desde mitad inferior, rodeando SÍ/NO
+      // Cambio de fila: flecha desde mitad inferior, rodeando caja SÍ/NO si existe
       const bottomA = anchor(a,'bottom');
       const topB    = anchor(b,'top');
       const brRect  = getBranchesRectForStep(stepA);
@@ -584,30 +585,6 @@ function drawFlowForSteps(container){
            L ${topB.x} ${yUp}
            L ${topB.x} ${topB.y}`;
     }
-    addPath(d);
-  }
-
-  /* Último paso → META (flecha normal, sin tocarla) */
-  const metaAnchor = container.querySelector('.flow-meta-anchor');
-  if(metaAnchor && rects.length){
-    const lastRect = rects[rects.length-1];
-    const bottomLast = anchor(lastRect,'bottom');
-    const start = {x:bottomLast.x,y:bottomLast.y};
-
-    const mRect = metaAnchor.getBoundingClientRect();
-    const meta = {
-      x: mRect.left - cRect.left,
-      y: mRect.top  - cRect.top
-    };
-
-    const metaCenterY = meta.y + 16; // punto medio aprox. de la pastilla META
-    const yDown = Math.max(start.y + 32, metaCenterY - 16);
-    const endX  = meta.x - 18;       // se queda un poco antes, no la toca
-
-    const d = `M ${start.x} ${start.y}
-               L ${start.x} ${yDown}
-               L ${endX} ${yDown}
-               L ${endX} ${metaCenterY}`;
     addPath(d);
   }
 
@@ -787,11 +764,6 @@ function modCard(p,m){
   const steps=document.createElement('div'); steps.className='steps';
   steps.style.setProperty('--proc',p.color);
   m.steps.forEach((st,idx)=> steps.appendChild(stepRow(p,m,st,idx)));
-
-  const metaAnchor=document.createElement('div');
-  metaAnchor.className='flow-meta-anchor';
-  steps.appendChild(metaAnchor);
-
   card.appendChild(steps);
 
   if(m.completed){
