@@ -130,7 +130,7 @@
   .right{padding:10px;display:flex;flex-direction:column;gap:12px}
   @media (max-width:1020px){ .wrap{grid-template-columns:1fr} }
 
-  /* ===== Lista de procesos (izquierda) ===== */
+  /* ===== Lista de procesos ===== */
   .proc-item{
     display:flex;
     flex-direction:column;
@@ -176,7 +176,7 @@
     background:#fff;
   }
 
-  /* ===== Subproceso (módulo) derecha ===== */
+  /* ===== Subproceso ===== */
   .module{
     position:relative;
     background:var(--pillGrad);
@@ -338,7 +338,7 @@
     box-shadow:0 2px 4px rgba(15,23,42,.25);
   }
 
-  /* detalle por paso */
+  /* Detalle paso */
   .step-detail{
     margin:4px 0 0 28px;
     width:calc(100% - 28px);
@@ -351,6 +351,7 @@
     padding:.35rem .45rem;
     font-size:12px;
     background:#fff;
+    resize:vertical;
   }
 
   .flow-svg{
@@ -383,7 +384,7 @@
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
     z-index:2;
-    max-width:520px; /* más ancho para ver bien 3.1.1 y chips */
+    max-width:100%; /* ahora usa todo el ancho disponible */
   }
   .branches::before{
     content:"";
@@ -413,15 +414,15 @@
     display:flex;
     align-items:center;
     gap:.4rem;
-    flex-wrap:wrap; /* para que chips y botones bajen de línea y no se corten */
+    flex-wrap:wrap; /* botones bajan de línea antes de cortar texto */
   }
   .point .num{min-width:44px;font-weight:900;opacity:.7}
   .pt-input{
-    flex:1;
+    flex:1 1 260px;
     border:1px solid #e6e8ec;
     border-radius:8px;
     padding:.25rem .45rem;
-    min-width:0;
+    min-width:120px;
   }
 
   .p-actions{
@@ -577,7 +578,7 @@ function procRow(p){
   det.setAttribute('aria-hidden', p._openDetail ? 'false':'true');
   det.innerHTML=`<textarea placeholder="Detalle del proceso…">${p.detail||''}</textarea>`;
   const ta=det.querySelector('textarea');
-  ta.oninput=e=>{ p.detail=e.target.value; save(); };
+  ta.oninput=e=>{ p.detail=e.target.value; ta.title=p.detail||''; save(); };
 
   const [bDet,bRen,bDel]=row.querySelectorAll('.icon-btn');
   bDet.onclick=e=>{
@@ -630,7 +631,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina con máximo 3 columnas ===== */
+/* ===== Layout serpentina con 3 columnas máx ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -881,7 +882,8 @@ function branchBox(p,m,st,kind,idx){
     input.className='pt-input';
     input.placeholder='Escribe…';
     input.value=pt.text||'';
-    input.oninput=e=>{ pt.text=e.target.value; save(); };
+    input.title=pt.text||'';
+    input.oninput=e=>{ pt.text=e.target.value; input.title=pt.text||''; save(); };
 
     const actions=document.createElement('div');
     actions.className='p-actions';
@@ -969,7 +971,8 @@ function branchBox(p,m,st,kind,idx){
       cInput.className='pt-input';
       cInput.placeholder='Subpunto…';
       cInput.value=ch.text||'';
-      cInput.oninput=e=>{ ch.text=e.target.value; save(); };
+      cInput.title=ch.text||'';
+      cInput.oninput=e=>{ ch.text=e.target.value; cInput.title=ch.text||''; save(); };
 
       const cActions=document.createElement('div');
       cActions.className='p-actions';
@@ -1042,7 +1045,7 @@ function branchBox(p,m,st,kind,idx){
   return wrap;
 }
 
-/* ===== Paso (tarjeta + detalle + ramas) ===== */
+/* ===== Paso ===== */
 function stepRow(p,m,st,index){
   const row=document.createElement('div');
 
@@ -1064,7 +1067,8 @@ function stepRow(p,m,st,index){
   });
 
   const titleInput = sc.querySelector('.title');
-  titleInput.oninput=e=>{ st.title=e.target.value; save(); };
+  titleInput.title = st.title || '';
+  titleInput.oninput=e=>{ st.title=e.target.value; titleInput.title=st.title||''; save(); };
 
   const branchesWrapper=document.createElement('div');
   branchesWrapper.className='branches'+(st._openBranches?'':' hide');
@@ -1079,7 +1083,8 @@ function stepRow(p,m,st,index){
   stepDetail.className='step-detail'+(st._openDetailStep?'':' hide');
   stepDetail.innerHTML=`<textarea placeholder="Detalle del paso…">${st.detail||''}</textarea>`;
   const sdTa = stepDetail.querySelector('textarea');
-  sdTa.oninput = e=>{ st.detail = e.target.value; save(); };
+  sdTa.title = st.detail || '';
+  sdTa.oninput = e=>{ st.detail = e.target.value; sdTa.title=st.detail||''; save(); };
 
   const miniFlag     = sc.querySelector('[data-act="flag-step"]');
   const miniBranches = sc.querySelector('[data-act="branches"]');
@@ -1135,7 +1140,8 @@ function modCard(p,m){
     <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
     <button class="pill" data-act="del">–</button>`;
   const titleEl=head.querySelector('.mod-title');
-  titleEl.oninput=e=>{ m.title=e.target.value; save(); };
+  titleEl.oninput=e=>{ m.title=e.target.value; titleEl.title=m.title||''; save(); };
+  titleEl.title = m.title || '';
   titleEl.ondblclick=()=>{ m._openDetail=!m._openDetail; toggleBlock(det,m._openDetail); if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
   head.querySelector('select').onchange=e=>{ m.responsable=e.target.value; save(); };
   head.querySelector('[data-act="add-step"]').onclick=()=>{ m.steps.push(makeStep()); save(); renderModules(); };
@@ -1155,13 +1161,13 @@ function modCard(p,m){
   det.setAttribute('aria-hidden', m._openDetail ? 'false':'true');
   det.innerHTML=`<textarea placeholder="Descripción del subproceso…">${m.detail||''}</textarea>`;
   const mta=det.querySelector('textarea');
-  mta.oninput=e=>{ m.detail=e.target.value; save(); };
+  mta.title = m.detail || '';
+  mta.oninput=e=>{ m.detail=e.target.value; mta.title=m.detail||''; save(); };
   card.appendChild(det);
 
   const steps=document.createElement('div'); steps.className='steps';
   steps.style.setProperty('--proc',p.color);
   m.steps.forEach((st,idx)=>{
-    // asegurar campos nuevos en datos antiguos
     if(typeof st.detail === 'undefined') st.detail='';
     if(typeof st._openDetailStep === 'undefined') st._openDetailStep=false;
     if(typeof st._openBranches === 'undefined') st._openBranches=false;
