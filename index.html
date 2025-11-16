@@ -170,12 +170,12 @@
   }
   .mini:active{transform:translateY(1px)}
 
-  /* Etiqueta META en el último paso */
+  /* Etiqueta META en el último paso (arriba-derecha) */
   .step.is-meta-step::after{
     content:"🎯 META";
     position:absolute;
-    right:6px;
-    bottom:6px;
+    top:4px;
+    right:8px;
     font-size:11px;
     font-weight:800;
     color:#0f172a;
@@ -183,6 +183,7 @@
     border-radius:999px;
     background:rgba(255,255,255,.97);
     box-shadow:0 2px 4px rgba(15,23,42,.25);
+    pointer-events:none;
   }
 
   /* Flechas SVG (detrás de las cajas) */
@@ -389,7 +390,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina ===== */
+/* ===== Layout serpentina (mejorado para tener en cuenta NO/SÍ) ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -400,10 +401,15 @@ function layoutStepsSerpentine(container){
     w.style.top='';
   });
 
-  const firstStep = wrappers[0].querySelector('.step');
-  if(!firstStep) return;
+  /* ancho de columna = máximo ancho real de cualquier wrapper
+     (paso + panel NO/SÍ) para evitar solapes */
+  let cardW = 0;
+  wrappers.forEach(w=>{
+    const wWidth = w.offsetWidth;
+    if(wWidth > cardW) cardW = wWidth;
+  });
+  if(cardW <= 0) return;
 
-  const cardW = firstStep.offsetWidth;
   const gapX = 24;
   const gapY = 40;
   const innerWidth = container.clientWidth || (cardW + gapX);
@@ -456,7 +462,7 @@ function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
 
-  // limpiar etiqueta META previa
+  // quitar META antiguo
   steps.forEach(s=>s.classList.remove('is-meta-step'));
 
   const old = container.querySelector('.flow-svg');
@@ -486,7 +492,7 @@ function drawFlowForSteps(container){
 
   const rects = steps.map(s => s.getBoundingClientRect());
 
-  // marcar último paso con etiqueta META
+  // último paso = META
   const lastStepEl = steps[steps.length-1];
   lastStepEl.classList.add('is-meta-step');
 
@@ -520,7 +526,6 @@ function drawFlowForSteps(container){
     return br ? br.getBoundingClientRect() : null;
   }
 
-  /* conexiones entre pasos */
   for(let i=0;i<rects.length-1;i++){
     const a = rects[i];
     const b = rects[i+1];
@@ -551,7 +556,7 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
-      // Cambio de fila: flecha desde mitad inferior, rodeando caja SÍ/NO si existe
+      // Cambio de fila: desde borde inferior, rodeando bloque SI/NO si existe
       const bottomA = anchor(a,'bottom');
       const topB    = anchor(b,'top');
       const brRect  = getBranchesRectForStep(stepA);
