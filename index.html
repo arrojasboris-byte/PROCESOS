@@ -6,26 +6,18 @@
 <title>PROCESOS AUDIO</title>
 <style>
   :root{
-    /* Fondo general claro pero neutro */
     --bg:#f3f4f6;
     --surface:#ffffff;
     --ink:#0b1120;
-    --muted:#6b7280;
-    --soft:#e5e7eb;
-
-    /* Sombras 3D suaves */
+    --muted:#667085;
+    --soft:#eceff3;
     --shadow:0 10px 24px rgba(0,0,0,.12);
-    --ring:0 0 0 2px rgba(248,113,113,.18);
-
-    /* Cabecera gris metálica */
+    --ring:0 0 0 2px rgba(248,113,113,.2);
     --grad:linear-gradient(90deg,#111827 0%,#4b5563 40%,#111827 100%);
-
-    /* Acentos rojos/negros */
-    --accent:#ef4444;       /* rojo principal */
-    --accent-dark:#b91c1c;  /* rojo profundo */
-    --accent-soft:#fee2e2;  /* fondo rojizo suave */
+    --pillGrad:linear-gradient(180deg,#ffffff 0%,#f2f4f8 100%);
+    --accent:#ef4444;
+    --accent-dark:#b91c1c;
   }
-
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
@@ -119,9 +111,7 @@
     color:#e5e7eb;
     font-weight:600;
   }
-  .search input::placeholder{
-    color:rgba(209,213,219,.8);
-  }
+  .search input::placeholder{color:rgba(209,213,219,.8);}
 
   /* ===== Layout ===== */
   .wrap{
@@ -145,13 +135,11 @@
     display:flex;
     flex-direction:column;
     gap:.45rem;
-    background:linear-gradient(180deg,#f9fafb 0%,#e5e7eb 100%);
+    background:var(--pillGrad);
     border-radius:14px;
     padding:.55rem .7rem;
     margin:.45rem 0;
-    box-shadow:
-      inset 0 1px 0 #fff,
-      0 1px 0 rgba(0,0,0,.06);
+    box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);
     border:2px solid transparent;
   }
   .proc-item.activo{
@@ -191,18 +179,15 @@
   /* ===== Subproceso (módulo) derecha ===== */
   .module{
     position:relative;
-    background:linear-gradient(180deg,#f9fafb 0%,#e5e7eb 100%);
+    background:var(--pillGrad);
     border-radius:14px;
-    box-shadow:
-      inset 0 1px 0 #fff,
-      0 1px 0 rgba(0,0,0,.06);
+    box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);
     display:flex;
     flex-direction:column;
     gap:8px;
     padding:10px;
   }
   .mod-head{
-    position:relative;
     display:flex;
     align-items:center;
     gap:.5rem;
@@ -247,10 +232,7 @@
     font-weight:700;
   }
   .pill:active{transform:translateY(1px)}
-  .badge-diana{
-    margin-left:.25rem;
-    font-size:16px;
-  }
+  .badge-diana{margin-left:.25rem;}
 
   .mod-detail{display:none}
   .mod-detail textarea{
@@ -262,50 +244,47 @@
     background:#fff;
   }
 
-  /* ===== Pasos (cajas pequeñas 3D estilo diagrama lineal) ===== */
+  /* ===== Pasos (cajas pequeñas 3D serpentina) ===== */
   .steps{
     position:relative;
     z-index:0;
-    display:flex;
-    flex-wrap:wrap;
-    gap:18px;
-    padding:14px 10px 20px;
-    justify-content:flex-start;
+    display:block;
+    padding:10px 6px 20px;
   }
   .steps > div{
-    position:relative;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    gap:6px;
+    gap:4px;
   }
   .step{
     position:relative;
+    z-index:2;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    background:#ffffff;
-    border-radius:12px;
-    padding:12px 14px 14px;
+    background:linear-gradient(180deg,#ffffff 0%,#f3f4f6 100%);
+    border-radius:14px;
+    padding:7px 9px 9px;
     box-shadow:
       inset 0 1px 0 #fff,
       0 2px 0 rgba(15,23,42,.22),
       0 8px 16px rgba(15,23,42,.14);
-    width:260px;
-    min-height:90px;
-    border:2px solid var(--proc,#ef4444);
+    width:260px;          /* más anchos */
+    min-height:60px;
+    border:1px solid rgba(148,163,184,.7);
   }
   .bubble{
-    min-width:28px;
-    height:28px;
+    min-width:22px;
+    height:22px;
     border-radius:9999px;
-    background:var(--proc,#ef4444);
+    background:linear-gradient(180deg,var(--proc,#2563eb) 0%,#1d4ed8 100%);
     color:#fff;
     display:grid;
     place-items:center;
     font-weight:900;
-    font-size:13px;
-    margin-bottom:4px;
+    font-size:11px;
+    margin-bottom:2px;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,.6),
       0 2px 0 rgba(15,23,42,.35),
@@ -313,19 +292,25 @@
     padding:0 2px;
     z-index:1;
   }
+  .step.selected{
+    box-shadow:
+      0 0 0 2px rgba(37,99,235,.35),
+      0 3px 0 rgba(15,23,42,.3),
+      0 10px 20px rgba(15,23,42,.26);
+  }
   .step input.title{
     font-weight:800;
     border:0;
     background:transparent;
     outline:0;
     width:100%;
-    margin-top:2px;
-    font-size:13px;
+    margin-top:1px;
+    font-size:12.5px;
   }
   .minis{
     display:flex;
-    gap:.35rem;
-    margin-top:8px;
+    gap:.25rem;
+    margin-top:5px;
     margin-left:auto;
   }
   .mini{
@@ -338,43 +323,31 @@
     box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.18);
   }
   .mini:active{transform:translateY(1px)}
-  /* Flecha horizontal entre pasos (solo fila) */
-  .step::before{
-    content:"";
-    position:absolute;
-    right:-32px;
-    top:50%;
-    transform:translateY(-50%);
-    width:24px;
-    height:4px;
-    background:var(--proc,#ef4444);
-    border-radius:999px;
-  }
-  /* Último paso sin flecha */
-  .steps .step:last-child::before{
-    content:none;
-  }
-  /* Destacado al seleccionar */
-  .step.selected{
-    box-shadow:
-      0 0 0 3px rgba(248,113,113,.35),
-      0 10px 24px rgba(0,0,0,.24);
-  }
-  /* Etiqueta META arriba derecha en el último paso */
+
+  /* Etiqueta META: arriba derecha del último paso */
   .step.is-meta-step::after{
     content:"🎯 META";
     position:absolute;
     top:6px;
-    right:8px;
+    right:6px;
     font-size:11px;
     font-weight:800;
-    color:#111827;
-    padding:2px 9px;
+    color:#0f172a;
+    padding:2px 8px;
     border-radius:999px;
-    background:linear-gradient(180deg,#ffffff 0%,#f3f4f6 100%);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.9),
-      0 2px 4px rgba(15,23,42,.35);
+    background:rgba(255,255,255,.97);
+    box-shadow:0 2px 4px rgba(15,23,42,.25);
+  }
+
+  /* Flechas SVG (detrás de las cajas) */
+  .flow-svg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    overflow:visible;
+    z-index:0;
   }
 
   .chip{
@@ -397,7 +370,7 @@
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
     z-index:2;
-    max-width:260px;
+    max-width:320px; /* más ancha para que quepan los iconos */
   }
   .branches::before{
     content:"";
@@ -430,6 +403,15 @@
     border:1px solid #e6e8ec;
     border-radius:8px;
     padding:.25rem .45rem;
+    min-width:0;
+  }
+
+  /* Acciones compactas SÍ/NO */
+  .p-actions{
+    display:flex;
+    align-items:center;
+    gap:.15rem;
+    position:relative;
   }
   .p-mini{
     width:24px;
@@ -441,6 +423,22 @@
     box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);
   }
   .p-mini:active{transform:translateY(1px)}
+  .p-toggle{
+    background:#e5e7eb;
+    font-weight:900;
+  }
+  .p-extra{
+    position:absolute;
+    right:0;
+    top:110%;
+    display:flex;
+    gap:.25rem;
+    background:#fff;
+    border-radius:10px;
+    padding:4px 4px;
+    box-shadow:0 6px 16px rgba(15,23,42,.25);
+    z-index:20;
+  }
   .children{
     margin-left:44px;
     display:flex;
@@ -537,47 +535,27 @@ function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
 /* ===== Estado / Persistencia ===== */
 const LSKEY='pa_v3_connectors_3d';
 const RESPONSABLES=['Audiólogo','Responsable','Otros'];
-const colors = [
-  '#fecaca', // rojo muy suave
-  '#fca5a5',
-  '#fee2e2',
-  '#e5e7eb', // gris claro
-  '#d1d5db',
-  '#9ca3af',
-  '#f97373',
-  '#ef4444', // rojo principal
-  '#b91c1c', // rojo oscuro
-  '#111827', // casi negro
-  '#4b5563',
-  '#6b7280'
-];
+const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6ff','#a0e7e5','#c7f9cc','#fbcfe8','#fde68a','#bbf7d0'];
 const uid=()=>'p'+Math.random().toString(36).slice(2,9);
 const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/${p(d.getMonth()+1)}/${p(d.getFullYear())}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`};
 
 const state={processes:[]};
 let activePid=null;
 
-function save(){
-  localStorage.setItem(LSKEY,JSON.stringify(state));
-  document.getElementById('stamp').textContent='Última actualización '+stamp();
-}
+function save(){ localStorage.setItem(LSKEY,JSON.stringify(state)); document.getElementById('stamp').textContent='Última actualización '+stamp(); }
 function load(){
   const raw=localStorage.getItem(LSKEY);
   if(!raw){
     state.processes.push({id:uid(),name:'Revisión auditiva',color:colors[0],detail:'',modules:[],_openDetail:false});
     save();
-  }else{
-    try{ Object.assign(state,JSON.parse(raw)); }catch{}
-  }
+  }else{ try{ Object.assign(state,JSON.parse(raw)); }catch{} }
   if(!activePid && state.processes[0]) activePid=state.processes[0].id;
 }
 
 /* ===== Izquierda: procesos ===== */
 function procRow(p){
-  const wrap=document.createElement('div');
-  wrap.className='proc-item'+(p.id===activePid?' activo':'');
+  const wrap=document.createElement('div'); wrap.className='proc-item'+(p.id===activePid?' activo':'');
   wrap.dataset.pid = p.id;
-
   const row=document.createElement('div'); row.className='proc-row';
   row.innerHTML=`<span class="dot" style="background:${p.color}"></span>
     <span class="proc-name">${p.name}</span>
@@ -603,30 +581,10 @@ function procRow(p){
     if(p._openDetail) setTimeout(()=>ta.focus(),0);
     save();
   };
-  bRen.onclick=e=>{
-    e.stopPropagation();
-    const nn=prompt('Nombre del proceso',p.name);
-    if(nn){
-      p.name=nn;
-      save();
-      render();
-    }
-  };
-  bDel.onclick=e=>{
-    e.stopPropagation();
-    if(confirm('¿Eliminar proceso y sus módulos?')){
-      const i=state.processes.findIndex(x=>x.id===p.id);
-      if(i>-1){
-        state.processes.splice(i,1);
-        activePid=state.processes[0]?.id||null;
-        save();
-        render();
-      }
-    }
-  };
+  bRen.onclick=e=>{ e.stopPropagation(); const nn=prompt('Nombre del proceso',p.name); if(nn){p.name=nn;save();render();} };
+  bDel.onclick=e=>{ e.stopPropagation(); if(confirm('¿Eliminar proceso y sus módulos?')){ const i=state.processes.findIndex(x=>x.id===p.id); if(i>-1){ state.processes.splice(i,1); activePid=state.processes[0]?.id||null; save(); render(); } } };
 
-  wrap.appendChild(row);
-  wrap.appendChild(det);
+  wrap.appendChild(row); wrap.appendChild(det);
   return wrap;
 }
 function renderProcesses(){
@@ -640,8 +598,7 @@ function openProcPicker(onPick){
   const list=document.getElementById('procModalList'); list.innerHTML='';
   state.processes.forEach(p=>{
     const b=document.createElement('button');
-    b.className='btn3d';
-    b.style.cssText='justify-content:flex-start;color:#111;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06);border-radius:12px';
+    b.className='btn3d'; b.style.cssText='justify-content:flex-start;color:#111;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06);border-radius:12px';
     b.innerHTML=`<span class="dot" style="background:${p.color}"></span> <strong>${p.name}</strong>`;
     b.onclick=()=>{ modal.classList.add('hide'); onPick(p.id); };
     list.appendChild(b);
@@ -656,6 +613,213 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
+/* ===== Layout serpentina con centrado ===== */
+function layoutStepsSerpentine(container){
+  const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
+  if(!wrappers.length) return;
+
+  wrappers.forEach(w=>{
+    w.style.position='';
+    w.style.left='';
+    w.style.top='';
+  });
+
+  const firstStep = wrappers[0].querySelector('.step');
+  if(!firstStep) return;
+
+  const cardW = firstStep.offsetWidth;
+  const gapX = 40;
+  const gapY = 40;
+  const innerWidth = container.clientWidth || (cardW + gapX);
+  const cols = Math.max(1, Math.floor((innerWidth + gapX) / (cardW + gapX)));
+
+  const heights = wrappers.map(w => w.offsetHeight);
+
+  const rowHeights = [];
+  for(let i=0;i<wrappers.length;i++){
+    const r = Math.floor(i / cols);
+    if(!rowHeights[r]) rowHeights[r]=0;
+    rowHeights[r] = Math.max(rowHeights[r], heights[i]);
+  }
+  const totalRows = rowHeights.length;
+
+  let y = 0;
+  for(let r=0;r<totalRows;r++){
+    const dirRight = r % 2 === 0;
+    const rowStartIndex = r*cols;
+    const rowEndIndex = Math.min(rowStartIndex+cols, wrappers.length);
+    const itemsInRow = rowEndIndex - rowStartIndex;
+    const rowWidth = itemsInRow*cardW + (itemsInRow-1)*gapX;
+    const baseX = Math.max(0, (innerWidth - rowWidth)/2);
+
+    for(let k=rowStartIndex;k<rowEndIndex;k++){
+      const wrap = wrappers[k];
+      const idxInRow = k - rowStartIndex;
+      const colInRow = dirRight ? idxInRow : (itemsInRow-1-idxInRow);
+      const left = baseX + colInRow * (cardW + gapX);
+
+      wrap.style.position='absolute';
+      wrap.style.left = left + 'px';
+      wrap.style.top  = y + 'px';
+
+      const step = wrap.querySelector('.step');
+      if(step){
+        step.dataset.row = r;
+        step.dataset.rowDir = dirRight ? '1' : '-1';
+      }
+    }
+    y += rowHeights[r] + gapY;
+  }
+
+  container.style.height = y + 20 + 'px';
+}
+function layoutAllSteps(){
+  document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
+}
+
+/* ===== Dibujo de flechas ===== */
+function drawFlowForSteps(container){
+  const steps = Array.from(container.querySelectorAll('.step'));
+  if(!steps.length) return;
+
+  // limpiar etiqueta META previa
+  steps.forEach(s=>s.classList.remove('is-meta-step'));
+
+  const old = container.querySelector('.flow-svg');
+  if(old) old.remove();
+
+  const cRect = container.getBoundingClientRect();
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS,'svg');
+  svg.classList.add('flow-svg');
+  svg.setAttribute('viewBox',`0 0 ${cRect.width} ${cRect.height}`);
+
+  const defs=document.createElementNS(svgNS,'defs');
+  const markerSmall=document.createElementNS(svgNS,'marker');
+  markerSmall.setAttribute('id','arrowHead');
+  markerSmall.setAttribute('markerWidth','7');
+  markerSmall.setAttribute('markerHeight','7');
+  markerSmall.setAttribute('refX','6');
+  markerSmall.setAttribute('refY','3.5');
+  markerSmall.setAttribute('orient','auto');
+  markerSmall.setAttribute('markerUnits','strokeWidth');
+  const headSmall=document.createElementNS(svgNS,'path');
+  headSmall.setAttribute('d','M0,0 L7,3.5 L0,7 Z');
+  headSmall.setAttribute('fill','#cbd5e1');
+  markerSmall.appendChild(headSmall);
+  defs.appendChild(markerSmall);
+  svg.appendChild(defs);
+
+  const rects = steps.map(s => s.getBoundingClientRect());
+
+  // marcar último paso con etiqueta META
+  const lastStepEl = steps[steps.length-1];
+  lastStepEl.classList.add('is-meta-step');
+
+  function addPath(d){
+    const path=document.createElementNS(svgNS,'path');
+    path.setAttribute('d',d);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','#cbd5e1');
+    path.setAttribute('stroke-width','3');
+    path.setAttribute('marker-end','url(#arrowHead)');
+    svg.appendChild(path);
+  }
+
+  function anchor(rect, side){
+    const xLeft = rect.left - cRect.left;
+    const xRight = rect.right - cRect.left;
+    const yTop = rect.top - cRect.top;
+    const yBottom = rect.bottom - cRect.top;
+    const yMid = (yTop + yBottom)/2;
+    const xMid = (xLeft + xRight)/2;
+    switch(side){
+      case 'left': return {x:xLeft,y:yMid};
+      case 'right': return {x:xRight,y:yMid};
+      case 'top': return {x:xMid,y:yTop};
+      case 'bottom': return {x:xMid,y:yBottom};
+    }
+  }
+  function getBranchesRectForStep(stepEl){
+    if(!stepEl || !stepEl.parentElement) return null;
+    const br = stepEl.parentElement.querySelector('.branches:not(.hide)');
+    return br ? br.getBoundingClientRect() : null;
+  }
+
+  /* conexiones entre pasos */
+  for(let i=0;i<rects.length-1;i++){
+    const a = rects[i];
+    const b = rects[i+1];
+    const stepA = steps[i];
+    const stepB = steps[i+1];
+    const rowA = parseInt(stepA.dataset.row || '0',10);
+    const rowB = parseInt(stepB.dataset.row || '0',10);
+
+    let d;
+
+    if(rowA === rowB){
+      // Misma fila: flecha lateral limpia
+      let start,end;
+      if(a.left < b.left){
+        start = anchor(a,'right');
+        end   = anchor(b,'left');
+      }else{
+        start = anchor(a,'left');
+        end   = anchor(b,'right');
+      }
+      if(Math.abs(start.y - end.y) < 8){
+        d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+      }else{
+        const midY = (start.y + end.y) / 2;
+        d = `M ${start.x} ${start.y}
+             L ${start.x} ${midY}
+             L ${end.x} ${midY}
+             L ${end.x} ${end.y}`;
+      }
+    }else{
+      // Cambio de fila: flecha desde mitad inferior, rodeando caja SÍ/NO si existe
+      const bottomA = anchor(a,'bottom');
+      const topB    = anchor(b,'top');
+      const brRect  = getBranchesRectForStep(stepA);
+
+      const start = {x:bottomA.x, y:bottomA.y};
+
+      let yDown = bottomA.y + 16;
+      if(brRect){
+        const brBottom = brRect.bottom - cRect.top;
+        if(brBottom + 16 > yDown) yDown = brBottom + 16;
+      }
+
+      let yUp = topB.y - 16;
+
+      const allLefts  = rects.map(r => r.left - cRect.left);
+      const allRights = rects.map(r => r.right - cRect.left);
+      const minX = Math.min.apply(null,allLefts);
+      const maxX = Math.max.apply(null,allRights);
+      let corridorX = start.x - 80;
+      if(corridorX < minX - 40){
+        corridorX = minX - 40;
+      }
+      if(corridorX < 10){
+        corridorX = maxX + 40;
+      }
+
+      d = `M ${start.x} ${start.y}
+           L ${start.x} ${yDown}
+           L ${corridorX} ${yDown}
+           L ${corridorX} ${yUp}
+           L ${topB.x} ${yUp}
+           L ${topB.x} ${topB.y}`;
+    }
+    addPath(d);
+  }
+
+  container.appendChild(svg);
+}
+function drawAllFlows(){
+  document.querySelectorAll('.steps').forEach(drawFlowForSteps);
+}
+
 /* ===== Si / No ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
@@ -666,20 +830,8 @@ function branchBox(p,m,st,kind,idx){
   const label=document.createElement('div'); label.className='bh-label'; label.textContent=isYes?'SÍ':'NO';
   const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
   const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
-  add.onclick=()=>{
-    st._openBranches=true;
-    pushPoint(arr);
-    save();
-    renderModules();
-  };
-  flag.onclick=()=>{
-    st._openBranches=true;
-    openProcPicker(pid=>{
-      st[kind+'Link']={pid};
-      save();
-      renderModules();
-    });
-  };
+  add.onclick=()=>{ st._openBranches=true; pushPoint(arr); save(); renderModules(); };
+  flag.onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
   top.appendChild(label); top.appendChild(add); top.appendChild(flag);
 
   if(st[kind+'Link']?.pid){
@@ -693,22 +845,49 @@ function branchBox(p,m,st,kind,idx){
   wrap.appendChild(top);
 
   const list=document.createElement('div'); list.className='plist';
+
+  /* puntos principales */
   arr.forEach((pt,i)=>{
     const li=document.createElement('div'); li.className='point';
     const num=`${idx+1}.${i+1}`;
-    li.innerHTML=`<span class="num">${num}</span>
-      <input class="pt-input" placeholder="Escribe…" value="${pt.text||''}">
-      <button class="p-mini" title="Subpunto">＋</button>
-      <button class="p-mini" title="Bandera">🚩</button>
-      <button class="p-mini" title="Borrar">🗑</button>`;
-    li.querySelector('.pt-input').oninput=e=>{ pt.text=e.target.value; save(); };
-    li.querySelectorAll('.p-mini')[0].onclick=()=>{
+
+    const numSpan=document.createElement('span');
+    numSpan.className='num';
+    numSpan.textContent=num;
+
+    const input=document.createElement('input');
+    input.className='pt-input';
+    input.placeholder='Escribe…';
+    input.value=pt.text||'';
+    input.oninput=e=>{ pt.text=e.target.value; save(); };
+
+    const actions=document.createElement('div');
+    actions.className='p-actions';
+
+    const toggle=document.createElement('button');
+    toggle.className='p-mini p-toggle';
+    toggle.title='Más opciones';
+    toggle.textContent='＋';
+
+    const extra=document.createElement('div');
+    extra.className='p-extra hide';
+
+    const bSub=document.createElement('button');
+    bSub.className='p-mini';
+    bSub.title='Subpunto';
+    bSub.textContent='＋';
+    bSub.onclick=()=>{
       st._openBranches=true;
       pushSubPoint(pt);
       save();
       renderModules();
     };
-    li.querySelectorAll('.p-mini')[1].onclick=()=>{
+
+    const bFlag=document.createElement('button');
+    bFlag.className='p-mini';
+    bFlag.title='Bandera';
+    bFlag.textContent='🚩';
+    bFlag.onclick=()=>{
       st._openBranches=true;
       openProcPicker(pid=>{
         pt.link={pid};
@@ -716,12 +895,33 @@ function branchBox(p,m,st,kind,idx){
         renderModules();
       });
     };
-    li.querySelectorAll('.p-mini')[2].onclick=()=>{
+
+    const bDel=document.createElement('button');
+    bDel.className='p-mini';
+    bDel.title='Borrar';
+    bDel.textContent='🗑';
+    bDel.onclick=()=>{
       st._openBranches=true;
       delFromArray(arr,pt.id);
       save();
       renderModules();
     };
+
+    extra.appendChild(bSub);
+    extra.appendChild(bFlag);
+    extra.appendChild(bDel);
+
+    toggle.onclick=()=>{
+      st._openBranches=true;
+      extra.classList.toggle('hide');
+    };
+
+    actions.appendChild(toggle);
+    actions.appendChild(extra);
+
+    li.appendChild(numSpan);
+    li.appendChild(input);
+    li.appendChild(actions);
 
     if(pt.link?.pid){
       const dest=state.processes.find(x=>x.id===pt.link.pid);
@@ -732,16 +932,40 @@ function branchBox(p,m,st,kind,idx){
       }
     }
 
+    list.appendChild(li);
+
+    /* subpuntos */
     const kids=document.createElement('div'); kids.className='children';
     pt.children.forEach((ch,j)=>{
       const cli=document.createElement('div'); cli.className='point';
       const cnum=`${num}.${j+1}`;
-      cli.innerHTML=`<span class="num">${cnum}</span>
-        <input class="pt-input" placeholder="Subpunto…" value="${ch.text||''}">
-        <button class="p-mini" title="Bandera">🚩</button>
-        <button class="p-mini" title="Borrar">🗑</button>`;
-      cli.querySelector('.pt-input').oninput=e=>{ ch.text=e.target.value; save(); };
-      cli.querySelectorAll('.p-mini')[0].onclick=()=>{
+
+      const cNumSpan=document.createElement('span');
+      cNumSpan.className='num';
+      cNumSpan.textContent=cnum;
+
+      const cInput=document.createElement('input');
+      cInput.className='pt-input';
+      cInput.placeholder='Subpunto…';
+      cInput.value=ch.text||'';
+      cInput.oninput=e=>{ ch.text=e.target.value; save(); };
+
+      const cActions=document.createElement('div');
+      cActions.className='p-actions';
+
+      const cToggle=document.createElement('button');
+      cToggle.className='p-mini p-toggle';
+      cToggle.title='Más opciones';
+      cToggle.textContent='＋';
+
+      const cExtra=document.createElement('div');
+      cExtra.className='p-extra hide';
+
+      const cbFlag=document.createElement('button');
+      cbFlag.className='p-mini';
+      cbFlag.title='Bandera';
+      cbFlag.textContent='🚩';
+      cbFlag.onclick=()=>{
         st._openBranches=true;
         openProcPicker(pid=>{
           ch.link={pid};
@@ -749,7 +973,12 @@ function branchBox(p,m,st,kind,idx){
           renderModules();
         });
       };
-      cli.querySelectorAll('.p-mini')[1].onclick=()=>{
+
+      const cbDel=document.createElement('button');
+      cbDel.className='p-mini';
+      cbDel.title='Borrar';
+      cbDel.textContent='🗑';
+      cbDel.onclick=()=>{
         st._openBranches=true;
         const k=pt.children.indexOf(ch);
         if(k>-1){
@@ -759,6 +988,21 @@ function branchBox(p,m,st,kind,idx){
         }
       };
 
+      cExtra.appendChild(cbFlag);
+      cExtra.appendChild(cbDel);
+
+      cToggle.onclick=()=>{
+        st._openBranches=true;
+        cExtra.classList.toggle('hide');
+      };
+
+      cActions.appendChild(cToggle);
+      cActions.appendChild(cExtra);
+
+      cli.appendChild(cNumSpan);
+      cli.appendChild(cInput);
+      cli.appendChild(cActions);
+
       if(ch.link?.pid){
         const dest=state.processes.find(x=>x.id===ch.link.pid);
         if(dest){
@@ -766,15 +1010,16 @@ function branchBox(p,m,st,kind,idx){
           cli.appendChild(cc);
         }
       }
+
       kids.appendChild(cli);
     });
 
-    list.appendChild(li); list.appendChild(kids);
+    list.appendChild(kids);
   });
+
   wrap.appendChild(list);
   return wrap;
 }
-
 function stepRow(p,m,st,index){
   const row=document.createElement('div');
   const sc=document.createElement('div'); sc.className='step';
@@ -794,16 +1039,8 @@ function stepRow(p,m,st,index){
   });
 
   sc.querySelector('.title').oninput=e=>{ st.title=e.target.value; save(); };
-  sc.querySelectorAll('.mini')[2].onclick=()=>{
-    m.steps.splice(index,1);
-    save();
-    renderModules();
-  };
-  sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{
-    st.link={pid};
-    save();
-    renderModules();
-  });
+  sc.querySelectorAll('.mini')[2].onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
+  sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
 
   const branchesWrapper=document.createElement('div');
   branchesWrapper.className='branches'+(st._openBranches?'':' hide');
@@ -814,11 +1051,11 @@ function stepRow(p,m,st,index){
   branchesInner.appendChild(branchBox(p,m,st,'yes',index));
   branchesWrapper.appendChild(branchesInner);
 
-  sc.querySelectorAll('.mini')[1].onclick=()=>{
-    st._openBranches=!st._openBranches;
-    save();
-    toggleBlock(branchesWrapper,st._openBranches);
-    requestAnimationFrame(updateMetaSteps);
+  sc.querySelectorAll('.mini')[1].onclick=()=>{ 
+    st._openBranches=!st._openBranches; 
+    save(); 
+    toggleBlock(branchesWrapper,st._openBranches); 
+    requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
   };
 
   row.appendChild(sc);
@@ -827,9 +1064,7 @@ function stepRow(p,m,st,index){
     const dest=state.processes.find(x=>x.id===st.link.pid);
     if(dest){
       const chip=document.createElement('div');
-      chip.className='chip';
-      chip.style.background=dest.color;
-      chip.style.margin='4px 0 0 54px';
+      chip.className='chip'; chip.style.background=dest.color; chip.style.margin='4px 0 0 54px';
       chip.innerHTML=`→ <small>Ir al proceso:</small> <strong>${dest.name}</strong>`;
       row.appendChild(chip);
     }
@@ -856,20 +1091,9 @@ function modCard(p,m){
     <button class="pill" data-act="del">–</button>`;
   const titleEl=head.querySelector('.mod-title');
   titleEl.oninput=e=>{ m.title=e.target.value; save(); };
-  titleEl.ondblclick=()=>{
-    m._openDetail=!m._openDetail;
-    toggleBlock(det,m._openDetail);
-    if(m._openDetail){
-      setTimeout(()=>det.querySelector('textarea').focus(),0);
-    }
-    save();
-  };
+  titleEl.ondblclick=()=>{ m._openDetail=!m._openDetail; toggleBlock(det,m._openDetail); if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
   head.querySelector('select').onchange=e=>{ m.responsable=e.target.value; save(); };
-  head.querySelector('[data-act="add-step"]').onclick=()=>{
-    m.steps.push(makeStep());
-    save();
-    renderModules();
-  };
+  head.querySelector('[data-act="add-step"]').onclick=()=>{ m.steps.push(makeStep()); save(); renderModules(); };
   head.querySelector('[data-act="toggle-detail"]').onclick=(ev)=>{
     m._openDetail=!m._openDetail;
     ev.currentTarget.setAttribute('aria-expanded', m._openDetail?'true':'false');
@@ -877,21 +1101,8 @@ function modCard(p,m){
     if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0); }
     save();
   };
-  head.querySelector('[data-act="close"]').onclick=()=>{
-    m.completed=!m.completed;
-    save();
-    renderModules();
-  };
-  head.querySelector('[data-act="del"]').onclick=()=>{
-    if(confirm('¿Eliminar subproceso?')){
-      const i=p.modules.findIndex(x=>x.id===m.id);
-      if(i>-1){
-        p.modules.splice(i,1);
-        save();
-        renderModules();
-      }
-    }
-  };
+  head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
+  head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
   card.appendChild(head);
 
   const det=document.createElement('div');
@@ -914,24 +1125,13 @@ function modCard(p,m){
   return card;
 }
 
-/* ===== Marca META (último paso) ===== */
-function updateMetaSteps(){
-  document.querySelectorAll('.steps').forEach(container=>{
-    const steps = Array.from(container.querySelectorAll('.step'));
-    steps.forEach(s=>s.classList.remove('is-meta-step'));
-    if(steps.length){
-      steps[steps.length-1].classList.add('is-meta-step');
-    }
-  });
-}
-
 /* ===== Render derecha ===== */
 function renderModules(){
   const box=document.getElementById('modules'); box.innerHTML='';
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
   p.modules.forEach(m=> box.appendChild(modCard(p,m)));
 
-  requestAnimationFrame(updateMetaSteps);
+  requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
 }
 
 /* ===== Acciones globales ===== */
@@ -965,13 +1165,12 @@ load(); document.getElementById('stamp').textContent='Última actualización '+s
 window.applyPinLockUI = window.applyPinLockUI || function(){};
 render();
 document.getElementById('btnAddProcess').onclick=addProcess;
-document.getElementById('btnAddSubprocPaso').onclick=()=>{
-  const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
-  if(!p){alert('Crea un proceso');return;}
-  createModuleForProcess(p.id,'Nuevo subproceso');
-};
+document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p){alert('Crea un proceso');return;} createModuleForProcess(p.id,'Nuevo subproceso'); };
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
+
+/* Recalcular al redimensionar */
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
 
 /* ===== MATCHERS PARA BUSCADOR ===== */
 function stepMatches(st, q){
@@ -1138,13 +1337,7 @@ document.getElementById('q').addEventListener('input',e=>{
         opened.push(b);
       }
     });
-    const restore=()=>{
-      opened.forEach(h=>{
-        if(h.tagName==='DETAILS') h.open=false;
-        else hideBlock(h);
-      });
-      window.removeEventListener('afterprint',restore);
-    };
+    const restore=()=>{ opened.forEach(h=>{ if(h.tagName==='DETAILS') h.open=false; else hideBlock(h); }); window.removeEventListener('afterprint',restore); };
     window.addEventListener('afterprint',restore);
     window.print();
   }
@@ -1191,16 +1384,16 @@ document.getElementById('q').addEventListener('input',e=>{
       toast('Edición bloqueada');
     }else{
       const v=prompt('Introduce PIN para editar:');
-      if(v===PIN_CODE){
-        sessionStorage.setItem('PA_PIN_OK','1');
-        pinBtn.classList.add('locked');
-        applyPinLockUI();
-        toast('Edición habilitada');
-      }else if(v!==null){
-        toast('PIN incorrecto');
-      }
+      if(v===PIN_CODE){ sessionStorage.setItem('PA_PIN_OK','1'); pinBtn.classList.add('locked'); applyPinLockUI(); toast('Edición habilitada'); }
+      else if(v!==null){ toast('PIN incorrecto'); }
     }
   }
+
+  const pinBtn  = document.getElementById('paPinBtn');
+  const pdfBtn  = document.getElementById('paPdfBtn');
+  const htmlBtn = document.getElementById('paHtmlBtn');
+  const saveBtn = document.getElementById('paSaveCloud');
+  const loadBtn = document.getElementById('paLoadCloud');
 
   pinBtn?.addEventListener('click', togglePin);
   pdfBtn?.addEventListener('click',  printAll);
