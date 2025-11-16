@@ -201,7 +201,7 @@
 
   /* ===== Si / No ===== */
   .branches{
-    margin:8px 0 0 24px;
+    margin:8px 0 0 0;           /* debajo del paso, sin desplazamiento lateral */
     padding:10px 10px 8px;
     border-radius:12px;
     border:1px dashed #cbd5e1;
@@ -209,16 +209,15 @@
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
     z-index:2;
-    max-width:260px;
+    max-width:100%;             /* nunca más ancha que el paso */
   }
   .branches::before{
     content:"";
     position:absolute;
-    top:-12px;
-    left:50%;
-    transform:translateX(-50%);
+    top:-10px;
+    left:24px;                  /* pequeña línea que une con el paso, sin cruzar otras cajas */
     width:0;
-    height:12px;
+    height:10px;
     border-left:2px solid #cbd5e1;
   }
   .branches-inner{
@@ -456,53 +455,10 @@ function layoutStepsSerpentine(container){
   container.style.height = y + 20 + 'px';
 }
 
-/* ===== Posicionamiento de paneles SÍ/NO para que no se solapen ===== */
-function positionBranchesForContainer(container){
-  const cRect = container.getBoundingClientRect();
-  const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
-
-  // quitar transform previo
-  wrappers.forEach(w=>{
-    const br = w.querySelector('.branches:not(.hide)');
-    if(br) br.style.transform = 'none';
-  });
-
-  wrappers.forEach(w=>{
-    const step = w.querySelector('.step');
-    const br   = w.querySelector('.branches:not(.hide)');
-    if(!step || !br) return;
-
-    const stepRect = step.getBoundingClientRect();
-    const brRect   = br.getBoundingClientRect();
-
-    const stepCx = (stepRect.left + stepRect.right)/2 - cRect.left;
-    const halfW  = brRect.width/2;
-
-    const dir = (parseInt(step.dataset.col || '0',10) % 2 === 0) ? -1 : 1; // alternar sentido
-    const delta = 160; // distancia base hacia un lado
-
-    const minCx = halfW + 8;
-    const maxCx = cRect.width - halfW - 8;
-
-    let newCx = stepCx + dir * delta;
-    if(newCx < minCx) newCx = minCx;
-    if(newCx > maxCx) newCx = maxCx;
-
-    const currentCx = (brRect.left + brRect.right)/2 - cRect.left;
-    const offsetX = newCx - currentCx;
-
-    br.style.transform = `translateX(${offsetX}px)`;
-  });
-}
-function positionAllBranches(){
-  document.querySelectorAll('.steps').forEach(positionBranchesForContainer);
-}
-
 function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(container=>{
     layoutStepsSerpentine(container);
   });
-  positionAllBranches();
 }
 
 /* ===== Dibujo de flechas ===== */
