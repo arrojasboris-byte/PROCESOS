@@ -96,7 +96,7 @@
   .steps{
     position:relative;
     display:block;
-    padding:10px 6px 26px;
+    padding:10px 6px 32px;
   }
   .steps > div{
     display:flex;
@@ -143,18 +143,19 @@
     padding:0 2px;
     z-index:1;
   }
+  /* Botón META más grande */
   .steps::after{
     content:"🎯 META";
     position:absolute;
-    right:4px;
-    bottom:0;
-    font-size:11px;
-    font-weight:700;
+    right:10px;
+    bottom:4px;
+    font-size:13px;
+    font-weight:800;
     color:#0f172a;
-    padding:2px 6px;
+    padding:5px 14px;
     border-radius:999px;
-    background:rgba(255,255,255,.9);
-    box-shadow:0 2px 6px rgba(15,23,42,.18);
+    background:rgba(255,255,255,.96);
+    box-shadow:0 3px 8px rgba(15,23,42,.25);
   }
   .step.selected{
     box-shadow:
@@ -199,25 +200,42 @@
     overflow:visible;
     z-index:1;
   }
-  /* Ancla meta desplazada a la izquierda */
   .flow-meta-anchor{
     position:absolute;
     right:130px;
-    bottom:26px;
+    bottom:32px;
     width:1px;
     height:1px;
   }
 
   /* ===== Si / No ===== */
   .branches{
+    margin:8px 0 0 20px;
+    padding:10px 10px 8px;
+    border-radius:12px;
+    border:1px dashed #cbd5e1;
+    background:rgba(255,255,255,.97);
+    box-shadow:0 2px 6px rgba(15,23,42,.1);
+    position:relative;
+  }
+  /* Línea de unión con el paso origen */
+  .branches::before{
+    content:"";
+    position:absolute;
+    top:-12px;
+    left:32px;
+    width:0;
+    height:12px;
+    border-left:2px solid #cbd5e1;
+  }
+
+  .branches-inner{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
-    margin:6px 0 0 54px;
   }
-  .steps > div > .branches{ margin:0 0 0 12px; }
 
-  .branch{background:#fff;border:1px solid #ececec;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
+  .branch{background:#fff;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
   .branch.yes .bh-label{font-size:12px;font-weight:700;opacity:.8}
   .branch.no .bh-label{font-size:14px;font-weight:900}
   .bh-top{display:flex;align-items:center;gap:.35rem;margin-bottom:.35rem}
@@ -461,7 +479,6 @@ function drawFlowForSteps(container){
 
   const defs=document.createElementNS(svgNS,'defs');
 
-  // Flecha normal
   const markerSmall=document.createElementNS(svgNS,'marker');
   markerSmall.setAttribute('id','arrowHead');
   markerSmall.setAttribute('markerWidth','7');
@@ -475,31 +492,16 @@ function drawFlowForSteps(container){
   headSmall.setAttribute('fill','#cbd5e1');
   markerSmall.appendChild(headSmall);
 
-  // Flecha grande hacia META
-  const markerMeta=document.createElementNS(svgNS,'marker');
-  markerMeta.setAttribute('id','arrowHeadMeta');
-  markerMeta.setAttribute('markerWidth','11');
-  markerMeta.setAttribute('markerHeight','11');
-  markerMeta.setAttribute('refX','9');
-  markerMeta.setAttribute('refY','5.5');
-  markerMeta.setAttribute('orient','auto');
-  markerMeta.setAttribute('markerUnits','strokeWidth');
-  const headMeta=document.createElementNS(svgNS,'path');
-  headMeta.setAttribute('d','M0,0 L11,5.5 L0,11 Z');
-  headMeta.setAttribute('fill','#cbd5e1');
-  markerMeta.appendChild(headMeta);
-
   defs.appendChild(markerSmall);
-  defs.appendChild(markerMeta);
   svg.appendChild(defs);
 
-  function addPath(d,isMeta){
+  function addPath(d){
     const path=document.createElementNS(svgNS,'path');
     path.setAttribute('d',d);
     path.setAttribute('fill','none');
     path.setAttribute('stroke','#cbd5e1');
-    path.setAttribute('stroke-width', isMeta ? '4.5' : '3');
-    path.setAttribute('marker-end', isMeta ? 'url(#arrowHeadMeta)' : 'url(#arrowHead)');
+    path.setAttribute('stroke-width','3');
+    path.setAttribute('marker-end','url(#arrowHead)');
     svg.appendChild(path);
   }
 
@@ -529,10 +531,11 @@ function drawFlowForSteps(container){
     const rowA = parseInt(stepA.dataset.row || '0',10);
     const rowB = parseInt(stepB.dataset.row || '0',10);
 
-    let start,end,d;
+    let d;
 
     if(rowA === rowB){
-      // Misma fila
+      // Misma fila izquierda-derecha o derecha-izquierda
+      let start,end;
       if(a.left < b.left){
         start = anchor(a,'right');
         end   = anchor(b,'left');
@@ -550,36 +553,49 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
-      // Cambio de fila: bajada limpia sin cruzar la segunda fila
-      const bottomCenter = anchor(a,'bottom');
-      const topCenter    = anchor(b,'top');
+      // Cambio de fila: la flecha baja por el lateral, nunca por encima del área SÍ/NO
+      const dirA = parseInt(stepA.dataset.rowDir || '1',10);
+      const dirB = parseInt(stepB.dataset.rowDir || '1',10);
 
-      const yStart = bottomCenter.y + 8;
-      const yEnd   = topCenter.y - 8;
-      const midY   = (yStart + yEnd) / 2;
+      const sideA = dirA === 1 ? anchor(a,'right') : anchor(a,'left');
+      const bottomA = anchor(a,'bottom');
+      const start = {
+        x: sideA.x,
+        y: (bottomA.y + sideA.y)/2   // mitad inferior, lateral
+      };
 
-      d = `M ${bottomCenter.x} ${bottomCenter.y}
-           L ${bottomCenter.x} ${yStart}
-           L ${topCenter.x} ${midY}
-           L ${topCenter.x} ${yEnd}
-           L ${topCenter.x} ${topCenter.y}`;
+      const sideB = dirB === 1 ? anchor(b,'left') : anchor(b,'right');
+      const topB = anchor(b,'top');
+      const target = {
+        x: sideB.x,
+        y: (topB.y + sideB.y)/2
+      };
+
+      const corridorX = start.x + (dirA * 32); // se despega un poco del lateral
+      const midY = (start.y + target.y) / 2;
+
+      d = `M ${start.x} ${start.y}
+           L ${corridorX} ${start.y}
+           L ${corridorX} ${midY}
+           L ${target.x} ${midY}
+           L ${target.x} ${target.y}`;
     }
-    addPath(d,false);
+    addPath(d);
   }
 
-  // Último paso → META (flecha grande)
+  // Último paso → META (flecha normal)
   const metaAnchor = container.querySelector('.flow-meta-anchor');
   if(metaAnchor && rects.length){
     const lastRect = rects[rects.length-1];
     const lastStep = steps[steps.length-1];
     const dirLast  = parseInt(lastStep.dataset.rowDir || '1',10);
     const fromSide = dirLast === 1 ? 'right' : 'left';
-    const baseSide = anchor(lastRect, fromSide);
-
-    const hL = lastRect.height || (lastRect.bottom - lastRect.top);
-    const lowerMidY = lastRect.bottom - cRect.top - hL*0.25;
-
-    const start = {x: baseSide.x, y: lowerMidY};
+    const sideBase = anchor(lastRect, fromSide);
+    const bottomLast = anchor(lastRect,'bottom');
+    const start = {
+      x: sideBase.x,
+      y: (bottomLast.y + sideBase.y)/2
+    };
 
     const mRect = metaAnchor.getBoundingClientRect();
     const metaPoint = {
@@ -587,20 +603,19 @@ function drawFlowForSteps(container){
       y: mRect.top - cRect.top + 2
     };
 
-    // Dejar un pequeño margen para no tocar el botón META
     const metaGap = 10;
     const endX = metaPoint.x - metaGap;
     const endY = metaPoint.y;
 
-    const corridorX = endX; // horizontal limpio hacia META
-    const midY = (start.y + endY) / 2;
+    const corridorX = start.x + (dirLast * 32);
+    const midY = (start.y + endY)/2;
 
     const d = `M ${start.x} ${start.y}
                L ${corridorX} ${start.y}
                L ${corridorX} ${midY}
                L ${endX} ${midY}
                L ${endX} ${endY}`;
-    addPath(d,true);
+    addPath(d);
   }
 
   container.appendChild(svg);
@@ -705,8 +720,21 @@ function stepRow(p,m,st,index){
   sc.querySelectorAll('.mini')[2].onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
   sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
 
-  const branches=document.createElement('div'); branches.className='branches'+(st._openBranches?'':' hide');
-  sc.querySelectorAll('.mini')[1].onclick=()=>{ st._openBranches=!st._openBranches; save(); toggleBlock(branches,st._openBranches); };
+  const branchesWrapper=document.createElement('div'); 
+  branchesWrapper.className='branches'+(st._openBranches?'':' hide');
+
+  const branchesInner=document.createElement('div');
+  branchesInner.className='branches-inner';
+  branchesInner.appendChild(branchBox(p,m,st,'no',index));
+  branchesInner.appendChild(branchBox(p,m,st,'yes',index));
+  branchesWrapper.appendChild(branchesInner);
+
+  sc.querySelectorAll('.mini')[1].onclick=()=>{ 
+    st._openBranches=!st._openBranches; 
+    save(); 
+    toggleBlock(branchesWrapper,st._openBranches); 
+    requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
+  };
 
   row.appendChild(sc);
 
@@ -720,9 +748,7 @@ function stepRow(p,m,st,index){
     }
   }
 
-  branches.appendChild(branchBox(p,m,st,'no',index));
-  branches.appendChild(branchBox(p,m,st,'yes',index));
-  row.appendChild(branches);
+  row.appendChild(branchesWrapper);
   return row;
 }
 
