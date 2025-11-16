@@ -386,7 +386,7 @@
     font-size:11px;
   }
 
-  /* ===== SÍ / NO (compacto y horizontal) ===== */
+  /* ===== SÍ / NO compacto y horizontal ===== */
   .branches{
     margin:6px 0 0 18px;
     padding:4px 6px;
@@ -442,7 +442,6 @@
     min-width:110px;
     font-size:10px;
   }
-
   .p-actions{
     display:flex;
     align-items:center;
@@ -650,11 +649,12 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina (3 columnas) con altura extra si hay SÍ/NO ===== */
+/* ===== Layout serpentina: 3 columnas, y pasos con SÍ/NO ocupan fila completa ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
 
+  // reset
   wrappers.forEach(w=>{
     w.style.position='';
     w.style.left='';
@@ -667,56 +667,63 @@ function layoutStepsSerpentine(container){
   const cardW = firstStep.offsetWidth || 210;
   const gapX = 34;
   const gapY = 34;
+  const maxCols = 3;
 
-  const cols = Math.min(3, wrappers.length);
-  const innerWidth = container.clientWidth || (cols*cardW + (cols-1)*gapX);
-
+  // alturas actuales de cada wrapper (con detalle + SÍ/NO)
   const heights = wrappers.map(w => w.offsetHeight);
 
-  const rowCount = Math.ceil(wrappers.length / cols);
-  const rowHeights = new Array(rowCount).fill(0);
-  const rowHasBranches = new Array(rowCount).fill(false);
-
-  for(let i=0;i<wrappers.length;i++){
-    const r = Math.floor(i / cols);
-    rowHeights[r] = Math.max(rowHeights[r], heights[i]);
-    if(wrappers[i].querySelector('.branches:not(.hide)')){
-      rowHasBranches[r] = true;
+  // construir filas: si un wrapper tiene SÍ/NO visible, cierra fila
+  const rows = [];
+  let current = [];
+  wrappers.forEach((w,idx)=>{
+    const hasBranches = !!w.querySelector('.branches:not(.hide)');
+    current.push(idx);
+    if(hasBranches || current.length===maxCols){
+      rows.push(current);
+      current=[];
     }
-  }
+  });
+  if(current.length) rows.push(current);
 
-  // colchón generoso para filas con SÍ/NO → nunca toca los pasos de abajo
-  for(let r=0;r<rowCount;r++){
-    if(rowHasBranches[r]) rowHeights[r] += 80;
-  }
+  const rowHeights = [];
+  rows.forEach((idxs,r)=>{
+    let maxH = 0;
+    let hasBranchesRow = false;
+    idxs.forEach(i=>{
+      if(heights[i]>maxH) maxH = heights[i];
+      if(wrappers[i].querySelector('.branches:not(.hide)')) hasBranchesRow=true;
+    });
+    // colchón vertical extra si hay SÍ/NO en esa fila
+    rowHeights[r] = maxH + (hasBranchesRow ? 80 : 0);
+  });
 
   let y = 0;
-  for(let r=0;r<rowCount;r++){
-    const dirRight = r % 2 === 0;
-    const rowStartIndex = r*cols;
-    const rowEndIndex = Math.min(rowStartIndex+cols, wrappers.length);
-    const itemsInRow = rowEndIndex - rowStartIndex;
-    const rowWidth = itemsInRow*cardW + (itemsInRow-1)*gapX;
-    const baseX = Math.max(0, (innerWidth - rowWidth)/2);
+  const innerWidth = container.clientWidth || (maxCols*cardW + (maxCols-1)*gapX);
 
-    for(let k=rowStartIndex;k<rowEndIndex;k++){
-      const wrap = wrappers[k];
-      const idxInRow = k - rowStartIndex;
-      const colInRow = dirRight ? idxInRow : (itemsInRow-1-idxInRow);
-      const left = baseX + colInRow * (cardW + gapX);
+  rows.forEach((idxs,r)=>{
+    const dirRight = r%2===0;
+    const itemsInRow = idxs.length;
+    const rowWidth = itemsInRow*cardW + (itemsInRow-1)*gapX;
+    const baseX = Math.max(0,(innerWidth-rowWidth)/2);
+
+    idxs.forEach((idx,pos)=>{
+      const wrap = wrappers[idx];
+      const colInRow = dirRight ? pos : (itemsInRow-1-pos);
+      const left = baseX + colInRow*(cardW+gapX);
 
       wrap.style.position='absolute';
-      wrap.style.left = left + 'px';
-      wrap.style.top  = y + 'px';
+      wrap.style.left = left+'px';
+      wrap.style.top  = y+'px';
 
       const step = wrap.querySelector('.step');
       if(step){
         step.dataset.row = r;
-        step.dataset.rowDir = dirRight ? '1' : '-1';
+        step.dataset.rowDir = dirRight ? '1':'-1';
       }
-    }
+    });
+
     y += rowHeights[r] + gapY;
-  }
+  });
 
   container.style.height = y + 18 + 'px';
 }
@@ -785,6 +792,7 @@ function drawFlowForSteps(container){
       case 'bottom': return {x:xMid,y:yBottom};
     }
   }
+
   function getBranchesRectForStep(stepEl){
     if(!stepEl || !stepEl.parentElement) return null;
     const br = stepEl.parentElement.querySelector('.branches:not(.hide)');
@@ -862,7 +870,7 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
-/* ===== SÍ / NO (JS) ===== */
+/* ===== SÍ / NO (lógica) ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
