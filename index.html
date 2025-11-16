@@ -27,8 +27,8 @@
     align-items:center;
     gap:.75rem;
     padding:.65rem .9rem .75rem;
-    background:var(--grad);
-    color:#fff;
+    background:#e5e7eb;           /* gris */
+    color:#111827;                /* texto negro */
     box-shadow:var(--shadow)
   }
   .title{
@@ -38,24 +38,53 @@
     font-weight:900;
     font-size:22px;
     flex:1 1 auto;
+    color:#111827;                /* título negro */
   }
   .title .ear{font-size:30px;line-height:1;display:inline-block;transform:translateY(2px)}
-  .btn3d{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border:0;border-radius:9999px;color:#fff;
-    background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.28),0 12px 24px rgba(0,0,0,.2);cursor:pointer}
+  .btn3d{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    padding:.6rem 1rem;
+    border:0;
+    border-radius:9999px;
+    color:#f97373;                /* texto / iconos rojo suave */
+    background:#111827;           /* botón negro */
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 3px 0 rgba(0,0,0,.32),0 12px 24px rgba(0,0,0,.35);
+    cursor:pointer
+  }
   .btn3d:active{transform:translateY(1px)}
   .bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
-  .stamp{color:#fff;opacity:.9;font-size:12px;background:rgba(255,255,255,.14);border-radius:9999px;padding:.35rem .75rem}
+  .stamp{
+    color:#111827;
+    opacity:.9;
+    font-size:12px;
+    background:#f9fafb;
+    border-radius:9999px;
+    padding:.35rem .75rem
+  }
   .bar-right .btn3d svg{width:14px;height:14px}
+  /* iconos rojos en cabecera */
+  .topbar svg path{stroke:#ef4444!important;}
+
   .search{
     flex:1 1 100%;
     display:flex;
     align-items:center;
-    background:rgba(255,255,255,.18);
+    background:#ffffff;
+    border:1px solid #d1d5db;
     padding:.4rem .6rem;
     border-radius:9999px;
     margin-top:.3rem;
   }
-  .search input{width:100%;border:0;background:transparent;outline:0;color:#fff;font-weight:600}
+  .search input{
+    width:100%;
+    border:0;
+    background:transparent;
+    outline:0;
+    color:#111827;
+    font-weight:600
+  }
 
   /* ===== Layout ===== */
   .wrap{display:grid;grid-template-columns:360px 1fr;gap:14px;padding:14px;min-height:calc(100dvh - 64px)}
@@ -90,12 +119,12 @@
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos (cajas pequeñas 3D) ===== */
+  /* ===== Pasos (circuito rectangular) ===== */
   .steps{
     position:relative;
-    z-index:0;            /* contexto para flechas detrás */
+    z-index:0;
     display:block;
-    padding:10px 6px 20px;
+    padding:10px 6px 16px;
   }
   .steps > div{
     display:flex;
@@ -105,19 +134,19 @@
   }
   .step{
     position:relative;
-    z-index:2;            /* por encima de las flechas */
+    z-index:2;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
     background:linear-gradient(180deg,#ffffff 0%,#f3f4f6 100%);
     border-radius:14px;
-    padding:7px 9px 9px;
+    padding:8px 10px 10px;
     box-shadow:
       inset 0 1px 0 #fff,
       0 2px 0 rgba(15,23,42,.22),
       0 8px 16px rgba(15,23,42,.14);
-    width:180px;
-    min-height:60px;
+    width:220px;
+    min-height:72px;
     border:1px solid rgba(148,163,184,.7);
   }
   .bubble{
@@ -170,19 +199,20 @@
   }
   .mini:active{transform:translateY(1px)}
 
-  /* Etiqueta META en el último paso */
+  /* Etiqueta META en esquina superior derecha del último paso */
   .step.is-meta-step::after{
     content:"🎯 META";
     position:absolute;
-    right:6px;
-    bottom:6px;
+    top:4px;
+    right:8px;
     font-size:11px;
     font-weight:800;
     color:#0f172a;
     padding:2px 8px;
     border-radius:999px;
-    background:rgba(255,255,255,.97);
-    box-shadow:0 2px 4px rgba(15,23,42,.25);
+    background:rgba(255,255,255,.98);
+    box-shadow:0 2px 4px rgba(15,23,42,.3);
+    pointer-events:none;
   }
 
   /* Flechas SVG (detrás de las cajas) */
@@ -193,35 +223,35 @@
     height:100%;
     pointer-events:none;
     overflow:visible;
-    z-index:0;       /* por detrás de step y branches */
+    z-index:0;
   }
 
   .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
 
   /* ===== Si / No ===== */
   .branches{
-    margin:8px 0 0 24px;
+    margin:8px 0 0 0;
     padding:10px 10px 8px;
     border-radius:12px;
     border:1px dashed #cbd5e1;
     background:rgba(255,255,255,.97);
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
-    z-index:2;        /* panel SI/NO por encima de flechas */
-    max-width:260px;
+    z-index:2;
+    max-width:100%;
   }
   .branches::before{
     content:"";
     position:absolute;
-    top:-12px;
-    left:40px;
+    top:-10px;
+    left:24px;
     width:0;
-    height:12px;
+    height:10px;
     border-left:2px solid #cbd5e1;
   }
   .branches-inner{
     display:flex;
-    flex-direction:column;
+    flex-direction:column;   /* NO arriba, SÍ debajo */
     gap:8px;
   }
   .branch{background:#fff;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
@@ -260,23 +290,33 @@
 
     <div class="bar-right">
       <button id="paPinBtn" class="btn3d pa-tools-hide" title="PIN (AR4321)">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 8V7a5 5 0 10-10 0v1M6 8h12v12H6V8z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M17 8V7a5 5 0 10-10 0v1M6 8h12v12H6V8z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         PIN
       </button>
       <button id="paPdfBtn" class="btn3d pa-tools-hide" title="Imprimir / Guardar PDF">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9V4h12v5M6 18h12M6 14h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 9V4h12v5M6 18h12M6 14h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         PDF
       </button>
       <button id="paHtmlBtn" class="btn3d pa-tools-hide" title="Descargar HTML idéntico">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         HTML
       </button>
       <button id="paSaveCloud" class="btn3d pa-tools-hide" title="Guardar copia en nube (local)">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 18a4 4 0 110-8 5 5 0 119.9 1H18a3 3 0 110 6H7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M7 18a4 4 0 110-8 5 5 0 119.9 1H18a3 3 0 110 6H7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         Nube
       </button>
       <button id="paLoadCloud" class="btn3d pa-tools-hide" title="Abrir copia guardada">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6M20 8a8 8 0 10-3.17 6.34" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 4v6h6M20 20v-6h-6M20 8a8 8 0 10-3.17 6.34" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         Actualizar
       </button>
 
@@ -374,7 +414,7 @@ function openProcPicker(onPick){
   const list=document.getElementById('procModalList'); list.innerHTML='';
   state.processes.forEach(p=>{
     const b=document.createElement('button');
-    b.className='btn3d'; b.style.cssText='justify-content:flex-start;color:#111;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06);border-radius:12px';
+    b.className='btn3d'; b.style.cssText='justify-content:flex-start;color:#f97373;background:#111827;box-shadow:0 1px 0 rgba(0,0,0,.3);border-radius:12px';
     b.innerHTML=`<span class="dot" style="background:${p.color}"></span> <strong>${p.name}</strong>`;
     b.onclick=()=>{ modal.classList.add('hide'); onPick(p.id); };
     list.appendChild(b);
@@ -389,7 +429,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina ===== */
+/* ===== Layout serpentina rectangular (4 columnas) ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -400,19 +440,23 @@ function layoutStepsSerpentine(container){
     w.style.top='';
   });
 
-  const firstStep = wrappers[0].querySelector('.step');
-  if(!firstStep) return;
+  let cardW = 0;
+  wrappers.forEach(w=>{
+    const wWidth = w.offsetWidth;
+    if(wWidth > cardW) cardW = wWidth;
+  });
+  if(cardW <= 0) return;
 
-  const cardW = firstStep.offsetWidth;
-  const gapX = 24;
+  const gapX = 32;
   const gapY = 40;
-  const innerWidth = container.clientWidth || (cardW + gapX);
-  const cols = Math.max(1, Math.floor((innerWidth + gapX) / (cardW + gapX)));
 
   const heights = wrappers.map(w => w.offsetHeight);
 
   const rowHeights = [];
   const rowsIndex = [];
+
+  const cols = Math.min(wrappers.length, 4);
+
   for(let i=0;i<wrappers.length;i++){
     const r = Math.floor(i / cols);
     rowsIndex[i] = r;
@@ -440,6 +484,8 @@ function layoutStepsSerpentine(container){
       if(step){
         step.dataset.row = r;
         step.dataset.rowDir = dirRight ? '1' : '-1';
+        step.dataset.col = col;
+        step.dataset.cols = cols;
       }
     }
     y += rowHeights[r] + gapY;
@@ -447,8 +493,11 @@ function layoutStepsSerpentine(container){
 
   container.style.height = y + 20 + 'px';
 }
+
 function layoutAllSteps(){
-  document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
+  document.querySelectorAll('.steps').forEach(container=>{
+    layoutStepsSerpentine(container);
+  });
 }
 
 /* ===== Dibujo de flechas ===== */
@@ -456,7 +505,6 @@ function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
 
-  // limpiar etiqueta META previa
   steps.forEach(s=>s.classList.remove('is-meta-step'));
 
   const old = container.querySelector('.flow-svg');
@@ -486,7 +534,6 @@ function drawFlowForSteps(container){
 
   const rects = steps.map(s => s.getBoundingClientRect());
 
-  // marcar último paso con etiqueta META
   const lastStepEl = steps[steps.length-1];
   lastStepEl.classList.add('is-meta-step');
 
@@ -520,7 +567,6 @@ function drawFlowForSteps(container){
     return br ? br.getBoundingClientRect() : null;
   }
 
-  /* conexiones entre pasos */
   for(let i=0;i<rects.length-1;i++){
     const a = rects[i];
     const b = rects[i+1];
@@ -532,7 +578,6 @@ function drawFlowForSteps(container){
     let d;
 
     if(rowA === rowB){
-      // Misma fila: flecha lateral limpia
       let start,end;
       if(a.left < b.left){
         start = anchor(a,'right');
@@ -551,7 +596,6 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
-      // Cambio de fila: flecha desde mitad inferior, rodeando caja SÍ/NO si existe
       const bottomA = anchor(a,'bottom');
       const topB    = anchor(b,'top');
       const brRect  = getBranchesRectForStep(stepA);
