@@ -312,7 +312,7 @@
       inset 0 1px 0 #fff,
       0 2px 0 rgba(15,23,42,.22),
       0 7px 14px rgba(15,23,42,.14);
-    width:260px;
+    width:280px;                 /* un poco más ancho para leer mejor */
     min-height:54px;
     border:1px solid rgba(148,163,184,.7);
   }
@@ -401,6 +401,7 @@
     border-radius:10px;
     padding:3px 4px;
     display:flex;
+    flex-wrap:wrap;
     gap:2px;
     box-shadow:0 6px 16px rgba(15,23,42,.7);
     z-index:5;
@@ -464,7 +465,7 @@
     box-shadow:0 1px 4px rgba(15,23,42,.08);
     position:relative;
     z-index:3;
-    max-width:min(520px,100%);
+    max-width:100%;              /* puede usar todo el ancho disponible */
     font-size:10px;
   }
   .branches::before{
@@ -489,7 +490,7 @@
     box-shadow:inset 0 1px 0 #fff;
     flex:1 1 48%;
     max-width:calc(50% - 4px);
-    min-width:200px;
+    min-width:220px;
     position:relative;
   }
   .branch.branch-has-content{
@@ -529,11 +530,11 @@
     font-size:10px;
   }
   .pt-input{
-    flex:1 1 230px;
+    flex:1 1 260px;
     border:1px solid #e6e8ec;
     border-radius:7px;
     padding:.16rem .30rem;
-    min-width:110px;
+    min-width:140px;
     font-size:10px;
   }
   .p-actions{
@@ -784,7 +785,7 @@ function layoutStepsSerpentine(container){
   const firstStep = wrappers[0].querySelector('.step');
   if(!firstStep) return;
 
-  const cardW = firstStep.offsetWidth || 260;
+  const cardW = firstStep.offsetWidth || 280;
   const gapX = 34;
   const gapY = 34;
   const maxCols = 3;
@@ -1047,13 +1048,13 @@ function branchBox(p,m,st,kind,idx){
 
   const list=document.createElement('div'); list.className='plist';
 
-  arr.forEach((pt,i)=>{
+  arr.forEach((pt)=>{
     if(!Array.isArray(pt.children)) pt.children=[];
     const li=document.createElement('div'); li.className='point';
 
     const numSpan=document.createElement('span');
     numSpan.className='num';
-    numSpan.textContent=''; // <-- sin numeración
+    numSpan.textContent=''; // numeración oculta
 
     const input=document.createElement('input');
     input.className='pt-input';
@@ -1142,7 +1143,7 @@ function branchBox(p,m,st,kind,idx){
 
       const cNumSpan=document.createElement('span');
       cNumSpan.className='num';
-      cNumSpan.textContent=''; // <-- sin numeración también en subpuntos
+      cNumSpan.textContent='';
 
       const cInput=document.createElement('input');
       cInput.className='pt-input';
@@ -1222,7 +1223,7 @@ function branchBox(p,m,st,kind,idx){
   return wrap;
 }
 
-/* ===== Paso ===== */
+/* ===== Paso (iconos dentro del lápiz) ===== */
 function stepRow(p,m,st,index){
   const row=document.createElement('div');
 
@@ -1232,10 +1233,6 @@ function stepRow(p,m,st,index){
     <input class="title" value="${st.title}">
     <div class="minis">
       <button class="mini" data-act="menu-toggle" title="Opciones de paso">✏️</button>
-      <button class="mini" data-act="flag-step" title="Bandera paso">🚩</button>
-      <button class="mini" data-act="branches" title="Si / No">❓</button>
-      <button class="mini" data-act="detail" title="Detalle del paso">📝</button>
-      <button class="mini" data-act="delete" title="Eliminar">–</button>
     </div>`;
   sc.style.setProperty('--proc',p.color);
   sc.addEventListener('click', (e)=>{
@@ -1252,8 +1249,11 @@ function stepRow(p,m,st,index){
   menu.className='step-menu hide';
   menu.innerHTML=`
     <button data-act="menu-flag" title="Bandera proceso">🚩</button>
+    <button data-act="menu-branches" title="SÍ / NO">❓</button>
+    <button data-act="menu-detail" title="Detalle del paso">📝</button>
+    <button data-act="menu-delete" title="Eliminar paso">🗑</button>
     <button data-act="menu-link" title="Adjuntar enlace">🔗</button>
-    <button data-act="menu-doc" title="Adjuntar documento">📎</button>
+    <button data-act="menu-doc"  title="Adjuntar documento">📎</button>
   `;
   sc.appendChild(menu);
 
@@ -1262,8 +1262,18 @@ function stepRow(p,m,st,index){
 
   const branchesInner=document.createElement('div');
   branchesInner.className='branches-inner';
-  branchesInner.appendChild(branchBox(p,m,st,'no',index));
-  branchesInner.appendChild(branchBox(p,m,st,'yes',index));
+
+  const yesHas = (st.yes && st.yes.length>0) || !!(st.yesLink && st.yesLink.pid);
+  const noHas  = (st.no  && st.no.length>0)  || !!(st.noLink  && st.noLink.pid);
+
+  if(!yesHas && !noHas){
+    branchesInner.appendChild(branchBox(p,m,st,'no',index));
+    branchesInner.appendChild(branchBox(p,m,st,'yes',index));
+  }else{
+    if(noHas)  branchesInner.appendChild(branchBox(p,m,st,'no',index));
+    if(yesHas) branchesInner.appendChild(branchBox(p,m,st,'yes',index));
+  }
+
   branchesWrapper.appendChild(branchesInner);
 
   const stepDetail=document.createElement('div');
@@ -1276,41 +1286,47 @@ function stepRow(p,m,st,index){
   if(!Array.isArray(st.links)) st.links=[];
   if(!Array.isArray(st.docs))  st.docs=[];
 
-  const miniMenu     = sc.querySelector('[data-act="menu-toggle"]');
-  const miniFlag     = sc.querySelector('[data-act="flag-step"]');
-  const miniBranches = sc.querySelector('[data-act="branches"]');
-  const miniDetail   = sc.querySelector('[data-act="detail"]');
-  const miniDelete   = sc.querySelector('[data-act="delete"]');
+  const miniMenu = sc.querySelector('[data-act="menu-toggle"]');
 
-  miniDelete.onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
-  miniFlag.onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
-  miniBranches.onclick=()=>{ 
-    st._openBranches=!st._openBranches; 
-    save(); 
-    toggleBlock(branchesWrapper,st._openBranches); 
+  function doFlag(){
+    openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
+  }
+  function doBranches(){
+    st._openBranches=!st._openBranches;
+    save();
+    toggleBlock(branchesWrapper,st._openBranches);
     requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
-  };
-  miniDetail.onclick=()=>{
+  }
+  function doDetail(){
     st._openDetailStep = !st._openDetailStep;
     toggleBlock(stepDetail, st._openDetailStep);
     save();
     if(st._openDetailStep){ setTimeout(()=>sdTa.focus(),0); }
     requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
-  };
+  }
+  function doDelete(){
+    m.steps.splice(index,1);
+    save();
+    renderModules();
+  }
 
   miniMenu.onclick=(ev)=>{
     ev.stopPropagation();
     menu.classList.toggle('hide');
   };
 
-  const menuFlag = menu.querySelector('[data-act="menu-flag"]');
-  const menuLink = menu.querySelector('[data-act="menu-link"]');
-  const menuDoc  = menu.querySelector('[data-act="menu-doc"]');
+  const menuFlag     = menu.querySelector('[data-act="menu-flag"]');
+  const menuBranches = menu.querySelector('[data-act="menu-branches"]');
+  const menuDetail   = menu.querySelector('[data-act="menu-detail"]');
+  const menuDelete   = menu.querySelector('[data-act="menu-delete"]');
+  const menuLink     = menu.querySelector('[data-act="menu-link"]');
+  const menuDoc      = menu.querySelector('[data-act="menu-doc"]');
 
-  menuFlag.onclick=()=>{
-    miniFlag.click();
-    menu.classList.add('hide');
-  };
+  menuFlag.onclick = ()=>{ doFlag(); menu.classList.add('hide'); };
+  menuBranches.onclick = ()=>{ doBranches(); menu.classList.add('hide'); };
+  menuDetail.onclick = ()=>{ doDetail(); menu.classList.add('hide'); };
+  menuDelete.onclick = ()=>{ if(confirm('¿Eliminar paso?')) doDelete(); menu.classList.add('hide'); };
+
   menuLink.onclick=()=>{
     const url = prompt('Enlace a adjuntar (URL o referencia):', '');
     if(url){
