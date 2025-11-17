@@ -118,28 +118,51 @@
   /* ===== Layout ===== */
   .wrap{
     display:grid;
-    grid-template-columns:260px minmax(0,1fr); /* derecha más ancha */
-    gap:14px;
-    padding:12px;
+    grid-template-columns:280px minmax(0,1fr);  /* izquierda fija, derecha todo lo demás */
+    gap:0;
+    padding:0 0 10px 0;                         /* sin márgenes laterales */
     min-height:calc(100dvh - 60px);
-    transform:scale(.8);      /* ZOOM GLOBAL 80% */
-    transform-origin:top center;
+    width:100%;
   }
   .left,.right{
     background:var(--surface);
-    border-radius:14px;
-    box-shadow:var(--shadow);
   }
-  .left{padding:8px}
+  .left{
+    padding:8px 6px 8px 8px;
+    border-right:1px solid #e5e7eb;
+    box-shadow:var(--shadow);
+    border-radius:0;
+    display:flex;
+    flex-direction:column;
+    max-height:calc(100dvh - 60px);
+    overflow-y:auto;
+  }
   .right{
     padding:10px;
     display:flex;
     flex-direction:column;
     gap:10px;
     position:relative;
+    max-height:calc(100dvh - 60px);
+    overflow:auto;
+    border-radius:0;
+    box-shadow:var(--shadow);
+  }
+  #processList{
+    flex:1 1 auto;
   }
   @media (max-width:1020px){
-    .wrap{grid-template-columns:1fr;transform:scale(1);}
+    .wrap{
+      grid-template-columns:1fr;
+    }
+    .left{
+      max-height:none;
+      border-right:0;
+      border-bottom:1px solid #e5e7eb;
+    }
+    .right{
+      max-height:none;
+    }
   }
 
   /* ===== Lista de procesos ===== */
@@ -228,7 +251,7 @@
 
   .mod-head{
     display:flex;
-    flex-wrap:wrap;  /* botones se ordenan mejor */
+    flex-wrap:wrap;
     align-items:center;
     gap:.45rem;
     background:linear-gradient(135deg,#020617 0%,#1f2937 50%,#020617 100%);
@@ -292,6 +315,7 @@
     z-index:0;
     display:block;
     padding:8px 4px 18px;
+    width:100%;
   }
   .steps > div{
     display:flex;
@@ -618,12 +642,13 @@
     .wrap{
       grid-template-columns:1fr;
       padding:0;
-      transform:none;
     }
     .right{
       box-shadow:none;
       border-radius:0;
       padding:0;
+      max-height:none;
+      overflow:visible;
     }
     .module{
       page-break-inside:avoid;
@@ -790,7 +815,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina ===== */
+/* ===== Layout serpentina (3 cols, sin salirse de la derecha) ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -809,6 +834,13 @@ function layoutStepsSerpentine(container){
   const gapY = 34;
   const maxCols = 3;
 
+  const containerWidthRaw = container.clientWidth || (cardW+gapX);
+  const containerWidth = Math.max(120, containerWidthRaw - 20);   // margen interno
+  const rowMaxCols = Math.min(
+    maxCols,
+    Math.max(1, Math.floor(containerWidth / (cardW + gapX)))
+  );
+
   const heights = wrappers.map(w => w.offsetHeight);
 
   const rows = [];
@@ -816,7 +848,7 @@ function layoutStepsSerpentine(container){
   wrappers.forEach((w,idx)=>{
     const hasBranches = !!w.querySelector('.branches:not(.hide)');
     current.push(idx);
-    if(hasBranches || current.length===maxCols){
+    if(hasBranches || current.length===rowMaxCols){
       rows.push(current);
       current=[];
     }
@@ -835,13 +867,11 @@ function layoutStepsSerpentine(container){
   });
 
   let y = 0;
-  const innerWidth = container.clientWidth || (maxCols*cardW + (maxCols-1)*gapX);
 
   rows.forEach((idxs,r)=>{
     const dirRight = r%2===0;
     const itemsInRow = idxs.length;
-    const rowWidth = itemsInRow*cardW + (itemsInRow-1)*gapX;
-    const baseX = Math.max(0,(innerWidth-rowWidth)/2);
+    const baseX = 10;  // alineado al margen izquierdo del área de procesos
 
     idxs.forEach((idx,pos)=>{
       const wrap = wrappers[idx];
@@ -868,7 +898,7 @@ function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ===== Flechas ===== */
+/* ===== Flechas (se mantiene lógica anterior) ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
@@ -1332,7 +1362,7 @@ function stepRow(p,m,st,index){
   function doBranches(){
     const next = !st._openBranches;
     st._openBranches = next;
-    st._editingBranches = next;  // mientras se edita: ambas ramas
+    st._editingBranches = next;
     save();
     renderModules();
   }
