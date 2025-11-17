@@ -958,7 +958,6 @@ function branchBox(p,m,st,kind,idx){
 
   const toggleBranch=document.createElement('button');
   toggleBranch.className='p-mini';
-  // 👇 Aquí la manito cuando está cerrado
   toggleBranch.textContent = collapsed ? '👉' : '▾';
   toggleBranch.title='Haz clic para abrir/cerrar el detalle de la rama';
 
@@ -981,7 +980,7 @@ function branchBox(p,m,st,kind,idx){
     const nowCollapsed = (st[kind+'Collapsed'] === true);
     st[kind+'Collapsed'] = !nowCollapsed;
     save();
-    renderModules(); // se vuelve a pintar, actualizando manito/▾
+    renderModules();
   };
 
   top.appendChild(label);
@@ -990,7 +989,6 @@ function branchBox(p,m,st,kind,idx){
   top.appendChild(flag);
   top.appendChild(delBranch);
 
-  // La etiqueta / chip de próximo proceso se ve SIEMPRE, abierto o cerrado
   if(st[kind+'Link']?.pid){
     const dest=state.processes.find(x=>x.id===st[kind+'Link'].pid);
     if(dest){
@@ -1206,7 +1204,6 @@ function stepRow(p,m,st,index){
   titleInput.title = st.title || '';
   titleInput.oninput=e=>{ st.title=e.target.value; titleInput.title=st.title||''; save(); };
 
-  /* menú del lápiz */
   const menu=document.createElement('div');
   menu.className='step-menu hide';
   menu.innerHTML=`
@@ -1310,7 +1307,7 @@ function stepRow(p,m,st,index){
   return row;
 }
 
-/* ===== Subprocesos ===== */
+/* ===== Subprocesos (módulos) ===== */
 function modCard(p,m){
   const card=document.createElement('div'); card.className='module';
   card.style.setProperty('--proc',p.color);
@@ -1323,6 +1320,7 @@ function modCard(p,m){
     <select class="sel">${RESPONSABLES.map(r=>`<option ${m.responsable===r?'selected':''}>${r}</option>`).join('')}</select>
     <button class="pill" data-act="toggle-detail" aria-expanded="${m._openDetail?'true':'false'}">▾ Detalle</button>
     <button class="pill" data-act="toggle-steps" aria-expanded="${m._openSteps===false?'false':'true'}">▾ Pasos</button>
+    <button class="pill" data-act="add-submodule">+ Sub/subproceso</button>
     <button class="pill" data-act="add-step">+ Paso</button>
     <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
     <button class="pill" data-act="del">–</button>`;
@@ -1341,6 +1339,31 @@ function modCard(p,m){
   };
   head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
   head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
+
+  const btnSub = head.querySelector('[data-act="add-submodule"]');
+  if(btnSub){
+    btnSub.onclick=()=>{
+      const idx = p.modules.findIndex(x=>x.id===m.id);
+      const subModule = {
+        id:uid(),
+        title: (m.title || 'Subproceso') + ' - Sub',
+        responsable: m.responsable || RESPONSABLES[0],
+        detail:'',
+        steps:[makeStep()],
+        completed:false,
+        _openDetail:false,
+        _openSteps:false
+      };
+      if(idx>-1){
+        p.modules.splice(idx+1,0,subModule);
+      }else{
+        p.modules.push(subModule);
+      }
+      save();
+      renderModules();
+    };
+  }
+
   card.appendChild(head);
 
   const det=document.createElement('div');
@@ -1366,7 +1389,6 @@ function modCard(p,m){
   });
   card.appendChild(steps);
 
-  /* Mostrar/ocultar pasos según _openSteps (por defecto true si no existe) */
   if(m._openSteps === false){
     hideBlock(steps);
   }else{
@@ -1414,7 +1436,7 @@ function createModuleForProcess(pid,titleOverride){
     steps:[makeStep()],
     completed:false,
     _openDetail:false,
-    _openSteps:false   // pasos ocultos por defecto para "Subproceso + Paso"
+    _openSteps:false
   };
   p.modules.push(m); save(); renderModules(); return m;
 }
