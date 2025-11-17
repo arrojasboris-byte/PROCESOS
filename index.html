@@ -412,7 +412,7 @@
     font-size:11px;
   }
 
-  /* ===== SÍ / NO compacto y horizontal ===== */
+  /* ===== SÍ / NO compacto y horizontal con semicolapso ===== */
   .branches{
     margin:6px 0 0 18px;
     padding:4px 6px;
@@ -448,11 +448,32 @@
     flex:1 1 48%;
     max-width:calc(50% - 4px);
     min-width:200px;
+    position:relative;
+  }
+  .branch.branch-has-content{
+    border:1px solid rgba(248,113,113,.55);
   }
   .branch.yes .bh-label{font-size:10px;font-weight:700;opacity:.8;text-transform:uppercase;}
   .branch.no .bh-label{font-size:11px;font-weight:900;text-transform:uppercase;}
-  .bh-top{display:flex;align-items:center;gap:.2rem;margin-bottom:.25rem}
-  .plist{display:flex;flex-direction:column;gap:.22rem}
+  .branch.branch-has-content .bh-label{
+    color:#b91c1c;
+  }
+  .bh-top{display:flex;align-items:center;gap:.2rem;margin-bottom:.25rem;flex-wrap:wrap}
+  .plist{display:flex;flex-direction:column;gap:.22rem;transition:max-height .18s ease;}
+  .branch.branch-collapsed .plist{
+    max-height:34px;
+    overflow:hidden;
+  }
+  .branch.branch-collapsed::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:14px;
+    background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);
+    pointer-events:none;
+  }
   .point{
     display:flex;
     align-items:center;
@@ -920,18 +941,31 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
-/* ===== SÍ / NO (lógica) ===== */
+/* ===== SÍ / NO (lógica con desplegable) ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
   const wrap=document.createElement('div'); wrap.className='branch '+(isYes?'yes':'no');
 
+  const hasContent = arr.length>0 || !!st[kind+'Link'];
+  if(hasContent) wrap.classList.add('branch-has-content');
+
+  const collapsed = st[kind+'Collapsed'] === true;
+  if(collapsed) wrap.classList.add('branch-collapsed');
+
   const top=document.createElement('div'); top.className='bh-top';
   const label=document.createElement('div'); label.className='bh-label'; label.textContent=isYes?'SÍ':'NO';
+
+  const toggleBranch=document.createElement('button');
+  toggleBranch.className='p-mini';
+  toggleBranch.textContent='▾';
+  toggleBranch.title='Mostrar/ocultar detalle rama';
+
   const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
   const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
   const delBranch=document.createElement('button'); delBranch.className='p-mini'; delBranch.textContent='−'; delBranch.title='Borrar rama';
-  add.onclick=()=>{ st._openBranches=true; pushPoint(arr); save(); renderModules(); };
+
+  add.onclick=()=>{ st._openBranches=true; pushPoint(arr); st[kind+'Collapsed']=false; save(); renderModules(); };
   flag.onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
   delBranch.onclick=()=>{
     if(!arr.length && !st[kind+'Link']) return;
@@ -942,7 +976,17 @@ function branchBox(p,m,st,kind,idx){
       renderModules();
     }
   };
-  top.appendChild(label); top.appendChild(add); top.appendChild(flag); top.appendChild(delBranch);
+  toggleBranch.onclick=()=>{
+    st[kind+'Collapsed'] = ! (st[kind+'Collapsed'] === true);
+    save();
+    renderModules();
+  };
+
+  top.appendChild(label);
+  top.appendChild(toggleBranch);
+  top.appendChild(add);
+  top.appendChild(flag);
+  top.appendChild(delBranch);
 
   if(st[kind+'Link']?.pid){
     const dest=state.processes.find(x=>x.id===st[kind+'Link'].pid);
@@ -990,6 +1034,7 @@ function branchBox(p,m,st,kind,idx){
     bSub.onclick=()=>{
       st._openBranches=true;
       pushSubPoint(pt);
+      st[kind+'Collapsed']=false;
       save();
       renderModules();
     };
@@ -1328,7 +1373,6 @@ function modCard(p,m){
   if(btnSteps){
     btnSteps.setAttribute('aria-expanded', m._openSteps===false?'false':'true');
     btnSteps.onclick=(ev)=>{
-      // estado actual: si es false -> cerrado, en otro caso abierto
       const current = (m._openSteps === false) ? false : true;
       const next = !current;
       m._openSteps = next;
