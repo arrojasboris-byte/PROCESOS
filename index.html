@@ -131,7 +131,13 @@
     box-shadow:var(--shadow);
   }
   .left{padding:8px}
-  .right{padding:8px;display:flex;flex-direction:column;gap:10px}
+  .right{
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    position:relative;
+  }
   @media (max-width:1020px){
     .wrap{grid-template-columns:1fr;transform:scale(1);}
   }
@@ -194,7 +200,33 @@
     flex-direction:column;
     gap:6px;
     padding:8px;
+    margin-bottom:10px;
   }
+
+  /* Sub/subproceso: más estrecho + línea discontinua desde el origen */
+  .module.module-subchild{
+    margin-left:46px;
+    max-width:calc(100% - 60px);
+    border:1px dashed rgba(148,163,184,.85);
+    box-shadow:0 4px 12px rgba(15,23,42,.1);
+  }
+  .module.module-subchild::before{
+    content:"";
+    position:absolute;
+    left:-28px;
+    top:20px;
+    width:22px;
+    border-bottom:1.5px dashed rgba(148,163,184,.85);
+  }
+  .module.module-subchild::after{
+    content:"";
+    position:absolute;
+    left:-28px;
+    top:-18px;
+    height:38px;
+    border-left:1.5px dashed rgba(148,163,184,.85);
+  }
+
   .mod-head{
     display:flex;
     align-items:center;
@@ -412,7 +444,7 @@
     font-size:11px;
   }
 
-  /* ===== SÍ / NO compacto y horizontal con semicolapso ===== */
+  /* ===== SÍ / NO compacto ===== */
   .branches{
     margin:6px 0 0 18px;
     padding:4px 6px;
@@ -539,7 +571,7 @@
   }
   .pa-toast.show{opacity:1;transform:translateY(0)}
 
-  /* Vista impresión: sólo proceso activo y sus módulos */
+  /* Vista impresión: sólo proceso activo y módulos */
   @media print{
     .pa-tools-hide,
     .topbar,
@@ -941,7 +973,7 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
-/* ===== SÍ / NO (lógica con desplegable + manito) ===== */
+/* ===== SÍ / NO ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
@@ -1309,7 +1341,9 @@ function stepRow(p,m,st,index){
 
 /* ===== Subprocesos (módulos) ===== */
 function modCard(p,m){
-  const card=document.createElement('div'); card.className='module';
+  const card=document.createElement('div');
+  card.className='module';
+  if(m.isSub) card.classList.add('module-subchild');
   card.style.setProperty('--proc',p.color);
   card.dataset.mid = m.id;
   card.dataset.pid = p.id;
@@ -1352,7 +1386,9 @@ function modCard(p,m){
         steps:[makeStep()],
         completed:false,
         _openDetail:false,
-        _openSteps:false
+        _openSteps:false,
+        isSub:true,
+        parentId:m.id
       };
       if(idx>-1){
         p.modules.splice(idx+1,0,subModule);
