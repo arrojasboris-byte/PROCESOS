@@ -280,7 +280,7 @@
       inset 0 1px 0 #fff,
       0 2px 0 rgba(15,23,42,.22),
       0 7px 14px rgba(15,23,42,.14);
-    width:260px;   /* ← AQUI EL CAMBIO (antes 210px) */
+    width:260px;
     min-height:54px;
     border:1px solid rgba(148,163,184,.7);
   }
@@ -1274,6 +1274,7 @@ function modCard(p,m){
   head.innerHTML=`<input class="mod-title" value="${m.title}">
     <select class="sel">${RESPONSABLES.map(r=>`<option ${m.responsable===r?'selected':''}>${r}</option>`).join('')}</select>
     <button class="pill" data-act="toggle-detail" aria-expanded="${m._openDetail?'true':'false'}">▾ Detalle</button>
+    <button class="pill" data-act="toggle-steps" aria-expanded="${m._openSteps===false?'false':'true'}">▾ Pasos</button>
     <button class="pill" data-act="add-step">+ Paso</button>
     <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
     <button class="pill" data-act="del">–</button>`;
@@ -1317,6 +1318,24 @@ function modCard(p,m){
   });
   card.appendChild(steps);
 
+  /* Mostrar/ocultar pasos según _openSteps (por defecto true si no existe) */
+  if(m._openSteps === false){
+    hideBlock(steps);
+  }else{
+    showBlock(steps);
+  }
+  const btnSteps = head.querySelector('[data-act="toggle-steps"]');
+  if(btnSteps){
+    btnSteps.setAttribute('aria-expanded', m._openSteps===false?'false':'true');
+    btnSteps.onclick=(ev)=>{
+      m._openSteps = ! (m._openSteps === false);
+      btnSteps.setAttribute('aria-expanded', m._openSteps?'true':'false');
+      toggleBlock(steps, m._openSteps);
+      save();
+      requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
+    };
+  }
+
   if(m.completed){
     const d=document.createElement('span'); d.className='badge-diana'; d.textContent='🎯';
     head.appendChild(d);
@@ -1337,7 +1356,16 @@ function renderModules(){
 function createModuleForProcess(pid,titleOverride){
   const p=state.processes.find(x=>x.id===pid); if(!p) return null;
   const defaultTitle = titleOverride || (p.name ? `${p.name} - Pasos` : 'Nuevo subproceso');
-  const m={id:uid(),title:defaultTitle,responsable:RESPONSABLES[0],detail:'',steps:[makeStep()],completed:false,_openDetail:false};
+  const m={
+    id:uid(),
+    title:defaultTitle,
+    responsable:RESPONSABLES[0],
+    detail:'',
+    steps:[makeStep()],
+    completed:false,
+    _openDetail:false,
+    _openSteps:false   // <-- NUEVO: pasos ocultos por defecto para "Subproceso + Paso"
+  };
   p.modules.push(m); save(); renderModules(); return m;
 }
 function addProcess(){
