@@ -299,15 +299,17 @@
     align-items:flex-start;
     gap:3px;
   }
+
+  /* CAJA DE PASO – SIN DEGRADADO Y CON BANDA LATERAL DEL COLOR DEL PROCESO */
   .step{
     position:relative;
     z-index:2;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    background:linear-gradient(180deg,var(--proc,#e5e7eb) 0%,#ffffff 42%,#f3f4f6 100%);
+    background:#ffffff;                   /* sin degradado */
     border-radius:13px;
-    padding:6px 8px 8px;
+    padding:6px 8px 8px 12px;             /* algo más de padding izquierdo */
     box-shadow:
       inset 0 1px 0 #fff,
       0 2px 0 rgba(15,23,42,.22),
@@ -316,6 +318,18 @@
     min-height:54px;
     border:1px solid rgba(148,163,184,.7);
   }
+  .step::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:7px;
+    border-radius:13px 0 0 13px;
+    background:var(--proc,#e5e7eb);       /* color pastel del proceso */
+    opacity:0.95;
+  }
+
   .bubble{
     min-width:20px;
     height:20px;
@@ -1363,7 +1377,15 @@ function modCard(p,m){
   titleEl.title = m.title || '';
   titleEl.ondblclick=()=>{ m._openDetail=!m._openDetail; toggleBlock(det,m._openDetail); if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
   head.querySelector('select').onchange=e=>{ m.responsable=e.target.value; save(); };
-  head.querySelector('[data-act="add-step"]').onclick=()=>{ m.steps.push(makeStep()); save(); renderModules(); };
+
+  /* Al pulsar + Paso: añade y muestra los pasos siempre */
+  head.querySelector('[data-act="add-step"]').onclick=()=>{
+    m.steps.push(makeStep());
+    m._openSteps = true;          // siempre visible al añadir
+    save();
+    renderModules();
+  };
+
   head.querySelector('[data-act="toggle-detail"]').onclick=(ev)=>{
     m._openDetail=!m._openDetail;
     ev.currentTarget.setAttribute('aria-expanded', m._openDetail?'true':'false');
@@ -1386,7 +1408,7 @@ function modCard(p,m){
         steps:[makeStep()],
         completed:false,
         _openDetail:false,
-        _openSteps:false,
+        _openSteps:true,     // sub/subproceso muestra pasos de inicio
         isSub:true,
         parentId:m.id
       };
@@ -1472,7 +1494,7 @@ function createModuleForProcess(pid,titleOverride){
     steps:[makeStep()],
     completed:false,
     _openDetail:false,
-    _openSteps:false
+    _openSteps:true    // subproceso nuevo: pasos visibles
   };
   p.modules.push(m); save(); renderModules(); return m;
 }
@@ -1486,7 +1508,10 @@ function addStepGlobal(){
   if(!p){ alert('Primero crea un proceso'); return; }
   let m=p.modules[p.modules.length-1];
   if(!m) m=createModuleForProcess(p.id, `${p.name} - Pasos`);
-  m.steps.push(makeStep()); save(); renderModules();
+  m.steps.push(makeStep());
+  m._openSteps = true;       // al añadir desde botón global, se muestran los pasos
+  save();
+  renderModules();
 }
 
 /* ===== Render maestro ===== */
