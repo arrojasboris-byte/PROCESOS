@@ -1328,9 +1328,12 @@ function modCard(p,m){
   if(btnSteps){
     btnSteps.setAttribute('aria-expanded', m._openSteps===false?'false':'true');
     btnSteps.onclick=(ev)=>{
-      m._openSteps = ! (m._openSteps === false);
-      btnSteps.setAttribute('aria-expanded', m._openSteps?'true':'false');
-      toggleBlock(steps, m._openSteps);
+      // estado actual: si es false -> cerrado, en otro caso abierto
+      const current = (m._openSteps === false) ? false : true;
+      const next = !current;
+      m._openSteps = next;
+      btnSteps.setAttribute('aria-expanded', next ? 'true' : 'false');
+      toggleBlock(steps, next);
       save();
       requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
     };
@@ -1364,7 +1367,7 @@ function createModuleForProcess(pid,titleOverride){
     steps:[makeStep()],
     completed:false,
     _openDetail:false,
-    _openSteps:false   // <-- NUEVO: pasos ocultos por defecto para "Subproceso + Paso"
+    _openSteps:false   // pasos ocultos por defecto para "Subproceso + Paso"
   };
   p.modules.push(m); save(); renderModules(); return m;
 }
