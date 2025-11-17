@@ -273,7 +273,7 @@
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    background:linear-gradient(180deg,#ffffff 0%,#f3f4f6 100%);
+    background:linear-gradient(180deg,var(--proc,#e5e7eb) 0%,#ffffff 42%,#f3f4f6 100%);
     border-radius:13px;
     padding:6px 8px 8px;
     box-shadow:
@@ -348,6 +348,32 @@
     background:rgba(255,255,255,.97);
     box-shadow:0 2px 4px rgba(15,23,42,.25);
   }
+
+  /* Menú del lápiz */
+  .step-menu{
+    position:absolute;
+    right:6px;
+    bottom:30px;
+    background:#020617;
+    border-radius:10px;
+    padding:3px 4px;
+    display:flex;
+    gap:2px;
+    box-shadow:0 6px 16px rgba(15,23,42,.7);
+    z-index:5;
+  }
+  .step-menu button{
+    width:22px;
+    height:22px;
+    border-radius:7px;
+    border:0;
+    background:#111827;
+    color:#e5e7eb;
+    font-size:11px;
+    cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 2px 0 rgba(0,0,0,.6);
+  }
+  .step-menu button:active{transform:translateY(1px)}
 
   /* Detalle paso */
   .step-detail{
@@ -665,6 +691,8 @@ function makeStep(){
     title:'Nuevo paso',
     detail:'',
     link:null,
+    links:[],
+    docs:[],
     yes:[],
     no:[],
     _openBranches:false,
@@ -675,7 +703,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina: 3 columnas, pasos con SÍ/NO ocupan fila completa ===== */
+/* ===== Layout serpentina: 3 columnas ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -1113,6 +1141,7 @@ function stepRow(p,m,st,index){
     <div class="bubble">${index+1}</div>
     <input class="title" value="${st.title}">
     <div class="minis">
+      <button class="mini" data-act="menu-toggle" title="Opciones de paso">✏️</button>
       <button class="mini" data-act="flag-step" title="Bandera paso">🚩</button>
       <button class="mini" data-act="branches" title="Si / No">❓</button>
       <button class="mini" data-act="detail" title="Detalle del paso">📝</button>
@@ -1128,6 +1157,16 @@ function stepRow(p,m,st,index){
   const titleInput = sc.querySelector('.title');
   titleInput.title = st.title || '';
   titleInput.oninput=e=>{ st.title=e.target.value; titleInput.title=st.title||''; save(); };
+
+  /* menú del lápiz */
+  const menu=document.createElement('div');
+  menu.className='step-menu hide';
+  menu.innerHTML=`
+    <button data-act="menu-flag" title="Bandera proceso">🚩</button>
+    <button data-act="menu-link" title="Adjuntar enlace">🔗</button>
+    <button data-act="menu-doc" title="Adjuntar documento">📎</button>
+  `;
+  sc.appendChild(menu);
 
   const branchesWrapper=document.createElement('div');
   branchesWrapper.className='branches'+(st._openBranches?'':' hide');
@@ -1145,6 +1184,10 @@ function stepRow(p,m,st,index){
   sdTa.title = st.detail || '';
   sdTa.oninput = e=>{ st.detail = e.target.value; sdTa.title=st.detail||''; save(); };
 
+  if(!Array.isArray(st.links)) st.links=[];
+  if(!Array.isArray(st.docs))  st.docs=[];
+
+  const miniMenu     = sc.querySelector('[data-act="menu-toggle"]');
   const miniFlag     = sc.querySelector('[data-act="flag-step"]');
   const miniBranches = sc.querySelector('[data-act="branches"]');
   const miniDetail   = sc.querySelector('[data-act="detail"]');
@@ -1165,6 +1208,42 @@ function stepRow(p,m,st,index){
     if(st._openDetailStep){ setTimeout(()=>sdTa.focus(),0); }
     requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
   };
+
+  miniMenu.onclick=(ev)=>{
+    ev.stopPropagation();
+    menu.classList.toggle('hide');
+  };
+
+  const menuFlag = menu.querySelector('[data-act="menu-flag"]');
+  const menuLink = menu.querySelector('[data-act="menu-link"]');
+  const menuDoc  = menu.querySelector('[data-act="menu-doc"]');
+
+  menuFlag.onclick=()=>{
+    miniFlag.click();
+    menu.classList.add('hide');
+  };
+  menuLink.onclick=()=>{
+    const url = prompt('Enlace a adjuntar (URL o referencia):', '');
+    if(url){
+      st.links.push(url);
+      miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
+      save();
+    }
+    menu.classList.add('hide');
+  };
+  menuDoc.onclick=()=>{
+    const doc = prompt('Nombre/ubicación del documento:', '');
+    if(doc){
+      st.docs.push(doc);
+      miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
+      save();
+    }
+    menu.classList.add('hide');
+  };
+
+  if(st.links.length || st.docs.length){
+    miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
+  }
 
   row.appendChild(sc);
 
@@ -1232,6 +1311,8 @@ function modCard(p,m){
     if(typeof st._openBranches === 'undefined') st._openBranches=false;
     if(!Array.isArray(st.yes)) st.yes=[];
     if(!Array.isArray(st.no))  st.no=[];
+    if(!Array.isArray(st.links)) st.links=[];
+    if(!Array.isArray(st.docs))  st.docs=[];
     steps.appendChild(stepRow(p,m,st,idx));
   });
   card.appendChild(steps);
