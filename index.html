@@ -941,7 +941,7 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
-/* ===== SÍ / NO (lógica con desplegable) ===== */
+/* ===== SÍ / NO (lógica con desplegable + manito) ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
@@ -958,8 +958,9 @@ function branchBox(p,m,st,kind,idx){
 
   const toggleBranch=document.createElement('button');
   toggleBranch.className='p-mini';
-  toggleBranch.textContent='▾';
-  toggleBranch.title='Mostrar/ocultar detalle rama';
+  // 👇 Aquí la manito cuando está cerrado
+  toggleBranch.textContent = collapsed ? '👉' : '▾';
+  toggleBranch.title='Haz clic para abrir/cerrar el detalle de la rama';
 
   const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
   const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
@@ -977,9 +978,10 @@ function branchBox(p,m,st,kind,idx){
     }
   };
   toggleBranch.onclick=()=>{
-    st[kind+'Collapsed'] = ! (st[kind+'Collapsed'] === true);
+    const nowCollapsed = (st[kind+'Collapsed'] === true);
+    st[kind+'Collapsed'] = !nowCollapsed;
     save();
-    renderModules();
+    renderModules(); // se vuelve a pintar, actualizando manito/▾
   };
 
   top.appendChild(label);
@@ -988,6 +990,7 @@ function branchBox(p,m,st,kind,idx){
   top.appendChild(flag);
   top.appendChild(delBranch);
 
+  // La etiqueta / chip de próximo proceso se ve SIEMPRE, abierto o cerrado
   if(st[kind+'Link']?.pid){
     const dest=state.processes.find(x=>x.id===st[kind+'Link'].pid);
     if(dest){
