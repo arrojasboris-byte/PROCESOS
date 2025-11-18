@@ -237,7 +237,7 @@
   .module.module-subchild::before{
     content:"";
     position:absolute;
-    left:42px;            /* alineado con margen del panel negro */
+    left:42px;
     top:-22px;
     height:22px;
     border-left:1.5px dashed rgba(148,163,184,.9);
@@ -247,7 +247,7 @@
     position:absolute;
     left:0;
     top:-22px;
-    width:42px;           /* hasta el inicio visual del panel negro padre */
+    width:42px;
     border-top:1.5px dashed rgba(148,163,184,.9);
   }
   .module-subchild .mod-head{
@@ -607,7 +607,7 @@
 
   /* Faldón "ver más" en gris */
   .branch-indicator{
-    margin:6px 0 0 46px;          /* un poco más abajo y algo desplazado */
+    margin:6px 0 0 46px;
     font-size:11px;
     color:#374151;
     cursor:pointer;
@@ -860,7 +860,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina (3 columnas adaptadas al ancho) ===== */
+/* ===== Layout serpentina 3 columnas ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -1071,7 +1071,7 @@ function drawFlowForSteps(container){
       let yDown = bottomA.y + 14;
       if(brRect){
         const brBottom = brRect.bottom - cRect.top;
-        if(brBottom + 16 > yDown) yDown = brBottom + 16;  /* flecha siempre por debajo del SÍ/NO o "ver más" */
+        if(brBottom + 16 > yDown) yDown = brBottom + 16;
       }
 
       let yUp = topB.y - 14;
@@ -1886,7 +1886,6 @@ document.getElementById('q').addEventListener('input',e=>{
     a.href=URL.createObjectURL(blob);
     a.download=`PROCESOS-AUDIO_${fileStamp()}.html`;
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   }
 
   function saveToCloud(){
@@ -1904,7 +1903,6 @@ document.getElementById('q').addEventListener('input',e=>{
       if(!html){ toast('Copia inválida'); return; }
       const url = URL.createObjectURL(new Blob([html],{type:'text/html'}));
       window.open(url,'_blank','noopener');
-      setTimeout(()=>URL.revokeObjectURL(url),10000);
     }catch(e){ console.error(e); toast('Copia dañada'); }
   }
 
