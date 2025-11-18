@@ -118,9 +118,9 @@
   /* ===== Layout ===== */
   .wrap{
     display:grid;
-    grid-template-columns:280px minmax(0,1fr);  /* izquierda fija, derecha todo lo demás */
+    grid-template-columns:280px minmax(0,1fr);
     gap:0;
-    padding:0 0 10px 0;                         /* sin márgenes laterales */
+    padding:0 0 10px 0;
     min-height:calc(100dvh - 60px);
     width:100%;
   }
@@ -225,7 +225,6 @@
     padding:8px;
     margin-bottom:10px;
   }
-
   .module.module-subchild{
     margin-left:46px;
     max-width:calc(100% - 60px);
@@ -377,7 +376,7 @@
       0 3px 0 rgba(15,23,42,.3),
       0 10px 20px rgba(15,23,42,.24);
   }
-  .step input.title{
+  .step .title{
     font-weight:800;
     border:0;
     background:transparent;
@@ -385,6 +384,11 @@
     width:100%;
     margin-top:1px;
     font-size:13.5px;
+    resize:none;
+    overflow:hidden;
+    line-height:1.3;
+    white-space:pre-wrap;
+    word-break:break-word;
   }
   .minis{
     display:flex;
@@ -554,10 +558,24 @@
     position:absolute;
     left:0;
     right:0;
-    bottom:0;
-    height:14px;
+    bottom:14px;
+    height:10px;
     background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);
     pointer-events:none;
+  }
+  .branch-foot{
+    margin-top:2px;
+    text-align:center;
+    font-size:10px;
+    color:#6b7280;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+  }
+  .branch:not(.branch-collapsed) .branch-foot{
+    display:none;
   }
   .point{
     display:flex;
@@ -740,6 +758,14 @@ function load(){
   if(!activePid && state.processes[0]) activePid=state.processes[0].id;
 }
 
+/* ===== helper auto-resize títulos de paso ===== */
+function autoResize(el){
+  if(!el) return;
+  el.style.height='auto';
+  const h = el.scrollHeight || 24;
+  el.style.height = h + 'px';
+}
+
 /* ===== Procesos izquierda ===== */
 function procRow(p){
   const wrap=document.createElement('div'); wrap.className='proc-item'+(p.id===activePid?' activo':'');
@@ -815,7 +841,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina (3 cols, sin salirse de la derecha) ===== */
+/* ===== Layout serpentina (3 columnas compactas) ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -831,11 +857,11 @@ function layoutStepsSerpentine(container){
 
   const cardW = firstStep.offsetWidth || 290;
   const gapX = 34;
-  const gapY = 34;
+  const gapY = 24;
   const maxCols = 3;
 
   const containerWidthRaw = container.clientWidth || (cardW+gapX);
-  const containerWidth = Math.max(120, containerWidthRaw - 20);   // margen interno
+  const containerWidth = Math.max(120, containerWidthRaw - 20);
   const rowMaxCols = Math.min(
     maxCols,
     Math.max(1, Math.floor(containerWidth / (cardW + gapX)))
@@ -858,12 +884,10 @@ function layoutStepsSerpentine(container){
   const rowHeights = [];
   rows.forEach((idxs,r)=>{
     let maxH = 0;
-    let hasBranchesRow = false;
     idxs.forEach(i=>{
       if(heights[i]>maxH) maxH = heights[i];
-      if(wrappers[i].querySelector('.branches:not(.hide)')) hasBranchesRow=true;
     });
-    rowHeights[r] = maxH + (hasBranchesRow ? 80 : 0);
+    rowHeights[r] = maxH + 8;
   });
 
   let y = 0;
@@ -871,7 +895,7 @@ function layoutStepsSerpentine(container){
   rows.forEach((idxs,r)=>{
     const dirRight = r%2===0;
     const itemsInRow = idxs.length;
-    const baseX = 10;  // alineado al margen izquierdo del área de procesos
+    const baseX = 10;
 
     idxs.forEach((idx,pos)=>{
       const wrap = wrappers[idx];
@@ -898,7 +922,7 @@ function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ===== Flechas (se mantiene lógica anterior) ===== */
+/* ===== Flechas ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
@@ -1045,9 +1069,17 @@ function branchBox(p,m,st,kind,idx){
   const wrap=document.createElement('div'); wrap.className='branch '+(isYes?'yes':'no');
 
   const hasContent = arr.length>0 || !!st[kind+'Link'];
-  if(hasContent) wrap.classList.add('branch-has-content');
+
+  if(hasContent && typeof st[kind+'Collapsed']==='undefined' && !editing){
+    st[kind+'Collapsed']=true;
+  }
+  if(!hasContent){
+    st[kind+'Collapsed']=false;
+  }
 
   const collapsed = st[kind+'Collapsed'] === true;
+
+  if(hasContent) wrap.classList.add('branch-has-content');
   if(collapsed) wrap.classList.add('branch-collapsed');
 
   const top=document.createElement('div'); top.className='bh-top';
@@ -1280,6 +1312,21 @@ function branchBox(p,m,st,kind,idx){
   });
 
   wrap.appendChild(list);
+
+  if(hasContent){
+    const foot=document.createElement('div');
+    foot.className='branch-foot';
+    foot.innerHTML='<span>ver más</span><span>👇</span>';
+    foot.onclick=()=>{
+      st._openBranches=true;
+      st._editingBranches=true;
+      st[kind+'Collapsed']=false;
+      save();
+      renderModules();
+    };
+    wrap.appendChild(foot);
+  }
+
   return wrap;
 }
 
@@ -1290,7 +1337,7 @@ function stepRow(p,m,st,index){
   const sc=document.createElement('div'); sc.className='step';
   sc.innerHTML=`
     <div class="bubble">${index+1}</div>
-    <input class="title" value="${st.title}">
+    <textarea class="title" rows="1"></textarea>
     <div class="minis">
       <button class="mini" data-act="menu-toggle" title="Opciones de paso">✏️</button>
     </div>`;
@@ -1302,8 +1349,15 @@ function stepRow(p,m,st,index){
   });
 
   const titleInput = sc.querySelector('.title');
+  titleInput.value = st.title || '';
   titleInput.title = st.title || '';
-  titleInput.oninput=e=>{ st.title=e.target.value; titleInput.title=st.title||''; save(); };
+  autoResize(titleInput);
+  titleInput.addEventListener('input', e=>{
+    st.title = e.target.value;
+    titleInput.title = st.title || '';
+    autoResize(titleInput);
+    save();
+  });
 
   const menu=document.createElement('div');
   menu.className='step-menu hide';
@@ -1713,6 +1767,12 @@ document.getElementById('q').addEventListener('input',e=>{
     const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
     document.body.classList.toggle('pa-locked', locked);
 
+    if(locked){
+      // En lectura: todo visible y desplegado
+      document.querySelectorAll('.proc-detail, .mod-detail, .step-detail, .branches').forEach(showBlock);
+      document.querySelectorAll('.branch').forEach(b=> b.classList.remove('branch-collapsed'));
+    }
+
     ['#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso'].forEach(sel=>{
       const b=document.querySelector(sel);
       if(b){ b.classList.toggle('lock-block', locked); b.toggleAttribute('disabled', locked); }
@@ -1723,7 +1783,7 @@ document.getElementById('q').addEventListener('input',e=>{
       b.toggleAttribute('disabled', locked);
     });
 
-    document.querySelectorAll('input.title, .mod-title, textarea, .pt-input').forEach(el=>{
+    document.querySelectorAll('.title, .mod-title, textarea, .pt-input').forEach(el=>{
       el.toggleAttribute('readonly', locked);
       el.classList.toggle('is-readonly', locked);
     });
@@ -1746,17 +1806,19 @@ document.getElementById('q').addEventListener('input',e=>{
   function cancelIfLocked(e){
     const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
     if(!locked) return;
-    const t = e.target.closest('button, input, textarea, select');
+    const t = e.target.closest('button, textarea, select, .title, .mod-title, .pt-input');
     if(!t) return;
+
     const denySel = [
       '#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso',
       '.proc-item .icon-btn[title="Renombrar"]',
       '.proc-item .icon-btn[title="Eliminar"]',
       '[data-act="add-step"]','[data-act="close"]','[data-act="del"]',
-      '.branch .p-mini'
+      '.branch .p-mini',
+      '.title','.mod-title','.pt-input','textarea'
     ].join(',');
-    if(t.matches(denySel) || (t.tagName==='SELECT') || (t.tagName==='INPUT' && t.classList.contains('title')) ||
-       (t.tagName==='TEXTAREA') || t.classList.contains('pt-input')){
+
+    if(t.matches(denySel)){
       e.stopPropagation(); e.preventDefault();
       toast('Modo lectura: bloqueado por PIN');
     }
@@ -1770,7 +1832,7 @@ document.getElementById('q').addEventListener('input',e=>{
 
   function printAll(){
     const opened=[];
-    document.querySelectorAll('.proc-detail, .mod-detail, .branches, details').forEach(b=>{
+    document.querySelectorAll('.proc-detail, .mod-detail, .branches, .step-detail, details').forEach(b=>{
       const wasHidden = (b.classList && (b.classList.contains('hide') || b.style.display==='none')) || (b.tagName==='DETAILS' && !b.open);
       if(wasHidden){
         if(b.tagName==='DETAILS') b.open=true; else showBlock(b);
@@ -1821,7 +1883,7 @@ document.getElementById('q').addEventListener('input',e=>{
       sessionStorage.removeItem('PA_PIN_OK');
       pinBtn.classList.remove('locked');
       applyPinLockUI();
-      toast('Edición bloqueada');
+      toast('Edición bloqueada (vista lectura)');
     }else{
       const v=prompt('Introduce PIN para editar:');
       if(v===PIN_CODE){ sessionStorage.setItem('PA_PIN_OK','1'); pinBtn.classList.add('locked'); applyPinLockUI(); toast('Edición habilitada'); }
