@@ -6,7 +6,7 @@
 <title>PROCESOS AUDIO</title>
 <style>
   :root{
-    --bg:#d1d5db; /* <── FONDO GENERAL GRIS (ANTES era #f5f6f8) */
+    --bg:#d1d5db; /* FONDO GENERAL GRIS */
     --surface:#ffffff; --ink:#1b1d24;
     --muted:#667085; --soft:#eceff3;
     --shadow:0 10px 24px rgba(0,0,0,.08);
@@ -16,7 +16,12 @@
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+  body{
+    margin:0;
+    background:var(--bg) !important; /* FORZAMOS GRIS */
+    color:var(--ink);
+    font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif
+  }
 
   /* ===== Top bar ===== */
   .topbar{
@@ -94,7 +99,7 @@
   /* ===== Pasos (cajas pequeñas 3D) ===== */
   .steps{
     position:relative;
-    z-index:0;            /* contexto para flechas detrás */
+    z-index:0;
     display:block;
     padding:10px 6px 20px;
   }
@@ -106,7 +111,7 @@
   }
   .step{
     position:relative;
-    z-index:2;            /* por encima de las flechas */
+    z-index:2;
     display:flex;
     flex-direction:column;
     align-items:flex-start;
@@ -171,7 +176,6 @@
   }
   .mini:active{transform:translateY(1px)}
 
-  /* Etiqueta META en el último paso */
   .step.is-meta-step::after{
     content:"🎯 META";
     position:absolute;
@@ -186,7 +190,6 @@
     box-shadow:0 2px 4px rgba(15,23,42,.25);
   }
 
-  /* Flechas SVG (detrás de las cajas) */
   .flow-svg{
     position:absolute;
     inset:0;
@@ -194,7 +197,7 @@
     height:100%;
     pointer-events:none;
     overflow:visible;
-    z-index:0;       /* por detrás de step y branches */
+    z-index:0;
   }
 
   .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
@@ -208,7 +211,7 @@
     background:rgba(255,255,255,.97);
     box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
-    z-index:2;        /* panel SI/NO por encima de flechas */
+    z-index:2;
     max-width:260px;
   }
   .branches::before{
@@ -239,13 +242,11 @@
 
   .hide{display:none!important}
 
-  /* ===== Toast pequeño ===== */
   .pa-toast{position:fixed;right:14px;bottom:16px;background:#111;color:#fff;padding:.6rem .8rem;border-radius:10px;
     box-shadow:0 6px 18px rgba(0,0,0,.2);opacity:0;transform:translateY(6px);transition:all .2s;z-index:99999;font:14px system-ui}
   .pa-toast.show{opacity:1;transform:translateY(0)}
   @media print{ .pa-tools-hide{display:none!important} }
 
-  /* ===== Modo bloqueado por PIN ===== */
   body.pa-locked .is-readonly{opacity:.6;filter:saturate(.6)}
   body.pa-locked .lock-block{ pointer-events:none !important; opacity:.6; }
   body.pa-locked input[readonly], body.pa-locked textarea[readonly]{background:#f7f7f7}
@@ -304,12 +305,10 @@
   </div>
 
 <script>
-/* ===== Utilidades de visibilidad ===== */
 function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
 function hideBlock(el){ if(!el) return; el.classList.add('hide'); el.style.display='none'; el.setAttribute('aria-hidden','true'); }
 function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
 
-/* ===== Estado / Persistencia ===== */
 const LSKEY='pa_v3_connectors_3d';
 const RESPONSABLES=['Audiólogo','Responsable','Otros'];
 const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6ff','#a0e7e5','#c7f9cc','#fbcfe8','#fde68a','#bbf7d0'];
@@ -329,7 +328,6 @@ function load(){
   if(!activePid && state.processes[0]) activePid=state.processes[0].id;
 }
 
-/* ===== Izquierda: procesos ===== */
 function procRow(p){
   const wrap=document.createElement('div'); wrap.className='proc-item'+(p.id===activePid?' activo':'');
 
@@ -370,7 +368,6 @@ function renderProcesses(){
   state.processes.forEach(p=>box.appendChild(procRow(p)));
 }
 
-/* ===== Modal bandera ===== */
 function openProcPicker(onPick){
   const modal=document.getElementById('procModal');
   const list=document.getElementById('procModalList'); list.innerHTML='';
@@ -385,13 +382,11 @@ function openProcPicker(onPick){
   modal.classList.remove('hide');
 }
 
-/* ===== helpers ===== */
 function makeStep(){ return {id:uid(),title:'Nuevo paso',link:null,yes:[],no:[],_openBranches:false}; }
 function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -453,12 +448,10 @@ function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ===== Dibujo de flechas ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
 
-  // limpiar etiqueta META previa
   steps.forEach(s=>s.classList.remove('is-meta-step'));
 
   const old = container.querySelector('.flow-svg');
@@ -488,7 +481,6 @@ function drawFlowForSteps(container){
 
   const rects = steps.map(s => s.getBoundingClientRect());
 
-  // marcar último paso con etiqueta META
   const lastStepEl = steps[steps.length-1];
   lastStepEl.classList.add('is-meta-step');
 
@@ -522,7 +514,6 @@ function drawFlowForSteps(container){
     return br ? br.getBoundingClientRect() : null;
   }
 
-  /* conexiones entre pasos */
   for(let i=0;i<rects.length-1;i++){
     const a = rects[i];
     const b = rects[i+1];
@@ -534,7 +525,6 @@ function drawFlowForSteps(container){
     let d;
 
     if(rowA === rowB){
-      // Misma fila: flecha lateral limpia
       let start,end;
       if(a.left < b.left){
         start = anchor(a,'right');
@@ -553,7 +543,6 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
-      // Cambio de fila: flecha desde mitad inferior, rodeando caja SÍ/NO si existe
       const bottomA = anchor(a,'bottom');
       const topB    = anchor(b,'top');
       const brRect  = getBranchesRectForStep(stepA);
@@ -596,7 +585,6 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
-/* ===== Si / No ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
@@ -724,7 +712,6 @@ function stepRow(p,m,st,index){
   return row;
 }
 
-/* ===== Subproceso (módulo) ===== */
 function modCard(p,m){
   const card=document.createElement('div'); card.className='module';
   card.style.setProperty('--proc',p.color);
@@ -775,7 +762,6 @@ function modCard(p,m){
   return card;
 }
 
-/* ===== Render derecha ===== */
 function renderModules(){
   const box=document.getElementById('modules'); box.innerHTML='';
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
@@ -787,7 +773,6 @@ function renderModules(){
   });
 }
 
-/* ===== Acciones globales ===== */
 function createModuleForProcess(pid,titleOverride){
   const p=state.processes.find(x=>x.id===pid); if(!p) return null;
   const m={id:uid(),title:titleOverride||'Nuevo subproceso',responsable:RESPONSABLES[0],detail:'',steps:[makeStep()],completed:false,_openDetail:false};
@@ -806,26 +791,22 @@ function addStepGlobal(){
   m.steps.push(makeStep()); save(); renderModules();
 }
 
-/* ===== Render maestro ===== */
 function render(){
   renderProcesses();
   renderModules();
   if (window.applyPinLockUI) window.applyPinLockUI();
 }
 
-/* ===== Boot ===== */
 load(); document.getElementById('stamp').textContent='Última actualización '+stamp();
-window.applyPinLockUI = window.applyPinLockUI || function(){}; // placeholder; real impl at bottom
+window.applyPinLockUI = window.applyPinLockUI || function(){}; 
 render();
 document.getElementById('btnAddProcess').onclick=addProcess;
 document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p){alert('Crea un proceso');return;} createModuleForProcess(p.id,'Nuevo subproceso'); };
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
 
-/* Recalcular al redimensionar */
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
 
-/* ===== MATCHERS PARA BUSCADOR ===== */
 function stepMatches(st, q){
   if(!q) return true;
   const ql = q.toLowerCase();
@@ -872,7 +853,6 @@ function processMatches(p, q){
   return false;
 }
 
-/* ===== Buscador global ===== */
 document.getElementById('q').addEventListener('input',e=>{
   const q = e.target.value.trim().toLowerCase();
 
@@ -894,9 +874,6 @@ document.getElementById('q').addEventListener('input',e=>{
   });
 });
 
-/* =======================================================================
-   UTILIDADES (PIN, PDF, HTML, NUBE)
-   ======================================================================= */
 (function(){
   const PIN_CODE = 'AR4321';
   const SNAP_KEY = 'PA_SNAPSHOT_V1';
