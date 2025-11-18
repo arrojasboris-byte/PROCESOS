@@ -160,6 +160,40 @@
     .left{border-right:0;border-bottom:1px solid #e5e7eb;}
   }
 
+  /* ===== Departamento ===== */
+  .dept-header{
+    display:flex;
+    align-items:center;
+    gap:.4rem;
+    padding:.35rem .55rem;
+    margin:.1rem 0 .4rem;
+    border-radius:12px;
+    background:#020617;
+    color:#e5e7eb;
+    box-shadow:0 4px 10px rgba(0,0,0,.45);
+  }
+  #deptName{
+    flex:1;
+    font-weight:800;
+    outline:0;
+    border:0;
+    background:transparent;
+    cursor:text;
+  }
+  .dept-header button{
+    height:26px;
+    padding:0 .6rem;
+    border-radius:9999px;
+    border:0;
+    background:#111827;
+    color:#e5e7eb;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:700;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 0 rgba(0,0,0,.7);
+  }
+  .dept-header button:active{transform:translateY(1px);}
+
   /* ===== Lista de procesos ===== */
   .proc-item{
     display:flex;
@@ -214,7 +248,6 @@
     padding:6px 6px 8px;
     position:relative;
   }
-  /* línea discontinua faldón negro -> faldón negro */
   .module.module-subchild::before{
     content:"";position:absolute;left:42px;top:-22px;height:22px;
     border-left:1.5px dashed rgba(148,163,184,.9);
@@ -264,7 +297,7 @@
     padding:.45rem;background:#fff;font-size:12px;
   }
   .mod-fold-hint{
-    margin:5px 0 2px 60px;
+    margin:5px 0 2px 14px;
     font-size:11px;
     color:#374151;
     cursor:pointer;
@@ -408,7 +441,9 @@
   .children{margin-left:30px;display:flex;flex-direction:column;gap:.16rem;}
 
   .branch-indicator{
-    margin:6px 0 0 60px;
+    position:absolute;
+    left:22px;
+    bottom:-18px;
     font-size:11px;
     color:#374151;
     cursor:pointer;
@@ -463,7 +498,7 @@
     <button id="paPdfBtn" class="btn3d" title="Imprimir / Guardar PDF">PDF</button>
     <button id="paHtmlBtn" class="btn3d" title="Descargar HTML">HTML</button>
     <button id="paSaveCloud" class="btn3d" title="Guardar copia local">Nube</button>
-    <button id="paLoadCloud" class="btn3d" title="Abrir copia guardada">Actualizar</button>
+    <button id="paLoadDept" class="btn3d" title="Nuevo departamento">Nuevo depto.</button>
 
     <div class="topbar-main-actions">
       <span id="stamp" class="stamp">—</span>
@@ -477,7 +512,16 @@
   </div>
 
   <div class="wrap">
-    <div class="left"><div id="processList"></div></div>
+    <div class="left">
+      <div id="deptBox">
+        <div class="dept-header">
+          <span id="deptName" contenteditable="true"></span>
+          <button id="deptToggle">▾ Procesos</button>
+          <button id="deptSaveBtn">💾</button>
+        </div>
+      </div>
+      <div id="processList"></div>
+    </div>
     <div class="right" id="modules"></div>
   </div>
 
@@ -495,21 +539,51 @@
   <div id="paToast" class="pa-toast"></div>
 
 <script>
-/* ===== Utilidades de visibilidad ===== */
+/* ===== Utilidades ===== */
 function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
 function hideBlock(el){ if(!el) return; el.classList.add('hide'); el.style.display='none'; el.setAttribute('aria-hidden','true'); }
 function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
 
-/* ===== Estado / Persistencia ===== */
 const LSKEY='pa_v3_connectors_3d';
+const SNAP_KEY='PA_SNAPSHOT_V1';
 const RESPONSABLES=['Audiólogo','Responsable','Otros'];
 const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6ff','#a0e7e5','#c7f9cc','#fbcfe8','#fde68a','#bbf7d0'];
 const uid=()=>'p'+Math.random().toString(36).slice(2,9);
 const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/${p(d.getMonth()+1)}/${p(d.getFullYear())}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`};
 
-const state={processes:[]};
+const state={processes:[],departmentName:'Audiología',deptOpen:false};
 let activePid=null;
 
+/* ===== Toast global ===== */
+const toastEl=document.getElementById('paToast');
+function toast(msg){
+  toastEl.textContent=msg;
+  toastEl.classList.add('show');
+  setTimeout(()=>toastEl.classList.remove('show'),2200);
+}
+window._paToast = toast;
+
+/* ===== Estado / carga ===== */
+function normaliseState(){
+  if(!state.departmentName) state.departmentName='Audiología';
+  if(typeof state.deptOpen!=='boolean') state.deptOpen=false;
+  state.processes.forEach(p=>{
+    p._openDetail=false;
+    p.modules=p.modules||[];
+    p.modules.forEach(m=>{
+      m._openDetail=false;
+      if(typeof m._stepsCollapsed!=='boolean') m._stepsCollapsed=true;
+      m.steps=m.steps||[];
+      m.steps.forEach(st=>{
+        if(st===null) return;
+        st._openDetail=false;
+        st._openBranches=false;
+        st.yes=st.yes||[];
+        st.no=st.no||[];
+      });
+    });
+  });
+}
 function save(){
   localStorage.setItem(LSKEY,JSON.stringify(state));
   document.getElementById('stamp').textContent='Última actualización '+stamp();
@@ -529,7 +603,44 @@ function load(){
   }else{
     try{ Object.assign(state,JSON.parse(raw)); }catch(e){}
   }
+  normaliseState();
   if(!activePid && state.processes[0]) activePid=state.processes[0].id;
+}
+
+/* ===== Departamento UI ===== */
+const deptNameEl=document.getElementById('deptName');
+const deptToggle=document.getElementById('deptToggle');
+const deptSaveBtn=document.getElementById('deptSaveBtn');
+function syncDeptHeader(){
+  deptNameEl.textContent = state.departmentName || 'Audiología';
+  const list=document.getElementById('processList');
+  list.style.display = state.deptOpen ? 'block':'none';
+  deptToggle.textContent = state.deptOpen ? '▴ Procesos' : '▾ Procesos';
+}
+deptNameEl.addEventListener('input',()=>{
+  state.departmentName = deptNameEl.textContent.trim() || 'Audiología';
+});
+deptNameEl.addEventListener('blur',()=>{ save(); toast('Departamento guardado'); });
+deptToggle.addEventListener('click',()=>{
+  state.deptOpen=!state.deptOpen;
+  syncDeptHeader();
+  save();
+});
+deptSaveBtn.addEventListener('click',()=>{ save(); toast('Departamento guardado'); });
+
+/* ===== helpers ===== */
+function makeStep(){ 
+  return {id:uid(),title:'Nuevo paso',detail:'',link:null,url:null,attachmentName:null,yes:[],no:[],_openBranches:false,_openDetail:false};
+}
+function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
+function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
+function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
+function hasAnyBranchContent(st){
+  const check = list => (list||[]).some(pt=>{
+    if(pt.text && pt.text.trim()) return true;
+    return (pt.children||[]).some(ch=>ch.text && ch.text.trim());
+  });
+  return check(st.yes)||check(st.no)||st.yesLink||st.noLink;
 }
 
 /* ===== Izquierda: procesos ===== */
@@ -542,30 +653,30 @@ function procRow(p){
     <div class="proc-acts">
       <button class="icon-btn" title="Detalle">▾</button>
       <button class="icon-btn" title="Renombrar">✏️</button>
+      <button class="icon-btn" title="Guardar proceso">💾</button>
       <button class="icon-btn" title="Eliminar" style="box-shadow:inset 0 0 0 #fff">🗑️</button>
     </div>`;
   row.onclick=e=>{ if(e.target.closest('.icon-btn')) return; activePid=p.id; render(); };
 
   const det=document.createElement('div'); 
-  det.className='proc-detail'+(p._openDetail?'':' hide');
-  det.setAttribute('aria-hidden', p._openDetail ? 'false':'true');
+  det.className='proc-detail hide';
+  det.setAttribute('aria-hidden','true');
   det.innerHTML=`<textarea placeholder="Detalle del proceso…">${p.detail||''}</textarea>`;
   const ta=det.querySelector('textarea');
   ta.oninput=e=>{ p.detail=e.target.value; save(); };
 
-  const [bDet,bRen,bDel]=row.querySelectorAll('.icon-btn');
+  const [bDet,bRen,bSave,bDel]=row.querySelectorAll('.icon-btn');
   bDet.onclick=e=>{
     e.stopPropagation();
-    p._openDetail=!p._openDetail;
-    toggleBlock(det,p._openDetail);
-    if(p._openDetail) setTimeout(()=>ta.focus(),0);
-    save();
+    const open=!det.classList.contains('hide');
+    toggleBlock(det,!open);
   };
   bRen.onclick=e=>{ 
     e.stopPropagation(); 
     const nn=prompt('Nombre del proceso',p.name); 
     if(nn){p.name=nn;save();render();}
   };
+  bSave.onclick=e=>{ e.stopPropagation(); save(); toast('Proceso guardado'); };
   bDel.onclick=e=>{
     e.stopPropagation();
     if(confirm('¿Eliminar proceso y todos sus subprocesos y pasos?')){
@@ -582,11 +693,12 @@ function procRow(p){
   return wrap;
 }
 function renderProcesses(){
+  syncDeptHeader();
   const box=document.getElementById('processList'); box.innerHTML='';
   state.processes.forEach(p=>box.appendChild(procRow(p)));
 }
 
-/* ===== Modal selector de proceso (banderas) ===== */
+/* ===== Modal bandera ===== */
 function openProcPicker(onPick){
   const modal=document.getElementById('procModal');
   const list=document.getElementById('procModalList'); list.innerHTML='';
@@ -602,20 +714,7 @@ function openProcPicker(onPick){
   modal.classList.remove('hide');
 }
 
-/* ===== helpers ===== */
-function makeStep(){ return {id:uid(),title:'Nuevo paso',detail:'',link:null,url:null,attachmentName:null,yes:[],no:[],_openBranches:false}; }
-function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
-function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
-function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
-function hasAnyBranchContent(st){
-  const check = list => (list||[]).some(pt=>{
-    if(pt.text && pt.text.trim()) return true;
-    return (pt.children||[]).some(ch=>ch.text && ch.text.trim());
-  });
-  return check(st.yes)||check(st.no)||st.yesLink||st.noLink;
-}
-
-/* ===== Layout serpentina 3 columnas ===== */
+/* ===== Layout 3 columnas ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -664,6 +763,7 @@ function layoutStepsSerpentine(container){
       if(step){
         step.dataset.row = r;
       }
+      wrap.style.width = cardW+'px';
     }
     y += rowHeights[r] + gapY;
   }
@@ -674,7 +774,7 @@ function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ===== Dibujo de flechas ===== */
+/* ===== Flechas ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
@@ -807,7 +907,7 @@ function drawAllFlows(){
 }
 
 /* ===== SÍ / NO ===== */
-function branchBox(p,m,st,kind,idx){
+function branchBox(p,m,st,kind){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
   const wrap=document.createElement('div'); wrap.className='branch '+(isYes?'yes':'no');
@@ -891,8 +991,11 @@ function branchBox(p,m,st,kind,idx){
   wrap.appendChild(list);
   return wrap;
 }
+
+/* ===== Paso ===== */
 function stepRow(p,m,st,index){
   const row=document.createElement('div');
+  row.style.position='relative';
 
   const sc=document.createElement('div'); sc.className='step';
   sc.style.setProperty('--proc',p.color);
@@ -926,14 +1029,16 @@ function stepRow(p,m,st,index){
     menu=document.createElement('div');
     menu.className='step-menu';
     menu.innerHTML=`
+      <button title="Guardar">💾</button>
       <button title="Detalle">📝</button>
       <button title="Sí / No">❓</button>
       <button title="Adjuntar documento">📎</button>
       <button title="Adjuntar enlace">🔗</button>
       <button title="Bandera proceso">🚩</button>
       <button title="Eliminar">🗑</button>`;
-    const [bDet,bSN,bDoc,bLink,bFlag,bDel]=menu.querySelectorAll('button');
+    const [bSave,bDet,bSN,bDoc,bLink,bFlag,bDel]=menu.querySelectorAll('button');
 
+    bSave.onclick=()=>{ save(); toast('Paso guardado'); };
     bDet.onclick=()=>{
       st._openDetail = !st._openDetail;
       toggleBlock(stepDet, st._openDetail);
@@ -1001,7 +1106,7 @@ function stepRow(p,m,st,index){
   }
 
   const stepDet=document.createElement('div');
-  stepDet.className='step-detail'+(st._openDetail?'':' hide');
+  stepDet.className='step-detail hide';
   stepDet.innerHTML=`<textarea placeholder="Detalle del paso…">${st.detail||''}</textarea>`;
   const detTa=stepDet.querySelector('textarea');
   detTa.oninput=e=>{ st.detail=e.target.value; save(); };
@@ -1009,16 +1114,16 @@ function stepRow(p,m,st,index){
 
   /* SÍ / NO */
   const branchesWrapper=document.createElement('div'); 
-  branchesWrapper.className='branches'+(st._openBranches?'':' hide');
+  branchesWrapper.className='branches hide';
 
   const branchesInner=document.createElement('div');
   branchesInner.className='branches-inner';
-  branchesInner.appendChild(branchBox(p,m,st,'no',index));
-  branchesInner.appendChild(branchBox(p,m,st,'yes',index));
+  branchesInner.appendChild(branchBox(p,m,st,'no'));
+  branchesInner.appendChild(branchBox(p,m,st,'yes'));
   branchesWrapper.appendChild(branchesInner);
 
   const collapse=document.createElement('div');
-  collapse.className='branch-collapse'+(st._openBranches?'':' hide');
+  collapse.className='branch-collapse hide';
   collapse.innerHTML='Ocultar opciones 👆';
   collapse.onclick=()=>{
     st._openBranches=false;
@@ -1077,7 +1182,8 @@ function modCard(p,m){
     <button class="pill" data-act="toggle-steps">${m._stepsCollapsed?'▾ Pasos':'▴ Pasos'}</button>
     <button class="pill" data-act="add-step">+ Paso</button>
     <button class="pill" data-act="add-subsub">+ Sub/subproceso</button>
-    <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
+    <button class="pill" data-act="save-local">💾 Guardar</button>
+    <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Cerrado'}</button>
     <button class="pill" data-act="del">–</button>`;
   const titleEl=head.querySelector('.mod-title');
   titleEl.oninput=e=>{ m.title=e.target.value; save(); };
@@ -1122,12 +1228,13 @@ function modCard(p,m){
       steps:[makeStep()],
       completed:false,
       _openDetail:false,
-      _stepsCollapsed:false,
+      _stepsCollapsed:true,
       isSubChild:true
     };
     pObj.modules.splice(idx+1,0,sub);
     save(); renderModules();
   };
+  head.querySelector('[data-act="save-local"]').onclick=()=>{ save(); toast('Subproceso guardado'); };
   head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
   head.querySelector('[data-act="del"]').onclick=()=>{
     if(confirm('¿Eliminar subproceso y todos sus pasos y sub-subprocesos?')){
@@ -1135,7 +1242,6 @@ function modCard(p,m){
       if(!pObj) return;
       let idx=pObj.modules.findIndex(x=>x.id===m.id);
       if(idx>-1){
-        // eliminar también todos los sub-subprocesos consecutivos
         pObj.modules.splice(idx,1);
         while(idx < pObj.modules.length && pObj.modules[idx].isSubChild){
           pObj.modules.splice(idx,1);
@@ -1147,8 +1253,8 @@ function modCard(p,m){
   card.appendChild(head);
 
   const det=document.createElement('div'); 
-  det.className='mod-detail'+(m._openDetail?'':' hide');
-  det.setAttribute('aria-hidden', m._openDetail ? 'false':'true');
+  det.className='mod-detail hide';
+  det.setAttribute('aria-hidden','true');
   det.innerHTML=`<textarea placeholder="Descripción del subproceso…">${m.detail||''}</textarea>`;
   const mta=det.querySelector('textarea');
   mta.oninput=e=>{ m.detail=e.target.value; save(); };
@@ -1187,8 +1293,10 @@ function renderModules(){
   titleBar.className='mod-head';
   titleBar.style.marginBottom='8px';
   titleBar.innerHTML=`<div class="mod-title" style="border:none;">${p.name} - Pasos</div>
-    <select class="sel"><option>Audiólogo</option></select>`;
+    <select class="sel"><option>Audílogo</option></select>
+    <button class="pill" id="procSaveTop">💾 Guardar</button>`;
   box.appendChild(titleBar);
+  titleBar.querySelector('#procSaveTop').onclick=()=>{ save(); toast('Proceso guardado'); };
 
   p.modules.forEach(m=> box.appendChild(modCard(p,m)));
 
@@ -1207,7 +1315,7 @@ function createModuleForProcess(pid,titleOverride,isSubChild){
     steps:[makeStep()],
     completed:false,
     _openDetail:false,
-    _stepsCollapsed:false,
+    _stepsCollapsed:true,
     isSubChild:!!isSubChild
   };
   p.modules.push(m); save(); renderModules(); return m;
@@ -1223,13 +1331,6 @@ function addStepGlobal(){
   let m=p.modules[p.modules.length-1];
   if(!m) m=createModuleForProcess(p.id,p.name+' - Pasos');
   m.steps.push(makeStep()); save(); renderModules();
-}
-
-/* ===== Render maestro ===== */
-function render(){
-  renderProcesses();
-  renderModules();
-  if (window.applyPinLockUI) window.applyPinLockUI();
 }
 
 /* ===== Buscador ===== */
@@ -1285,20 +1386,17 @@ document.getElementById('q').addEventListener('input',e=>{
   });
 });
 
-/* ===== PIN, PDF, HTML, NUBE ===== */
+/* ===== PIN, PDF, HTML, NUBE, DEPARTAMENTO ===== */
 (function(){
   const PIN_CODE = 'AR4321';
-  const SNAP_KEY = 'PA_SNAPSHOT_V1';
-  const toastEl=document.getElementById('paToast');
-  const toast=(msg)=>{ toastEl.textContent=msg; toastEl.classList.add('show'); setTimeout(()=>toastEl.classList.remove('show'),2200); };
-
-  const fileStamp = () => { const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}`; };
 
   const pinBtn  = document.getElementById('paPinBtn');
   const pdfBtn  = document.getElementById('paPdfBtn');
   const htmlBtn = document.getElementById('paHtmlBtn');
   const saveBtn = document.getElementById('paSaveCloud');
-  const loadBtn = document.getElementById('paLoadCloud');
+  const deptBtn = document.getElementById('paLoadDept');
+
+  function fileStamp(){ const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}`; }
 
   window.applyPinLockUI = function applyPinLockUI(){
     const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
@@ -1388,16 +1486,15 @@ document.getElementById('q').addEventListener('input',e=>{
     }catch(e){ console.error(e); toast('No se pudo guardar'); }
   }
 
-  function loadFromCloud(){
-    const raw=localStorage.getItem(SNAP_KEY);
-    if(!raw){ toast('No hay copia en nube'); return; }
-    try{
-      const {html}=JSON.parse(raw)||{};
-      if(!html){ toast('Copia inválida'); return; }
-      const url = URL.createObjectURL(new Blob([html],{type:'text/html'}));
-      window.open(url,'_blank','noopener');
-      setTimeout(()=>URL.revokeObjectURL(url),10000);
-    }catch(e){ console.error(e); toast('Copia dañada'); }
+  function newDepartment(){
+    const nm=prompt('Nombre del nuevo departamento', state.departmentName || 'Audiología');
+    if(nm){
+      state.departmentName = nm.trim();
+      state.deptOpen = true;
+      save();
+      renderProcesses();
+      toast('Departamento actualizado');
+    }
   }
 
   function togglePin(){
@@ -1416,14 +1513,15 @@ document.getElementById('q').addEventListener('input',e=>{
   pdfBtn?.addEventListener('click',  printAll);
   htmlBtn?.addEventListener('click', downloadHTML);
   saveBtn?.addEventListener('click', saveToCloud);
-  loadBtn?.addEventListener('click', loadFromCloud);
+  deptBtn?.addEventListener('click', newDepartment);
 
   if(sessionStorage.getItem('PA_PIN_OK')!=='1'){ applyPinLockUI(); }
 })();
 
 /* ===== Boot ===== */
 load(); document.getElementById('stamp').textContent='Última actualización '+stamp();
-render();
+renderProcesses();
+renderModules();
 document.getElementById('btnAddProcess').onclick=addProcess;
 document.getElementById('btnAddSubprocPaso').onclick=()=>{ 
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; 
@@ -1431,7 +1529,7 @@ document.getElementById('btnAddSubprocPaso').onclick=()=>{
   createModuleForProcess(p.id,p.name+' - Sub');
 };
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
-document.getElementById('btnSave').onclick=save;
+document.getElementById('btnSave').onclick=()=>{ save(); toast('Guardado general'); };
 
 /* Recalcular al redimensionar */
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
