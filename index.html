@@ -18,7 +18,7 @@
   html,body{height:100%}
   body{
     margin:0;
-    background:var(--bg) !important; /* FORZAMOS GRIS */
+    background:var(--bg) !important;
     color:var(--ink);
     font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif
   }
@@ -46,8 +46,8 @@
     flex:1 1 auto;
   }
   .title .ear{font-size:30px;line-height:1;display:inline-block;transform:translateY(2px)}
-  .btn3d{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border:0;border-radius:9999px;color:#fff;
-    background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.28),0 12px 24px rgba(0,0,0,.2);cursor:pointer}
+  .btn3d{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .8rem;border:0;border-radius:9999px;color:#fff;
+    background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.28),0 12px 24px rgba(0,0,0,.2);cursor:pointer;font-size:13px}
   .btn3d:active{transform:translateY(1px)}
   .bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
   .stamp{color:#fff;opacity:.9;font-size:12px;background:rgba(255,255,255,.14);border-radius:9999px;padding:.35rem .75rem}
@@ -84,19 +84,19 @@
   .proc-detail textarea{width:100%;min-height:72px;border-radius:10px;border:1px solid #e6e8ec;padding:.5rem;background:#fff}
 
   /* ===== Subproceso (módulo) derecha ===== */
-  .module{position:relative;background:var(--pillGrad);border-radius:14px;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);display:flex;flex-direction:column;gap:8px;padding:10px}
+  .module{position:relative;background:var(--pillGrad);border-radius:14px;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);display:flex;flex-direction:column;gap:8px;padding:10px;margin-bottom:12px}
   .mod-head{display:flex;align-items:center;gap:.5rem;background:var(--proc,#333);color:#111;border-radius:12px;padding:.5rem .7rem}
   .mod-title{flex:1;font-weight:900;border:0;background:transparent;color:#111;outline:0}
   .sel{border:1px solid #e6e8ec;background:#fff;border-radius:10px;padding:.35rem .5rem}
-  .pill{height:34px;padding:0 .75rem;background:#222;border-radius:9999px;color:#fff;border:0;cursor:pointer;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 0 rgba(0,0,0,.3),0 12px 24px rgba(0,0,0,.2)}
+  .pill{height:30px;padding:0 .6rem;background:#222;border-radius:9999px;color:#fff;border:0;cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 0 rgba(0,0,0,.3),0 12px 24px rgba(0,0,0,.2);font-size:12px;white-space:nowrap}
   .pill:active{transform:translateY(1px)}
   .badge-diana{margin-left:.25rem}
 
   .mod-detail{display:none}
   .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos (cajas pequeñas 3D) ===== */
+  /* ===== Pasos ===== */
   .steps{
     position:relative;
     z-index:0;
@@ -250,6 +250,28 @@
   body.pa-locked .is-readonly{opacity:.6;filter:saturate(.6)}
   body.pa-locked .lock-block{ pointer-events:none !important; opacity:.6; }
   body.pa-locked input[readonly], body.pa-locked textarea[readonly]{background:#f7f7f7}
+
+  /* ===== Sub-subproceso (faldón pequeño con línea discontinua) ===== */
+  .sub-chain{
+    margin-top:8px;
+    padding:8px 0 0 26px;
+    border-left:2px dashed rgba(148,163,184,.7);
+  }
+  .module.sub-module{
+    max-width:90%;
+    margin-top:6px;
+    margin-bottom:8px;
+    padding:8px;
+  }
+  .module.sub-module .mod-head{
+    border-radius:10px;
+    padding:.35rem .6rem;
+  }
+  .module.sub-module .pill{
+    height:26px;
+    font-size:11px;
+    padding:0 .5rem;
+  }
 </style>
 </head>
 <body>
@@ -328,6 +350,7 @@ function load(){
   if(!activePid && state.processes[0]) activePid=state.processes[0].id;
 }
 
+/* ===== Procesos izquierda ===== */
 function procRow(p){
   const wrap=document.createElement('div'); wrap.className='proc-item'+(p.id===activePid?' activo':'');
 
@@ -368,6 +391,7 @@ function renderProcesses(){
   state.processes.forEach(p=>box.appendChild(procRow(p)));
 }
 
+/* ===== Modal bandera ===== */
 function openProcPicker(onPick){
   const modal=document.getElementById('procModal');
   const list=document.getElementById('procModalList'); list.innerHTML='';
@@ -382,11 +406,13 @@ function openProcPicker(onPick){
   modal.classList.remove('hide');
 }
 
+/* ===== Helpers ===== */
 function makeStep(){ return {id:uid(),title:'Nuevo paso',link:null,yes:[],no:[],_openBranches:false}; }
 function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
+/* ===== Layout de pasos ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -448,6 +474,7 @@ function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
+/* ===== Flechas ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
@@ -585,6 +612,7 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
+/* ===== Si / No ===== */
 function branchBox(p,m,st,kind,idx){
   const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
@@ -658,6 +686,8 @@ function branchBox(p,m,st,kind,idx){
   wrap.appendChild(list);
   return wrap;
 }
+
+/* ===== Paso individual ===== */
 function stepRow(p,m,st,index){
   const row=document.createElement('div');
   const sc=document.createElement('div'); sc.className='step';
@@ -712,7 +742,10 @@ function stepRow(p,m,st,index){
   return row;
 }
 
+/* ===== Subproceso (módulo principal) ===== */
 function modCard(p,m){
+  if(!m.subs) m.subs=[]; /* aseguramos array para sub-subprocesos */
+
   const card=document.createElement('div'); card.className='module';
   card.style.setProperty('--proc',p.color);
   card.dataset.mid = m.id;
@@ -724,6 +757,7 @@ function modCard(p,m){
     <select class="sel">${RESPONSABLES.map(r=>`<option ${m.responsable===r?'selected':''}>${r}</option>`).join('')}</select>
     <button class="pill" data-act="toggle-detail" aria-expanded="${m._openDetail?'true':'false'}">▾ Detalle</button>
     <button class="pill" data-act="add-step">+ Paso</button>
+    <button class="pill" data-act="add-sub">+ Sub/subproceso</button>
     <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
     <button class="pill" data-act="del">–</button>`;
   const titleEl=head.querySelector('.mod-title');
@@ -739,7 +773,20 @@ function modCard(p,m){
     save();
   };
   head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
-  head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
+  head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso y sus sub-subprocesos?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
+  head.querySelector('[data-act="add-sub"]').onclick=()=>{
+    const sub={
+      id:uid(),
+      title:m.title+' - Sub',
+      responsable:RESPONSABLES[0],
+      detail:'',
+      steps:[makeStep()],
+      completed:false,
+      _openDetail:false
+    };
+    m.subs.push(sub);
+    save(); renderModules();
+  };
   card.appendChild(head);
 
   const det=document.createElement('div'); 
@@ -755,6 +802,16 @@ function modCard(p,m){
   m.steps.forEach((st,idx)=> steps.appendChild(stepRow(p,m,st,idx)));
   card.appendChild(steps);
 
+  /* sub-subprocesos: faldón pequeño conectado por línea discontinua */
+  if(m.subs && m.subs.length){
+    const chain=document.createElement('div');
+    chain.className='sub-chain';
+    m.subs.forEach(sub=>{
+      chain.appendChild(subModCard(p,m,sub));
+    });
+    card.appendChild(chain);
+  }
+
   if(m.completed){
     const d=document.createElement('span'); d.className='badge-diana'; d.textContent='🎯';
     head.appendChild(d);
@@ -762,6 +819,63 @@ function modCard(p,m){
   return card;
 }
 
+/* ===== Sub-subproceso (faldón pequeño) ===== */
+function subModCard(p,parentModule,sub){
+  const card=document.createElement('div'); card.className='module sub-module';
+  card.style.setProperty('--proc',p.color);
+  card.dataset.sid=sub.id;
+
+  const head=document.createElement('div'); head.className='mod-head';
+  head.style.setProperty('--proc',p.color);
+  head.innerHTML=`<input class="mod-title" value="${sub.title}">
+    <select class="sel">${RESPONSABLES.map(r=>`<option ${sub.responsable===r?'selected':''}>${r}</option>`).join('')}</select>
+    <button class="pill" data-act="toggle-detail" aria-expanded="${sub._openDetail?'true':'false'}">▾ Detalle</button>
+    <button class="pill" data-act="add-step">+ Paso</button>
+    <button class="pill" data-act="close">${sub.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
+    <button class="pill" data-act="del">–</button>`;
+  const titleEl=head.querySelector('.mod-title');
+  titleEl.oninput=e=>{ sub.title=e.target.value; save(); };
+  titleEl.ondblclick=()=>{ sub._openDetail=!sub._openDetail; toggleBlock(det,sub._openDetail); if(sub._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
+  head.querySelector('select').onchange=e=>{ sub.responsable=e.target.value; save(); };
+  head.querySelector('[data-act="add-step"]').onclick=()=>{ sub.steps.push(makeStep()); save(); renderModules(); };
+  head.querySelector('[data-act="toggle-detail"]').onclick=(ev)=>{
+    sub._openDetail=!sub._openDetail;
+    ev.currentTarget.setAttribute('aria-expanded', sub._openDetail?'true':'false');
+    toggleBlock(det,sub._openDetail);
+    if(sub._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0); }
+    save();
+  };
+  head.querySelector('[data-act="close"]').onclick=()=>{ sub.completed=!sub.completed; save(); renderModules(); };
+  head.querySelector('[data-act="del"]').onclick=()=>{
+    if(confirm('¿Eliminar sub/subproceso?')){
+      const arr=parentModule.subs||[];
+      const i=arr.findIndex(x=>x.id===sub.id);
+      if(i>-1){ arr.splice(i,1); save(); renderModules(); }
+    }
+  };
+  card.appendChild(head);
+
+  const det=document.createElement('div'); 
+  det.className='mod-detail'+(sub._openDetail?'':' hide');
+  det.setAttribute('aria-hidden', sub._openDetail ? 'false':'true');
+  det.innerHTML=`<textarea placeholder="Descripción del sub/subproceso…">${sub.detail||''}</textarea>`;
+  const mta=det.querySelector('textarea');
+  mta.oninput=e=>{ sub.detail=e.target.value; save(); };
+  card.appendChild(det);
+
+  const steps=document.createElement('div'); steps.className='steps';
+  steps.style.setProperty('--proc',p.color);
+  sub.steps.forEach((st,idx)=> steps.appendChild(stepRow(p,sub,st,idx)));
+  card.appendChild(steps);
+
+  if(sub.completed){
+    const d=document.createElement('span'); d.className='badge-diana'; d.textContent='🎯';
+    head.appendChild(d);
+  }
+  return card;
+}
+
+/* ===== Render derecha ===== */
 function renderModules(){
   const box=document.getElementById('modules'); box.innerHTML='';
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
@@ -773,9 +887,10 @@ function renderModules(){
   });
 }
 
+/* ===== Acciones globales ===== */
 function createModuleForProcess(pid,titleOverride){
   const p=state.processes.find(x=>x.id===pid); if(!p) return null;
-  const m={id:uid(),title:titleOverride||'Nuevo subproceso',responsable:RESPONSABLES[0],detail:'',steps:[makeStep()],completed:false,_openDetail:false};
+  const m={id:uid(),title:titleOverride||'Nuevo subproceso',responsable:RESPONSABLES[0],detail:'',steps:[makeStep()],completed:false,_openDetail:false,subs:[]};
   p.modules.push(m); save(); renderModules(); return m;
 }
 function addProcess(){
@@ -791,12 +906,14 @@ function addStepGlobal(){
   m.steps.push(makeStep()); save(); renderModules();
 }
 
+/* ===== Render maestro ===== */
 function render(){
   renderProcesses();
   renderModules();
   if (window.applyPinLockUI) window.applyPinLockUI();
 }
 
+/* ===== Boot ===== */
 load(); document.getElementById('stamp').textContent='Última actualización '+stamp();
 window.applyPinLockUI = window.applyPinLockUI || function(){}; 
 render();
@@ -807,6 +924,7 @@ document.getElementById('btnSave').onclick=save;
 
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
 
+/* ===== Buscador ===== */
 function stepMatches(st, q){
   if(!q) return true;
   const ql = q.toLowerCase();
@@ -836,6 +954,17 @@ function moduleMatches(m, q){
   if(Array.isArray(m.steps)){
     for(const st of m.steps){
       if(stepMatches(st, ql)) return true;
+    }
+  }
+  if(Array.isArray(m.subs)){
+    for(const s of m.subs){
+      if((s.title||'').toLowerCase().includes(ql)) return true;
+      if((s.detail||'').toLowerCase().includes(ql)) return true;
+      if(Array.isArray(s.steps)){
+        for(const st of s.steps){
+          if(stepMatches(st, ql)) return true;
+        }
+      }
     }
   }
   return false;
@@ -874,6 +1003,7 @@ document.getElementById('q').addEventListener('input',e=>{
   });
 });
 
+/* ===== PIN / PDF / HTML / Nube ===== */
 (function(){
   const PIN_CODE = 'AR4321';
   const SNAP_KEY = 'PA_SNAPSHOT_V1';
@@ -916,7 +1046,7 @@ document.getElementById('q').addEventListener('input',e=>{
       s.classList.toggle('is-readonly', locked);
     });
 
-    document.querySelectorAll('[data-act="add-step"], [data-act="close"], [data-act="del"]').forEach(b=>{
+    document.querySelectorAll('[data-act="add-step"], [data-act="close"], [data-act="del"], [data-act="add-sub"]').forEach(b=>{
       b.classList.toggle('lock-block', locked);
       b.toggleAttribute('disabled', locked);
     });
@@ -941,7 +1071,7 @@ document.getElementById('q').addEventListener('input',e=>{
       '#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso',
       '.proc-item .icon-btn[title="Renombrar"]',
       '.proc-item .icon-btn[title="Eliminar"]',
-      '[data-act="add-step"]','[data-act="close"]','[data-act="del"]',
+      '[data-act="add-step"]','[data-act="close"]','[data-act="del"]','[data-act="add-sub"]',
       '.step .mini[title="Eliminar"]','.step .mini[title="Bandera paso"]',
       '.branch .p-mini'
     ].join(',');
