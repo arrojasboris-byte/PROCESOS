@@ -214,7 +214,7 @@
     padding:6px 6px 8px;
     position:relative;
   }
-  /* línea discontinua desde faldón negro a faldón negro */
+  /* línea discontinua faldón negro -> faldón negro */
   .module.module-subchild::before{
     content:"";position:absolute;left:42px;top:-22px;height:22px;
     border-left:1.5px dashed rgba(148,163,184,.9);
@@ -264,7 +264,7 @@
     padding:.45rem;background:#fff;font-size:12px;
   }
   .mod-fold-hint{
-    margin:5px 0 2px 26px;
+    margin:5px 0 2px 60px;
     font-size:11px;
     color:#374151;
     cursor:pointer;
@@ -276,6 +276,8 @@
     border-radius:999px;
     border:1px solid #d1d5db;
     box-shadow:0 1px 3px rgba(148,163,184,.7);
+    font-weight:700;
+    z-index:4;
   }
   .mod-fold-hint:hover{background:#d1d5db;color:#111827;}
 
@@ -403,15 +405,23 @@
     cursor:pointer;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);font-size:11px;
   }
   .p-mini:active{transform:translateY(1px)}
-  .p-toggle{background:#e5e7eb;font-weight:900;}
-  .p-extra{display:flex;gap:.16rem;}
   .children{margin-left:30px;display:flex;flex-direction:column;gap:.16rem;}
 
   .branch-indicator{
-    margin:6px 0 0 46px;font-size:11px;color:#374151;cursor:pointer;
-    display:inline-flex;align-items:center;gap:4px;background:#e5e7eb;
-    padding:2px 9px;border-radius:999px;border:1px solid #d1d5db;
-    box-shadow:0 1px 3px rgba(148,163,184,.7);z-index:4;
+    margin:6px 0 0 60px;
+    font-size:11px;
+    color:#374151;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    background:#e5e7eb;
+    padding:2px 9px;
+    border-radius:999px;
+    border:1px solid #d1d5db;
+    box-shadow:0 1px 3px rgba(148,163,184,.7);
+    font-weight:700;
+    z-index:4;
   }
   .branch-indicator:hover{background:#d1d5db;color:#111827;}
 
@@ -593,7 +603,7 @@ function openProcPicker(onPick){
 }
 
 /* ===== helpers ===== */
-function makeStep(){ return {id:uid(),title:'Nuevo paso',detail:'',link:null,yes:[],no:[],_openBranches:false}; }
+function makeStep(){ return {id:uid(),title:'Nuevo paso',detail:'',link:null,url:null,attachmentName:null,yes:[],no:[],_openBranches:false}; }
 function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
@@ -622,8 +632,7 @@ function layoutStepsSerpentine(container){
   const cardW = firstStep.offsetWidth;
   const gapX = 24;
   const gapY = 46;
-  const innerWidth = container.clientWidth || (cardW + gapX);
-  const cols = 3; // siempre 3 pasos horizontales
+  const cols = 3;
 
   const heights = wrappers.map(w => w.offsetHeight);
 
@@ -639,13 +648,12 @@ function layoutStepsSerpentine(container){
 
   let y = 0;
   for(let r=0;r<totalRows;r++){
-    const dirRight = true; // siempre izquierda -> derecha
     const rowStartIndex = r*cols;
     const rowEndIndex = Math.min(rowStartIndex+cols, wrappers.length);
     for(let k=rowStartIndex;k<rowEndIndex;k++){
       const wrap = wrappers[k];
       const idxInRow = k - rowStartIndex;
-      const col = dirRight ? idxInRow : (cols - 1 - idxInRow);
+      const col = idxInRow;
       const left = col * (cardW + gapX);
 
       wrap.style.position='absolute';
@@ -655,7 +663,6 @@ function layoutStepsSerpentine(container){
       const step = wrap.querySelector('.step');
       if(step){
         step.dataset.row = r;
-        step.dataset.rowDir = dirRight ? '1' : '-1';
       }
     }
     y += rowHeights[r] + gapY;
@@ -922,9 +929,10 @@ function stepRow(p,m,st,index){
       <button title="Detalle">📝</button>
       <button title="Sí / No">❓</button>
       <button title="Adjuntar documento">📎</button>
+      <button title="Adjuntar enlace">🔗</button>
       <button title="Bandera proceso">🚩</button>
       <button title="Eliminar">🗑</button>`;
-    const [bDet,bSN,bDoc,bFlag,bDel]=menu.querySelectorAll('button');
+    const [bDet,bSN,bDoc,bLink,bFlag,bDel]=menu.querySelectorAll('button');
 
     bDet.onclick=()=>{
       st._openDetail = !st._openDetail;
@@ -949,6 +957,13 @@ function stepRow(p,m,st,index){
         }
       };
       input.click();
+    };
+    bLink.onclick=()=>{
+      const url = prompt('URL del enlace (https://...)', st.url || '');
+      if(url){
+        st.url=url.trim();
+        save(); renderModules();
+      }
     };
     bFlag.onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
     bDel.onclick=()=>{
@@ -975,6 +990,13 @@ function stepRow(p,m,st,index){
     const chip=document.createElement('div');
     chip.className='chip'; chip.style.background='#e5e7eb'; chip.style.margin='4px 0 0 54px';
     chip.innerHTML=`📎 <small>${st.attachmentName}</small>`;
+    row.appendChild(chip);
+  }
+  if(st.url){
+    const chip=document.createElement('div');
+    chip.className='chip'; chip.style.background='#dbeafe'; chip.style.margin='4px 0 0 54px'; chip.style.cursor='pointer';
+    chip.innerHTML=`🔗 <small>Abrir enlace</small>`;
+    chip.onclick=()=>{ window.open(st.url,'_blank'); };
     row.appendChild(chip);
   }
 
@@ -1011,7 +1033,7 @@ function stepRow(p,m,st,index){
 
   const indicator=document.createElement('div');
   indicator.className='branch-indicator hide';
-  indicator.innerHTML='ver más 👇';
+  indicator.innerHTML='<strong>ver más 👇</strong>';
   indicator.onclick=()=>{
     st._openBranches=true;
     toggleBlock(branchesWrapper,true);
@@ -1111,9 +1133,13 @@ function modCard(p,m){
     if(confirm('¿Eliminar subproceso y todos sus pasos y sub-subprocesos?')){
       const pObj=state.processes.find(x=>x.id===p.id);
       if(!pObj) return;
-      const idx=pObj.modules.findIndex(x=>x.id===m.id);
+      let idx=pObj.modules.findIndex(x=>x.id===m.id);
       if(idx>-1){
+        // eliminar también todos los sub-subprocesos consecutivos
         pObj.modules.splice(idx,1);
+        while(idx < pObj.modules.length && pObj.modules[idx].isSubChild){
+          pObj.modules.splice(idx,1);
+        }
         save();renderModules();
       }
     }
@@ -1130,7 +1156,7 @@ function modCard(p,m){
 
   const foldHint=document.createElement('div');
   foldHint.className='mod-fold-hint'+(m._stepsCollapsed && m.steps.length ? '' : ' hide');
-  foldHint.innerHTML='ver más 👇';
+  foldHint.innerHTML='<strong>ver más 👇</strong>';
   foldHint.onclick=()=>{
     m._stepsCollapsed=false;
     steps.classList.remove('hide');
@@ -1142,9 +1168,7 @@ function modCard(p,m){
 
   const steps=document.createElement('div'); steps.className='steps'+(m._stepsCollapsed?' hide':'');
   steps.style.setProperty('--proc',p.color);
-  const inner=document.createElement('div');
-  m.steps.forEach((st,idx)=> inner.appendChild(stepRow(p,m,st,idx)));
-  steps.appendChild(inner);
+  m.steps.forEach((st,idx)=> steps.appendChild(stepRow(p,m,st,idx)));
   card.appendChild(steps);
 
   if(m.completed){
