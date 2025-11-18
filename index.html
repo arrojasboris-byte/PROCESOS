@@ -35,8 +35,8 @@
     display:flex;
     flex-wrap:wrap;
     align-items:center;
-    gap:.7rem;
-    padding:.6rem .9rem .75rem;
+    gap:.6rem;
+    padding:.55rem .9rem .7rem;
     background:var(--grad);
     color:#f9fafb;
     box-shadow:0 8px 20px rgba(0,0,0,.45);
@@ -45,7 +45,7 @@
   .title{
     display:flex;
     align-items:center;
-    gap:.4rem;
+    gap:.35rem;
     font-weight:900;
     font-size:22px;
     flex:1 1 auto;
@@ -62,19 +62,22 @@
   .btn3d{
     display:inline-flex;
     align-items:center;
-    gap:.45rem;
-    padding:.55rem 1rem;
+    justify-content:center;
+    gap:.35rem;
+    padding:.42rem .85rem;
     border:0;
     border-radius:9999px;
     color:#f9fafb;
     background:linear-gradient(180deg,var(--accent) 0%,var(--accent-dark) 100%);
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,.25),
-      0 4px 0 rgba(0,0,0,.65),
-      0 12px 24px rgba(0,0,0,.6);
+      0 3px 0 rgba(0,0,0,.65),
+      0 11px 20px rgba(0,0,0,.6);
     cursor:pointer;
     font-weight:700;
-    font-size:14px;
+    font-size:13px;
+    line-height:1;
+    min-height:34px;
   }
   .btn3d:active{
     transform:translateY(1px);
@@ -83,7 +86,7 @@
       0 2px 0 rgba(0,0,0,.6),
       0 8px 16px rgba(0,0,0,.6);
   }
-  .bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+  .bar-right{margin-left:auto;display:flex;align-items:center;gap:.45rem}
   .stamp{
     color:#f9fafb;
     opacity:.9;
@@ -93,7 +96,7 @@
     padding:.3rem .75rem;
     box-shadow:0 2px 8px rgba(0,0,0,.5);
   }
-  .bar-right .btn3d svg{width:15px;height:15px}
+  .bar-right .btn3d svg{width:14px;height:14px}
   .search{
     flex:1 1 100%;
     display:flex;
@@ -134,8 +137,6 @@
     border-radius:0;
     display:flex;
     flex-direction:column;
-    max-height:calc(100dvh - 60px);
-    overflow-y:auto;
   }
   .right{
     padding:10px;
@@ -143,25 +144,17 @@
     flex-direction:column;
     gap:10px;
     position:relative;
-    max-height:calc(100dvh - 60px);
-    overflow:auto;
     border-radius:0;
     box-shadow:var(--shadow);
   }
-  #processList{
-    flex:1 1 auto;
-  }
+  #processList{flex:1 1 auto;}
   @media (max-width:1020px){
     .wrap{
       grid-template-columns:1fr;
     }
     .left{
-      max-height:none;
       border-right:0;
       border-bottom:1px solid #e5e7eb;
-    }
-    .right{
-      max-height:none;
     }
   }
 
@@ -192,8 +185,8 @@
   .proc-name{flex:1;font-weight:800;font-size:14px}
   .proc-acts{display:flex;align-items:center;gap:.3rem}
   .icon-btn{
-    width:28px;
-    height:28px;
+    width:26px;
+    height:26px;
     border-radius:11px;
     border:0;
     background:#f2f4f8;
@@ -258,11 +251,11 @@
     display:flex;
     flex-wrap:wrap;
     align-items:center;
-    gap:.45rem;
+    gap:.4rem;
     background:linear-gradient(135deg,#020617 0%,#1f2937 50%,#020617 100%);
     color:#e5e7eb;
     border-radius:12px;
-    padding:.45rem .7rem;
+    padding:.4rem .7rem;
     box-shadow:0 4px 10px rgba(0,0,0,.45);
     border-left:4px solid var(--proc,#ef4444);
   }
@@ -281,13 +274,23 @@
     background:#0f172a;
     color:#e5e7eb;
     border-radius:10px;
-    padding:.3rem .5rem;
-    font-size:13px;
+    padding:.25rem .45rem;
+    font-size:12px;
     box-shadow:0 1px 0 rgba(255,255,255,.1);
   }
+  .resp-extra{
+    border:1px solid #4b5563;
+    background:#020617;
+    color:#e5e7eb;
+    border-radius:9999px;
+    padding:.2rem .5rem;
+    font-size:11px;
+    min-width:110px;
+    box-shadow:0 1px 0 rgba(255,255,255,.12);
+  }
   .pill{
-    height:32px;
-    padding:0 .75rem;
+    height:30px;
+    padding:0 .7rem;
     background:#111827;
     border-radius:9999px;
     color:#f9fafb;
@@ -295,9 +298,9 @@
     cursor:pointer;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,.06),
-      0 4px 0 rgba(0,0,0,.7),
-      0 12px 22px rgba(0,0,0,.75);
-    font-size:13px;
+      0 3px 0 rgba(0,0,0,.7),
+      0 10px 18px rgba(0,0,0,.75);
+    font-size:12px;
     font-weight:700;
   }
   .pill:active{transform:translateY(1px)}
@@ -626,7 +629,7 @@
     color:#111827;
   }
 
-  /* Botón "ver menos" dentro del panel abierto */
+  /* Botón "ver menos" */
   .branch-collapse{
     margin:3px 0 4px auto;
     font-size:10px;
@@ -682,8 +685,6 @@
       box-shadow:none;
       border-radius:0;
       padding:0;
-      max-height:none;
-      overflow:visible;
     }
     .module{
       page-break-inside:avoid;
@@ -749,6 +750,9 @@
     </div>
   </div>
 
+  <!-- selector de archivos global para adjuntar documentos -->
+  <input type="file" id="paFilePicker" style="display:none" multiple />
+
 <script>
 /* ===== util visibilidad ===== */
 function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
@@ -764,6 +768,7 @@ const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/
 
 const state={processes:[]};
 let activePid=null;
+let pendingDocTarget=null;
 
 function save(){ localStorage.setItem(LSKEY,JSON.stringify(state)); document.getElementById('stamp').textContent='Última actualización '+stamp(); }
 function load(){
@@ -1005,7 +1010,6 @@ function drawFlowForSteps(container){
     }
   }
 
-  /* rect combinado de panel SÍ/NO abierto o faldón "ver más" */
   function getBranchesRectForStep(stepEl){
     if(!stepEl || !stepEl.parentElement) return null;
     const parent = stepEl.parentElement;
@@ -1446,11 +1450,11 @@ function stepRow(p,m,st,index){
     menu.classList.add('hide');
   };
   menuDoc.onclick=()=>{
-    const doc = prompt('Nombre/ubicación del documento:', '');
-    if(doc){
-      st.docs.push(doc);
-      miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
-      save();
+    pendingDocTarget = st;
+    const fp=document.getElementById('paFilePicker');
+    if(fp){
+      fp.value='';
+      fp.click();
     }
     menu.classList.add('hide');
   };
@@ -1537,6 +1541,7 @@ function modCard(p,m){
   head.style.setProperty('--proc',p.color);
   head.innerHTML=`<input class="mod-title" value="${m.title}">
     <select class="sel">${RESPONSABLES.map(r=>`<option ${m.responsable===r?'selected':''}>${r}</option>`).join('')}</select>
+    <input class="resp-extra" placeholder="Nombre otros…" value="${m.respOtro||''}" style="${m.responsable==='Otros'?'display:inline-block':'display:none'}">
     <button class="pill" data-act="toggle-detail" aria-expanded="${m._openDetail?'true':'false'}">▾ Detalle</button>
     <button class="pill" data-act="toggle-steps" aria-expanded="${m._openSteps===false?'false':'true'}">▾ Pasos</button>
     <button class="pill" data-act="add-submodule">+ Sub/subproceso</button>
@@ -1547,7 +1552,22 @@ function modCard(p,m){
   titleEl.oninput=e=>{ m.title=e.target.value; titleEl.title=m.title||''; save(); };
   titleEl.title = m.title || '';
   titleEl.ondblclick=()=>{ m._openDetail=!m._openDetail; toggleBlock(det,m._openDetail); if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
-  head.querySelector('select').onchange=e=>{ m.responsable=e.target.value; save(); };
+
+  const selEl=head.querySelector('select');
+  const respExtra=head.querySelector('.resp-extra');
+  selEl.onchange=e=>{
+    m.responsable=e.target.value;
+    if(m.responsable==='Otros'){
+      respExtra.style.display='inline-block';
+    }else{
+      respExtra.style.display='none';
+    }
+    save();
+  };
+  respExtra.oninput=e=>{
+    m.respOtro=e.target.value;
+    save();
+  };
 
   head.querySelector('[data-act="add-step"]').onclick=()=>{
     m.steps.push(makeStep());
@@ -1564,7 +1584,15 @@ function modCard(p,m){
     save();
   };
   head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
-  head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
+
+  head.querySelector('[data-act="del"]').onclick=()=>{
+    if(confirm('¿Eliminar subproceso, sus pasos y sub-subprocesos?')){
+      const idToRemove = m.id;
+      p.modules = p.modules.filter(mod=>mod.id!==idToRemove && mod.parentId!==idToRemove);
+      save();
+      renderModules();
+    }
+  };
 
   const btnSub = head.querySelector('[data-act="add-submodule"]');
   if(btnSub){
@@ -1574,6 +1602,7 @@ function modCard(p,m){
         id:uid(),
         title: (m.title || 'Subproceso') + ' - Sub',
         responsable: m.responsable || RESPONSABLES[0],
+        respOtro: m.respOtro || '',
         detail:'',
         steps:[makeStep()],
         completed:false,
@@ -1661,6 +1690,7 @@ function createModuleForProcess(pid,titleOverride){
     id:uid(),
     title:defaultTitle,
     responsable:RESPONSABLES[0],
+    respOtro:'',
     detail:'',
     steps:[makeStep()],
     completed:false,
@@ -1776,6 +1806,21 @@ document.getElementById('q').addEventListener('input',e=>{
     el.classList.toggle('hide', !visible);
   });
 });
+
+/* ===== File picker docs ===== */
+const filePicker = document.getElementById('paFilePicker');
+if(filePicker){
+  filePicker.addEventListener('change', e=>{
+    if(!pendingDocTarget) return;
+    const files = Array.from(e.target.files || []);
+    files.forEach(f=>{
+      if(!pendingDocTarget.docs) pendingDocTarget.docs=[];
+      pendingDocTarget.docs.push(f.name);
+    });
+    pendingDocTarget=null;
+    save();
+  });
+}
 
 /* =======================================================================
    UTILIDADES (PIN, PDF, HTML, NUBE)
