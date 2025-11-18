@@ -231,22 +231,24 @@
     border:1px dashed rgba(148,163,184,.85);
     box-shadow:0 4px 12px rgba(15,23,42,.12);
     padding:6px 6px 8px;
+    position:relative;
   }
+  /* línea discontinua desde panel negro padre -> panel negro sub */
   .module.module-subchild::before{
     content:"";
     position:absolute;
-    left:-20px;
-    top:26px;
-    width:18px;
-    border-bottom:1.5px dashed rgba(148,163,184,.9);
+    left:70px;
+    top:-26px;
+    height:26px;
+    border-left:1.5px dashed rgba(148,163,184,.9);
   }
   .module.module-subchild::after{
     content:"";
     position:absolute;
-    left:-20px;
-    top:-6px;
-    height:32px;
-    border-left:1.5px dashed rgba(148,163,184,.9);
+    left:0;
+    top:-26px;
+    width:70px;
+    border-top:1.5px dashed rgba(148,163,184,.9);
   }
   .module-subchild .mod-head{
     margin:2px 22px 4px 22px;
@@ -603,19 +605,42 @@
     gap:.16rem;
   }
 
+  /* Faldón "ver más" en gris */
   .branch-indicator{
     margin:3px 0 0 36px;
     font-size:11px;
-    color:#6b7280;
+    color:#374151;
     cursor:pointer;
     display:inline-flex;
     align-items:center;
     gap:4px;
-  }
-  .branch-indicator span:first-child{
-    font-weight:700;
+    background:#e5e7eb;
+    padding:2px 9px;
+    border-radius:999px;
+    border:1px solid #d1d5db;
+    box-shadow:0 1px 3px rgba(148,163,184,.7);
   }
   .branch-indicator:hover{
+    background:#d1d5db;
+    color:#111827;
+  }
+
+  /* Botón "ver menos" dentro del panel abierto */
+  .branch-collapse{
+    margin:3px 0 4px auto;
+    font-size:10px;
+    color:#374151;
+    cursor:pointer;
+    background:#e5e7eb;
+    padding:1px 8px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    border:1px solid #d1d5db;
+  }
+  .branch-collapse:hover{
+    background:#d1d5db;
     color:#111827;
   }
 
@@ -834,7 +859,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina (3 columnas) ===== */
+/* ===== Layout serpentina (3 columnas fijas) ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -851,14 +876,11 @@ function layoutStepsSerpentine(container){
   const cardW = firstStep.offsetWidth || 290;
   const gapX = 34;
   const gapY = 24;
-  const maxCols = 3;
 
   const containerWidthRaw = container.clientWidth || (cardW+gapX);
-  const containerWidth = Math.max(120, containerWidthRaw - 20);
-  const cols = Math.min(
-    maxCols,
-    Math.max(1, Math.floor(containerWidth / (cardW + gapX)))
-  );
+
+  /* siempre 3 pasos horizontales cuando haya ≥3 */
+  const cols = Math.min(3, wrappers.length);
 
   const heights = wrappers.map(w => w.offsetHeight);
 
@@ -1433,6 +1455,19 @@ function stepRow(p,m,st,index){
   branchesInner.className='branches-inner';
 
   if((locked && hasAny) || st._editingBranches){
+    if(st._editingBranches && !locked){
+      const collapse = document.createElement('div');
+      collapse.className='branch-collapse';
+      collapse.innerHTML='<span>ver menos</span><span>▲</span>';
+      collapse.onclick=()=>{
+        st._editingBranches=false;
+        st._openBranches=false;
+        save();
+        renderModules();
+      };
+      branchesWrapper.appendChild(collapse);
+    }
+
     branchesInner.appendChild(branchBox(p,m,st,'no',index));
     branchesInner.appendChild(branchBox(p,m,st,'yes',index));
     branchesWrapper.appendChild(branchesInner);
