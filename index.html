@@ -6,41 +6,38 @@
 <title>PROCESOS AUDIO</title>
 <style>
   :root{
-    --bg:#0b1120;
-    --bg-soft:#111827;
-    --surface:#111827;
+    --bg:#020617;
+    --bg-soft:#0b1120;
     --panel:#020617;
-    --accent:#ef4444;
-    --accent-soft:#fecaca;
+    --surface:#0f172a;
     --ink:#f9fafb;
     --muted:#9ca3af;
-    --soft:#1f2937;
-    --shadow:0 18px 40px rgba(0,0,0,.55);
+    --accent:#ef4444;
+    --accent-soft:#fecaca;
+    --shadow:0 18px 40px rgba(0,0,0,.75);
     --ring:0 0 0 2px rgba(248,113,113,.5);
-    --stepGrad:#fefce8;
     --stepSide:#fed7aa;
+    --stepBg:#fefce8;
     --yes:#22c55e;
     --no:#f97316;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-  body{background:radial-gradient(circle at top,#1f2937 0,#020617 45%,#020617 100%);color:var(--ink);}
+  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;overflow:hidden;background:radial-gradient(circle at 0 0,#111827 0,#020617 50%,#020617 100%);color:var(--ink);}
 
   /* ===== Top bar ===== */
   .topbar{
     display:flex;
     align-items:center;
-    gap:.75rem;
-    padding:.4rem 1rem .55rem;
-    background:linear-gradient(90deg,#020617,#020617 20%,#111827 60%,#020617 100%);
-    box-shadow:0 8px 22px rgba(0,0,0,.8);
-    position:relative;
-    z-index:20;
+    gap:.6rem;
+    padding:.45rem 1rem .6rem;
+    background:linear-gradient(90deg,#020617,#020617 25%,#0b1120 70%,#020617 100%);
+    box-shadow:0 10px 26px rgba(0,0,0,.85);
+    z-index:40;
   }
   .logo{
     display:flex;
     align-items:center;
-    gap:.5rem;
+    gap:.45rem;
     font-weight:900;
     letter-spacing:.04em;
     font-size:20px;
@@ -48,148 +45,141 @@
   }
   .logo span.ear{font-size:26px;transform:translateY(1px)}
   .search{
-    flex:1;
-    max-width:360px;
-    background:#020617;
-    border-radius:999px;
-    padding:.25rem .8rem;
     display:flex;
     align-items:center;
-    gap:.35rem;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 0 1px rgba(15,23,42,.8);
+    gap:.3rem;
+    background:#020617;
+    border-radius:999px;
+    padding:.25rem .7rem;
+    box-shadow:inset 0 1px 0 rgba(148,163,184,.4),0 0 0 1px rgba(15,23,42,.9);
+    max-width:320px;
+    flex:1;
   }
+  .search span{font-size:13px;opacity:.75}
   .search input{
-    width:100%;border:0;background:transparent;outline:0;
-    color:var(--ink);font-size:13px;
+    border:0;background:transparent;outline:0;color:var(--ink);
+    font-size:13px;width:100%;
   }
 
   .btn3d{
     display:inline-flex;
     align-items:center;
-    gap:.35rem;
-    padding:.38rem .7rem;
+    gap:.3rem;
+    padding:.32rem .7rem;
     border-radius:999px;
     border:0;
-    font-size:12px;
+    font-size:11px;
     font-weight:700;
-    letter-spacing:.02em;
+    letter-spacing:.03em;
     cursor:pointer;
     color:#fee2e2;
     background:radial-gradient(circle at 20% 0,#f97373,#b91c1c);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.25),
+      inset 0 1px 0 rgba(255,255,255,.28),
       0 2px 0 rgba(127,29,29,1),
-      0 9px 18px rgba(0,0,0,.85);
+      0 9px 18px rgba(0,0,0,.9);
     white-space:nowrap;
   }
-  .btn3d small{font-size:11px;font-weight:600}
-  .btn3d:active{transform:translateY(1px);box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.2),
+  .btn3d span.icon{font-size:13px}
+  .btn3d:active{
+    transform:translateY(1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.22),
       0 1px 0 rgba(127,29,29,1),
-      0 5px 12px rgba(0,0,0,.8);
+      0 6px 12px rgba(0,0,0,.85);
   }
-  .btn3d svg{width:13px;height:13px}
   .btn3d-ghost{
     background:#020617;
     color:#e5e7eb;
     box-shadow:
-      inset 0 1px 0 rgba(148,163,184,.3),
+      inset 0 1px 0 rgba(148,163,184,.35),
       0 2px 0 rgba(15,23,42,1),
-      0 9px 20px rgba(0,0,0,.9);
+      0 9px 18px rgba(0,0,0,.95);
   }
-  .btn3d-ghost span.icon{font-size:13px}
+
+  .dept-wrap{
+    display:flex;
+    align-items:center;
+    gap:.35rem;
+    margin-left:.8rem;
+  }
+  .dept-select{
+    border-radius:999px;
+    border:1px solid rgba(148,163,184,.7);
+    background:#020617;
+    color:#e5e7eb;
+    font-size:12px;
+    padding:.28rem .7rem;
+  }
 
   .top-right{
     margin-left:auto;
     display:flex;
     align-items:center;
-    gap:.45rem;
+    gap:.4rem;
   }
   .stamp{
     padding:.2rem .7rem;
     border-radius:999px;
-    font-size:11px;
+    background:#020617;
     color:var(--muted);
-    background:rgba(15,23,42,.9);
+    font-size:11px;
     box-shadow:inset 0 1px 0 rgba(148,163,184,.35);
   }
 
-  /* Departamento selector */
-  .dept-wrap{
-    display:flex;
-    align-items:center;
-    gap:.4rem;
-    margin-left:1.2rem;
-  }
-  .dept-select{
-    background:#020617;
-    color:#e5e7eb;
-    border-radius:999px;
-    padding:.32rem .7rem;
-    border:1px solid rgba(148,163,184,.6);
-    font-size:12px;
-    cursor:pointer;
-  }
-
-  /* ===== Layout main ===== */
+  /* ===== Layout ===== */
   .layout{
-    height:calc(100% - 52px);
+    height:calc(100% - 56px);
     display:grid;
-    grid-template-columns:310px minmax(0,1fr);
-    overflow:hidden;
+    grid-template-columns:300px minmax(0,1fr);
   }
   @media (max-width:960px){
     .layout{grid-template-columns:1fr;grid-template-rows:260px minmax(0,1fr);}
   }
-
-  /* LEFT: Departments + processes */
   .left{
-    background:radial-gradient(circle at 0 0,#1f2937 0,#020617 55%);
-    border-right:1px solid rgba(15,23,42,.9);
+    background:radial-gradient(circle at 0 0,#111827 0,#020617 60%);
+    border-right:1px solid rgba(15,23,42,.95);
     padding:10px 10px 12px;
     overflow-y:auto;
   }
+  .right{
+    background:radial-gradient(circle at 0 0,#020617 0,#020617 60%);
+    padding:10px;
+    overflow:auto;
+  }
+
+  /* ===== Departments & processes left ===== */
   .dept-block{
     margin-bottom:10px;
     border-radius:16px;
-    background:rgba(15,23,42,.96);
-    box-shadow:0 12px 30px rgba(0,0,0,.9);
+    background:#020617;
+    box-shadow:0 12px 26px rgba(0,0,0,.9);
     padding:6px 6px 8px;
   }
   .dept-head{
     display:flex;
     align-items:center;
     gap:.4rem;
-    padding:.25rem .5rem .4rem;
+    padding:.25rem .4rem .35rem;
   }
   .dept-title{
-    flex:1;
-    font-size:13px;
-    font-weight:800;
-    cursor:pointer;
+    flex:1;font-size:13px;font-weight:800;cursor:pointer;
   }
   .dept-tag{
     font-size:11px;
-    padding:.12rem .45rem;
+    padding:.1rem .45rem;
     border-radius:999px;
     background:#4b5563;
     color:#e5e7eb;
   }
 
-  .proc-list{
-    margin-top:4px;
-    padding-top:4px;
-    border-top:1px solid rgba(31,41,55,.9);
-  }
-
+  .proc-list{margin-top:4px;padding-top:4px;border-top:1px solid rgba(31,41,55,.9);}
   .proc-item{
-    display:flex;
-    flex-direction:column;
-    gap:.25rem;
+    display:flex;flex-direction:column;gap:.2rem;
     padding:.35rem .45rem;
     margin-bottom:4px;
     border-radius:12px;
-    background:linear-gradient(135deg,#020617,#020617 40%,#111827 100%);
+    background:linear-gradient(135deg,#020617,#020617 50%,#111827 100%);
     box-shadow:0 1px 0 rgba(148,163,184,.7);
     cursor:pointer;
   }
@@ -197,60 +187,31 @@
     box-shadow:var(--ring),0 1px 0 rgba(148,163,184,.9);
   }
   .proc-main{
-    display:flex;
-    align-items:center;
-    gap:.4rem;
+    display:flex;align-items:center;gap:.4rem;
   }
   .dot{
     width:10px;height:10px;border-radius:999px;
-    box-shadow:inset 0 0 0 2px rgba(15,23,42,.85);
+    box-shadow:inset 0 0 0 2px rgba(15,23,42,.9);
   }
-  .proc-name{
-    flex:1;
-    font-size:13px;
-    font-weight:800;
-  }
-  .proc-actions{
-    display:flex;
-    align-items:center;
-    gap:.25rem;
-  }
+  .proc-name{flex:1;font-size:13px;font-weight:800;}
+  .proc-actions{display:flex;align-items:center;gap:.25rem;}
   .icon-btn{
-    width:26px;
-    height:26px;
-    border-radius:999px;
-    border:0;
-    background:#020617;
-    color:#e5e7eb;
+    width:26px;height:26px;border-radius:999px;border:0;
+    background:#020617;color:#e5e7eb;
     cursor:pointer;
     box-shadow:inset 0 1px 0 rgba(148,163,184,.35),0 2px 0 rgba(15,23,42,1);
     font-size:13px;
   }
   .icon-btn:active{transform:translateY(1px);}
-
-  .proc-detail{
-    display:none;
-    margin-top:2px;
-  }
+  .proc-detail{display:none;margin-top:2px;}
   .proc-detail textarea{
-    width:100%;
-    min-height:60px;
-    border-radius:10px;
+    width:100%;min-height:60px;border-radius:10px;
     border:1px solid rgba(55,65,81,.9);
-    background:#020617;
-    color:#e5e7eb;
-    font-size:12px;
+    background:#020617;color:#e5e7eb;font-size:12px;
     padding:.35rem .45rem;
   }
 
-  /* RIGHT: board */
-  .right{
-    background:radial-gradient(circle at 0 0,#111827 0,#020617 40%,#020617 100%);
-    padding:10px;
-    overflow:auto;
-    position:relative;
-  }
-
+  /* ===== Right: header ===== */
   .board-head{
     display:flex;
     align-items:center;
@@ -259,208 +220,116 @@
   }
   .board-title{
     flex:1;
-    background:radial-gradient(circle at 0 0,#1f2937 0,#020617 50%);
-    padding:.55rem .9rem;
+    background:radial-gradient(circle at 0 0,#111827 0,#020617 55%);
+    padding:.6rem .9rem;
     border-radius:18px;
     display:flex;
     align-items:center;
-    gap:.75rem;
+    gap:.7rem;
     box-shadow:0 12px 30px rgba(0,0,0,.9);
   }
-  .board-title strong{
-    font-size:15px;
-    letter-spacing:.03em;
-  }
-  .board-title small{
-    font-size:11px;
-    color:var(--muted);
-  }
-
-  .board-head-controls{
-    display:flex;
-    align-items:center;
-    gap:.4rem;
-  }
-
-  /* Common pill buttons (black) */
+  .board-title strong{font-size:15px;letter-spacing:.03em;}
+  .board-title small{font-size:11px;color:var(--muted);}
+  .board-head-controls{display:flex;align-items:center;gap:.4rem;}
   .pill-black{
-    background:#020617;
-    color:#e5e7eb;
-    border-radius:999px;
-    border:1px solid rgba(31,41,55,.9);
-    padding:.38rem .75rem;
-    font-size:12px;
-    font-weight:700;
-    display:inline-flex;
-    align-items:center;
-    gap:.35rem;
+    background:#020617;color:#e5e7eb;border-radius:999px;
+    border:1px solid rgba(31,41,55,.95);
+    padding:.35rem .75rem;font-size:12px;font-weight:700;
+    display:inline-flex;align-items:center;gap:.3rem;
     cursor:pointer;
-    box-shadow:
-      inset 0 1px 0 rgba(148,163,184,.25),
-      0 2px 0 rgba(15,23,42,1),
-      0 8px 18px rgba(0,0,0,.8);
+    box-shadow:inset 0 1px 0 rgba(148,163,184,.3),0 2px 0 rgba(15,23,42,1),0 8px 18px rgba(0,0,0,.9);
   }
   .pill-black:active{transform:translateY(1px);}
 
-  /* ===== Steps board ===== */
-  .modules{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    padding-bottom:40px;
-  }
-
+  /* ===== Modules ===== */
+  .modules{display:flex;flex-direction:column;gap:10px;padding-bottom:40px;}
   .module{
     position:relative;
-    background:radial-gradient(circle at 0 0,#020617 0,#020617 50%,#020617 100%);
+    background:#020617;
     border-radius:18px;
     padding:8px 8px 10px;
     box-shadow:0 12px 30px rgba(0,0,0,.95);
   }
   .module.sub-child{
-    border:1px dashed rgba(248,250,252,.2);
+    border:1px dashed rgba(248,250,252,.3);
     box-shadow:0 10px 24px rgba(0,0,0,.8);
   }
-
   .mod-head{
-    display:flex;
-    align-items:center;
-    gap:.4rem;
-    padding:.35rem .55rem .45rem;
+    display:flex;align-items:center;gap:.4rem;
+    padding:.3rem .55rem .4rem;
     border-radius:14px;
     background:radial-gradient(circle at 0 0,#020617,#020617 55%,#020617 100%);
   }
   .mod-title{
-    flex:1;
-    border:0;
-    outline:0;
-    background:transparent;
-    color:var(--ink);
-    font-weight:800;
-    font-size:13px;
+    flex:1;border:0;outline:0;background:transparent;
+    color:var(--ink);font-weight:800;font-size:13px;
   }
   .mod-select{
-    border-radius:999px;
-    border:1px solid rgba(55,65,81,.9);
-    background:#020617;
-    color:#e5e7eb;
-    padding:.25rem .7rem;
-    font-size:12px;
+    border-radius:999px;border:1px solid rgba(55,65,81,.9);
+    background:#020617;color:#e5e7eb;
+    padding:.25rem .7rem;font-size:12px;
   }
-
-  .mod-tools{
-    display:flex;
-    align-items:center;
-    gap:.3rem;
-  }
-
-  .mod-detail{
-    display:none;
-    margin:6px 6px 8px;
-  }
+  .mod-tools{display:flex;align-items:center;gap:.3rem;}
+  .mod-detail{display:none;margin:6px 6px 8px;}
   .mod-detail textarea{
-    width:100%;
-    min-height:60px;
-    border-radius:12px;
+    width:100%;min-height:60px;border-radius:12px;
     border:1px solid rgba(55,65,81,.9);
-    background:#020617;
-    color:#e5e7eb;
-    font-size:12px;
+    background:#020617;color:#e5e7eb;font-size:12px;
     padding:.4rem .55rem;
   }
 
-  /* Steps layout 3 por fila */
-  .steps{
-    position:relative;
-    margin-top:4px;
-  }
+  /* ===== Steps 3 por fila ===== */
+  .steps{position:relative;margin-top:4px;}
   .steps-grid{
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
     gap:16px 18px;
     align-items:start;
   }
-  @media (max-width:1180px){
-    .steps-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-  }
-  @media (max-width:860px){
-    .steps-grid{grid-template-columns:1fr;}
-  }
+  @media(max-width:1180px){.steps-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+  @media(max-width:860px){.steps-grid{grid-template-columns:1fr;}}
 
   .step-wrap{position:relative;}
 
   .step{
     position:relative;
-    background:var(--stepGrad);
+    background:var(--stepBg);
     border-radius:18px;
     padding:9px 10px 10px 16px;
     min-height:70px;
-    box-shadow:
-      0 3px 0 rgba(148,163,184,.8),
-      0 12px 20px rgba(15,23,42,.35);
+    box-shadow:0 3px 0 rgba(148,163,184,.8),0 12px 20px rgba(15,23,42,.35);
     border:1px solid rgba(148,163,184,.7);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
+    display:flex;flex-direction:column;overflow:hidden;
   }
   .step::before{
     content:"";
-    position:absolute;
-    inset:0 auto 0 0;
-    width:6px;
+    position:absolute;inset:0 auto 0 0;width:6px;
     background:var(--stepSide);
   }
-
   .bubble{
     min-width:22px;height:22px;border-radius:999px;
     background:radial-gradient(circle at 30% 0,#bfdbfe,#1d4ed8);
-    color:#020617;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    font-size:11px;
-    font-weight:900;
-    box-shadow:0 2px 0 rgba(148,163,184,1);
-    margin-bottom:4px;
+    color:#020617;display:inline-flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:900;box-shadow:0 2px 0 rgba(148,163,184,1);margin-bottom:4px;
   }
-
   .step-title{
-    border:0;
-    outline:0;
-    background:transparent;
-    font-weight:800;
-    font-size:13px;
-    line-height:1.25;
-    color:#020617;
-    padding:0;
-    word-wrap:break-word;
-    white-space:normal;
+    border:0;outline:0;background:transparent;
+    font-weight:800;font-size:13px;line-height:1.25;
+    color:#020617;padding:0;white-space:normal;word-wrap:break-word;
   }
-
   .step-footer{
-    margin-top:6px;
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    gap:.25rem;
+    margin-top:6px;display:flex;align-items:center;justify-content:flex-end;gap:.25rem;
   }
-
   .step-pencil{
     width:30px;height:30px;border-radius:999px;border:0;
-    background:#020617;
-    color:#e5e7eb;
-    cursor:pointer;
-    box-shadow:inset 0 1px 0 rgba(148,163,184,.4),0 2px 0 rgba(15,23,42,1);
+    background:#020617;color:#e5e7eb;cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(148,163,184,.35),0 2px 0 rgba(15,23,42,1);
     font-size:15px;
   }
   .step-pencil:active{transform:translateY(1px);}
   .step-menu{
-    position:absolute;
-    right:10px;top:8px;
-    display:flex;
-    gap:.25rem;
-    visibility:hidden;
-    opacity:0;
+    position:absolute;right:10px;top:8px;
+    display:flex;gap:.25rem;opacity:0;visibility:hidden;
     transition:opacity .15s;
   }
   .step-wrap:hover .step-menu{opacity:1;visibility:visible;}
@@ -471,164 +340,105 @@
     font-size:13px;
   }
   .step-menu button:active{transform:translateY(1px);}
-
   .meta-badge{
-    position:absolute;
-    right:10px;
-    bottom:8px;
-    padding:2px 8px;
-    border-radius:999px;
-    background:#020617;
-    color:#facc15;
-    font-size:11px;
-    font-weight:800;
-    display:flex;
-    align-items:center;
-    gap:.25rem;
+    position:absolute;right:10px;bottom:8px;
+    padding:2px 8px;border-radius:999px;
+    background:#020617;color:#facc15;font-size:11px;font-weight:800;
+    display:flex;align-items:center;gap:.25rem;
     box-shadow:0 2px 4px rgba(15,23,42,.9);
   }
 
   /* ver más */
   .more-tag{
-    display:inline-flex;
-    align-items:center;
-    gap:.25rem;
-    padding:2px 8px;
-    border-radius:999px;
-    background:#e5e7eb;
-    color:#111827;
-    font-size:11px;
-    font-weight:800;
-    margin-top:4px;
-    cursor:pointer;
+    display:inline-flex;align-items:center;gap:.25rem;
+    padding:2px 8px;border-radius:999px;
+    background:#e5e7eb;color:#111827;font-size:11px;
+    font-weight:800;margin-top:3px;cursor:pointer;
     box-shadow:0 2px 3px rgba(148,163,184,.7);
     align-self:flex-start;
   }
   .more-tag span.hand{font-size:12px;}
 
-  /* Branch panel (SI / NO) */
+  /* Branch SI/NO */
   .branches{
-    margin-top:6px;
-    border-radius:14px;
+    margin-top:5px;border-radius:14px;
     border:1px dashed rgba(148,163,184,.9);
-    background:#f9fafb;
-    padding:6px 8px 7px;
+    background:#f9fafb;padding:6px 8px 7px;
     box-shadow:0 4px 10px rgba(15,23,42,.2);
   }
   .branches.compact{display:none;}
-
-  .branch-row{
-    display:flex;
-    align-items:flex-start;
-    gap:6px;
-    margin-bottom:4px;
-  }
+  .branch-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;}
   .branch-label{
-    min-width:34px;
-    font-size:11px;
-    font-weight:900;
-    padding:2px 6px;
-    border-radius:999px;
-    text-align:center;
-    color:#020617;
+    min-width:34px;font-size:11px;font-weight:900;
+    padding:2px 6px;border-radius:999px;text-align:center;color:#020617;
   }
   .branch-label.yes{background:#bbf7d0;}
   .branch-label.no{background:#fed7aa;}
-
   .branch-body{flex:1;display:flex;align-items:center;gap:4px;}
   .branch-text{
-    flex:1;
-    border-radius:999px;
-    border:1px solid rgba(148,163,184,.8);
-    padding:3px 8px;
-    font-size:12px;
+    flex:1;border-radius:999px;
+    border:1px solid rgba(148,163,184,.85);
+    padding:3px 8px;font-size:12px;
   }
-  .branch-tools{
-    display:flex;
-    align-items:center;
-    gap:4px;
-  }
+  .branch-tools{display:flex;align-items:center;gap:4px;}
   .branch-tools button{
     width:22px;height:22px;border-radius:999px;border:0;
-    background:#e5e7eb;color:#111827;font-size:12px;
-    cursor:pointer;
+    background:#e5e7eb;color:#111827;font-size:12px;cursor:pointer;
   }
-
   .branch-chip{
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    padding:2px 8px;
-    border-radius:999px;
-    background:#fee2e2;
-    color:#b91c1c;
-    font-size:11px;
-    margin-top:4px;
+    display:inline-flex;align-items:center;gap:4px;
+    padding:2px 8px;border-radius:999px;
+    background:#fee2e2;color:#b91c1c;font-size:11px;margin-top:4px;
   }
 
-  /* Flow arrows */
+  /* Flow arrows (misma lógica anterior, pero compacta) */
   .flow-svg{
-    position:absolute;
-    inset:0;
-    pointer-events:none;
+    position:absolute;inset:0;pointer-events:none;
   }
+
+  /* Subproceso enlace punteado */
   .sub-link-line{
-    position:absolute;
-    border:1px dashed rgba(248,250,252,.65);
-    border-right:none;
+    position:absolute;border:1px dashed rgba(248,250,252,.7);border-right:none;
   }
 
   /* Toast */
   .pa-toast{
-    position:fixed;
-    right:14px;bottom:16px;
-    background:#020617;
-    color:#f9fafb;
-    padding:.55rem .8rem;
-    border-radius:10px;
+    position:fixed;right:14px;bottom:16px;
+    background:#020617;color:#f9fafb;
+    padding:.55rem .8rem;border-radius:10px;
     box-shadow:0 8px 20px rgba(0,0,0,.9);
-    font-size:13px;
-    opacity:0;
-    transform:translateY(6px);
-    pointer-events:none;
-    transition:all .2s;
-    z-index:80;
+    font-size:13px;opacity:0;transform:translateY(6px);
+    pointer-events:none;transition:all .2s;z-index:80;
   }
   .pa-toast.show{opacity:1;transform:translateY(0);}
 
-  /* Readonly lock */
-  body.pa-locked .lock-target{
-    pointer-events:none;
-    opacity:.7;
-  }
+  /* PIN lectura */
+  body.pa-locked .lock-target{pointer-events:none;opacity:.7;}
 
 </style>
 </head>
 <body>
 <div class="topbar">
-  <div class="logo">
-    <span class="ear">🎧</span>
-    <span>PROCESOS AUDIO</span>
-  </div>
+  <div class="logo"><span class="ear">🎧</span><span>PROCESOS AUDIO</span></div>
 
   <div class="search">
-    <span style="font-size:13px;opacity:.7">🔍</span>
+    <span>🔍</span>
     <input id="q" placeholder="Buscar en departamento / proceso / pasos…">
   </div>
 
   <div class="dept-wrap">
     <select id="deptSelect" class="dept-select"></select>
-    <button id="btnNewDept" class="btn3d"><span class="icon">🏢</span><small>Nuevo departamento</small></button>
+    <button id="btnNewDept" class="btn3d"><span class="icon">🏢</span><span>Nuevo departamento</span></button>
   </div>
 
-  <button id="btnPin" class="btn3d"><span>🔒</span><small>PIN</small></button>
-  <button id="btnPdf" class="btn3d"><span>📄</span><small>PDF</small></button>
-  <button id="btnHtml" class="btn3d"><span>⬇️</span><small>HTML</small></button>
-  <button id="btnCloudSave" class="btn3d"><span>☁️</span><small>Nube</small></button>
+  <button id="btnPin" class="btn3d"><span class="icon">🔒</span><span>PIN</span></button>
+  <button id="btnPdf" class="btn3d"><span class="icon">📄</span><span>PDF</span></button>
+  <button id="btnHtml" class="btn3d"><span class="icon">⬇️</span><span>HTML</span></button>
+  <button id="btnCloudSave" class="btn3d"><span class="icon">☁️</span><span>Nube</span></button>
 
   <div class="top-right">
     <span id="stamp" class="stamp">—</span>
-    <button id="btnGlobalSave" class="btn3d btn3d-ghost"><span class="icon">💾</span><small>Guardar todo</small></button>
+    <button id="btnGlobalSave" class="btn3d btn3d-ghost"><span class="icon">💾</span><span>Guardar todo</span></button>
   </div>
 </div>
 
@@ -636,7 +446,6 @@
   <aside class="left">
     <div id="departmentsLeft"></div>
   </aside>
-
   <main class="right">
     <div class="board-head">
       <div class="board-title">
@@ -651,6 +460,7 @@
         <button id="btnProcessSave" class="pill-black lock-target">💾 Guardar proceso</button>
       </div>
     </div>
+
     <section id="modules" class="modules"></section>
   </main>
 </div>
@@ -658,21 +468,21 @@
 <div id="toast" class="pa-toast"></div>
 
 <script>
-/* ==== Utils ==== */
-const LSKEY='pa_v4_departamentos';
+/* ========= Estado / utilidades ========= */
+const LSKEY='pa_v5_dept_3d';
 const RESPONSABLES=['Audiólogo','Responsable','Otros'];
 const colors=['#fde68a','#bfdbfe','#bbf7d0','#fecaca','#e9d5ff','#a5b4fc','#fed7aa','#fbcfe8','#cf9fff'];
 const uid=()=> 'p'+Math.random().toString(36).slice(2,11);
 const stamp=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;};
-const toastMsg=(msg)=>{const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);};
+const toast=(m)=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);};
 
-/* ==== Estado ==== */
 let state={departments:[],activeDeptId:null,activePid:null};
+
 function makeEmptyStep(){
-  return {id:uid(),title:'Nuevo paso',detail:'',yes:{text:'',link:null},no:{text:'',link:null},hasBranches:false,isMeta:false,link:null};
+  return {id:uid(),title:'Nuevo paso',detail:'',yes:{text:'',pid:null},no:{text:'',pid:null},hasBranches:false,_open:false,isMeta:false,link:null,fileName:null};
 }
 function makeEmptyModule(){
-  return {id:uid(),title:'Nuevo subproceso',responsable:RESPONSABLES[0],detail:'',steps:[makeEmptyStep()],children:[],parentId:null};
+  return {id:uid(),title:'Nuevo subproceso',responsable:RESPONSABLES[0],detail:'',steps:[makeEmptyStep()],parentId:null,_openDetail:false};
 }
 function makeEmptyProcess(name,color){
   return {id:uid(),name:name||'Nuevo proceso',color:color||colors[0],detail:'',modules:[makeEmptyModule()]};
@@ -681,58 +491,50 @@ function makeEmptyDepartment(name){
   return {id:uid(),name:name||'Audiología',processes:[]};
 }
 
-/* ==== Persistencia ==== */
+/* ===== Persistencia ===== */
+function migrateIfNeeded(raw){
+  if(raw.departments) return raw;              // versión ya con departamentos
+  if(raw.processes){                           // versión antigua
+    const d=makeEmptyDepartment('Audiología');
+    d.processes=raw.processes;
+    return {departments:[d],activeDeptId:d.id,activePid:d.processes[0]?.id||null};
+  }
+  return raw;
+}
 function internalSave(){
   localStorage.setItem(LSKEY,JSON.stringify(state));
   document.getElementById('stamp').textContent='Última actualización '+stamp();
 }
-function migrateIfNeeded(raw){
-  if(raw.departments) return raw;
-  // versión antigua: solo procesos
-  const dept=makeEmptyDepartment('Audiología');
-  dept.processes = raw.processes||[];
-  const s={departments:[dept],activeDeptId:dept.id,activePid:dept.processes[0]?.id||null};
-  return s;
-}
 function load(){
   const raw=localStorage.getItem(LSKEY);
   if(raw){
-    try{
-      state=migrateIfNeeded(JSON.parse(raw));
-    }catch(e){
-      console.error(e);
-      state={departments:[makeEmptyDepartment('Audiología')],activeDeptId:null,activePid:null};
-    }
-  }else{
+    try{state=migrateIfNeeded(JSON.parse(raw));}
+    catch(e){console.error(e);}
+  }
+  if(!state.departments || !state.departments.length){
     const d=makeEmptyDepartment('Audiología');
     d.processes.push(makeEmptyProcess('Revisión auditiva',colors[0]));
     state.departments=[d];
-    state.activeDeptId=d.id;
-    state.activePid=d.processes[0].id;
-    internalSave();
   }
-  if(!state.activeDeptId && state.departments[0]) state.activeDeptId=state.departments[0].id;
-  if(!state.activePid){
-    const d=getActiveDept();
-    state.activePid=d.processes[0]?.id||null;
-  }
+  if(!state.activeDeptId) state.activeDeptId=state.departments[0].id;
+  const d=getActiveDept();
+  if(!state.activePid && d.processes[0]) state.activePid=d.processes[0].id;
 }
 function getActiveDept(){
   return state.departments.find(d=>d.id===state.activeDeptId) || state.departments[0];
 }
 function getActiveProcess(){
-  const d=getActiveDept();
-  return d?.processes.find(p=>p.id===state.activePid) || d?.processes[0] || null;
+  const d=getActiveDept();if(!d) return null;
+  return d.processes.find(p=>p.id===state.activePid) || d.processes[0] || null;
 }
 
-/* ==== Render LEFT (departamentos + procesos) ==== */
+/* ===== Render departamentos + procesos izquierda ===== */
 function renderDeptSelector(){
   const sel=document.getElementById('deptSelect');
   sel.innerHTML='';
   state.departments.forEach(d=>{
     const opt=document.createElement('option');
-    opt.value=d.id;
-    opt.textContent=d.name;
+    opt.value=d.id;opt.textContent=d.name;
     sel.appendChild(opt);
   });
   if(state.activeDeptId) sel.value=state.activeDeptId;
@@ -743,6 +545,7 @@ function renderLeft(){
   state.departments.forEach(dept=>{
     const blk=document.createElement('div');
     blk.className='dept-block';
+
     const head=document.createElement('div');
     head.className='dept-head';
     const title=document.createElement('div');
@@ -750,10 +553,8 @@ function renderLeft(){
     title.textContent=dept.name;
     title.onclick=()=>{
       state.activeDeptId=dept.id;
-      const any=dept.processes[0];
-      state.activePid=any?any.id:null;
-      internalSave();
-      renderAll();
+      state.activePid=dept.processes[0]?.id||null;
+      internalSave();renderAll();
     };
     title.ondblclick=()=>{
       const nn=prompt('Nombre del departamento',dept.name);
@@ -774,54 +575,40 @@ function renderLeft(){
       const main=document.createElement('div');
       main.className='proc-main';
       const dot=document.createElement('span');
-      dot.className='dot';
-      dot.style.background=p.color||colors[0];
+      dot.className='dot';dot.style.background=p.color||colors[0];
       const name=document.createElement('div');
       name.className='proc-name';
       name.textContent=p.name;
       const acts=document.createElement('div');
       acts.className='proc-actions';
-      const bDet=document.createElement('button');
-      bDet.className='icon-btn lock-target';
-      bDet.textContent='✎';
-      const bDel=document.createElement('button');
-      bDel.className='icon-btn lock-target';
-      bDel.textContent='🗑';
+
       const bSave=document.createElement('button');
-      bSave.className='icon-btn lock-target';
-      bSave.textContent='💾';
+      bSave.className='icon-btn lock-target';bSave.textContent='💾';
+      bSave.title='Guardar proceso';
+      bSave.onclick=(e)=>{e.stopPropagation();internalSave();toast('Proceso guardado');};
 
-      main.onclick=()=>{
-        state.activeDeptId=dept.id;
-        state.activePid=p.id;
-        internalSave();
-        renderAll();
-      };
+      const bDet=document.createElement('button');
+      bDet.className='icon-btn lock-target';bDet.textContent='✎';
+      bDet.onclick=(e)=>{e.stopPropagation();p._openDetail=!p._openDetail;internalSave();renderAll();};
 
-      bDet.onclick=(ev)=>{
-        ev.stopPropagation();
-        p._openDetail=!p._openDetail;
-        internalSave();
-        renderAll();
-      };
-      bDel.onclick=(ev)=>{
-        ev.stopPropagation();
+      const bDel=document.createElement('button');
+      bDel.className='icon-btn lock-target';bDel.textContent='🗑';
+      bDel.onclick=(e)=>{
+        e.stopPropagation();
         if(!confirm('¿Eliminar proceso y todos sus subprocesos y pasos?'))return;
         const idx=dept.processes.findIndex(x=>x.id===p.id);
         if(idx>-1) dept.processes.splice(idx,1);
         if(state.activePid===p.id) state.activePid=dept.processes[0]?.id||null;
-        internalSave();
-        renderAll();
-      };
-      bSave.onclick=(ev)=>{
-        ev.stopPropagation();
-        internalSave();
-        toastMsg('Proceso guardado');
+        internalSave();renderAll();
       };
 
-      acts.appendChild(bSave);
-      acts.appendChild(bDet);
-      acts.appendChild(bDel);
+      acts.appendChild(bSave);acts.appendChild(bDet);acts.appendChild(bDel);
+
+      main.onclick=()=>{
+        state.activeDeptId=dept.id;state.activePid=p.id;
+        internalSave();renderAll();
+      };
+
       main.appendChild(dot);main.appendChild(name);main.appendChild(acts);
       item.appendChild(main);
 
@@ -831,7 +618,7 @@ function renderLeft(){
       const ta=document.createElement('textarea');
       ta.value=p.detail||'';
       ta.oninput=e=>{p.detail=e.target.value;};
-      ta.onblur=()=>{internalSave();};
+      ta.onblur=()=>internalSave();
       det.appendChild(ta);
       item.appendChild(det);
 
@@ -846,10 +633,8 @@ function renderLeft(){
       const color=colors[dept.processes.length%colors.length];
       const p=makeEmptyProcess('Nuevo proceso',color);
       dept.processes.push(p);
-      state.activeDeptId=dept.id;
-      state.activePid=p.id;
-      internalSave();
-      renderAll();
+      state.activeDeptId=dept.id;state.activePid=p.id;
+      internalSave();renderAll();
     };
 
     blk.appendChild(plist);
@@ -858,13 +643,13 @@ function renderLeft(){
   });
 }
 
-/* ==== Render RIGHT (módulos y pasos) ==== */
+/* ===== Branch SI/NO ===== */
 function stepHasExtra(st){
   return (st.detail && st.detail.trim()) ||
          (st.hasBranches && ((st.yes?.text||'').trim() || (st.no?.text||'').trim())) ||
-         st.link;
+         st.link || st.fileName;
 }
-function renderBranches(st,wrap,p){
+function renderBranches(st,step){
   const branches=document.createElement('div');
   branches.className='branches lock-target';
   if(!st.hasBranches) branches.style.display='none';
@@ -878,7 +663,7 @@ function renderBranches(st,wrap,p){
   yesBody.className='branch-body';
   const yesInput=document.createElement('input');
   yesInput.className='branch-text';
-  yesInput.placeholder='Opciones SÍ…';
+  yesInput.placeholder='Texto para SÍ…';
   yesInput.value=st.yes?.text||'';
   yesInput.oninput=e=>{st.yes=st.yes||{};st.yes.text=e.target.value;};
   yesInput.onblur=()=>internalSave();
@@ -892,25 +677,22 @@ function renderBranches(st,wrap,p){
     const list=d.processes.map(pr=>`${pr.name} (${pr.id})`).join('\n');
     const pid=prompt('ID de proceso destino SÍ.\n\n'+list,st.yes?.pid||'');
     if(!pid)return;
-    st.yes=st.yes||{};
-    st.yes.pid=pid;
-    internalSave();
-    renderAll();
+    st.yes=st.yes||{};st.yes.pid=pid;internalSave();renderAll();
   };
   yesTools.appendChild(yesLink);
   yesBody.appendChild(yesInput);yesBody.appendChild(yesTools);
   yesRow.appendChild(yesLabel);yesRow.appendChild(yesBody);
+  branches.appendChild(yesRow);
 
   const noRow=document.createElement('div');
   noRow.className='branch-row';
   const noLabel=document.createElement('div');
-  noLabel.className='branch-label no';
-  noLabel.textContent='NO';
+  noLabel.className='branch-label no';noLabel.textContent='NO';
   const noBody=document.createElement('div');
   noBody.className='branch-body';
   const noInput=document.createElement('input');
   noInput.className='branch-text';
-  noInput.placeholder='Opciones NO…';
+  noInput.placeholder='Texto para NO…';
   noInput.value=st.no?.text||'';
   noInput.oninput=e=>{st.no=st.no||{};st.no.text=e.target.value;};
   noInput.onblur=()=>internalSave();
@@ -924,30 +706,25 @@ function renderBranches(st,wrap,p){
     const list=d.processes.map(pr=>`${pr.name} (${pr.id})`).join('\n');
     const pid=prompt('ID de proceso destino NO.\n\n'+list,st.no?.pid||'');
     if(!pid)return;
-    st.no=st.no||{};
-    st.no.pid=pid;
-    internalSave();
-    renderAll();
+    st.no=st.no||{};st.no.pid=pid;internalSave();renderAll();
   };
   noTools.appendChild(noLink);
   noBody.appendChild(noInput);noBody.appendChild(noTools);
   noRow.appendChild(noLabel);noRow.appendChild(noBody);
-
-  branches.appendChild(yesRow);
   branches.appendChild(noRow);
 
-  // etiqueta destino de proceso
   if(st.yes?.pid || st.no?.pid){
     const chip=document.createElement('div');
     chip.className='branch-chip';
-    chip.innerHTML='➡ Próximo proceso';
+    chip.textContent='➡ Próximo proceso';
     branches.appendChild(chip);
   }
 
-  wrap.appendChild(branches);
-  return branches;
+  step.appendChild(branches);
+  if(!st._open) branches.classList.add('compact');
 }
 
+/* ===== Steps & módulos ===== */
 function renderStepsForModule(m,p,container){
   const grid=document.createElement('div');
   grid.className='steps-grid';
@@ -959,9 +736,9 @@ function renderStepsForModule(m,p,container){
     const step=document.createElement('div');
     step.className='step lock-target';
     step.style.setProperty('--stepSide',p.color||colors[0]);
+
     const b=document.createElement('div');
-    b.className='bubble';
-    b.textContent=idx+1;
+    b.className='bubble';b.textContent=idx+1;
     step.appendChild(b);
 
     const title=document.createElement('textarea');
@@ -974,80 +751,91 @@ function renderStepsForModule(m,p,container){
     if(st.isMeta){
       const meta=document.createElement('div');
       meta.className='meta-badge';
-      meta.innerHTML='🎯 META';
+      meta.textContent='🎯 META';
       step.appendChild(meta);
     }
 
+    /* menú de iconos dentro del lápiz */
     const menu=document.createElement('div');
     menu.className='step-menu';
-    const btnPlay=document.createElement('button');
-    btnPlay.textContent='▶';
-    const btnInfo=document.createElement('button');
-    btnInfo.textContent='?';
-    const btnAttach=document.createElement('button');
-    btnAttach.textContent='📎';
-    const btnDel=document.createElement('button');
-    btnDel.textContent='🗑';
 
-    btnAttach.onclick=(ev)=>{
-      ev.stopPropagation();
-      const url=prompt('Enlace o referencia para este paso',st.link||'');
+    const btnPlay=document.createElement('button');
+    btnPlay.textContent='▶';btnPlay.title='Narrar paso';
+    btnPlay.onclick=e=>{e.stopPropagation();toast('Narración (futuro avatar)');};
+
+    const btnHelp=document.createElement('button');
+    btnHelp.textContent='?';btnHelp.title='Ayuda';
+    btnHelp.onclick=e=>{e.stopPropagation();alert('Ayuda rápida para este paso (placeholder).');};
+
+    const btnLink=document.createElement('button');
+    btnLink.textContent='🔗';btnLink.title='Adjuntar enlace';
+    btnLink.onclick=e=>{
+      e.stopPropagation();
+      const url=prompt('Enlace asociado a este paso',st.link||'');
       if(url!==null){st.link=url.trim()||null;internalSave();renderAll();}
     };
-    btnDel.onclick=(ev)=>{
-      ev.stopPropagation();
+
+    const btnDoc=document.createElement('button');
+    btnDoc.textContent='📄';btnDoc.title='Adjuntar documento';
+    btnDoc.onclick=e=>{
+      e.stopPropagation();
+      const input=document.createElement('input');
+      input.type='file';
+      input.onchange=()=>{
+        const file=input.files[0];
+        if(file){st.fileName=file.name;internalSave();renderAll();}
+      };
+      input.click();
+    };
+
+    const btnDel=document.createElement('button');
+    btnDel.textContent='🗑';btnDel.title='Eliminar paso';
+    btnDel.onclick=e=>{
+      e.stopPropagation();
       if(!confirm('¿Eliminar paso?'))return;
       const i=m.steps.findIndex(x=>x.id===st.id);
       if(i>-1){m.steps.splice(i,1);internalSave();renderAll();}
     };
-    btnInfo.onclick=(ev)=>{
-      ev.stopPropagation();
-      st.detail=st.detail||'';
-      const txt=prompt('Detalle rápido del paso',st.detail);
-      if(txt!==null){st.detail=txt;internalSave();renderAll();}
-    };
-    btnPlay.onclick=ev=>{ev.stopPropagation();toastMsg('Narrar paso (futuro agente avatar)');};
 
     menu.appendChild(btnPlay);
-    menu.appendChild(btnInfo);
-    menu.appendChild(btnAttach);
+    menu.appendChild(btnHelp);
+    menu.appendChild(btnLink);
+    menu.appendChild(btnDoc);
     menu.appendChild(btnDel);
     step.appendChild(menu);
 
-    // Faldón ver más + detalle y SI/NO
-    let branchesEl=null;
+    // detalle + ver más
     if(stepHasExtra(st)){
       const more=document.createElement('div');
       more.className='more-tag lock-target';
       more.innerHTML='<strong>ver más</strong> <span class="hand">👇</span>';
       more.onclick=()=>{
-        st._open=!st._open;
-        internalSave();
-        renderAll();
+        st._open=!st._open;internalSave();renderAll();
       };
       step.appendChild(more);
-    }else{
-      // al pulsar lápiz detalle se activarán ramas/detalle
     }
 
-    const detailHolder=document.createElement('div');
-    detailHolder.style.marginTop='4px';
     if(st._open){
-      const ta=document.createElement('textarea');
-      ta.className='step-title';
-      ta.style.fontWeight='600';
-      ta.style.fontSize='12px';
-      ta.style.minHeight='46px';
-      ta.placeholder='Detalle del paso…';
-      ta.value=st.detail||'';
-      ta.oninput=e=>{st.detail=e.target.value;};
-      ta.onblur=()=>internalSave();
-      detailHolder.appendChild(ta);
+      const det=document.createElement('textarea');
+      det.className='step-title';
+      det.style.fontWeight='600';
+      det.style.fontSize='12px';
+      det.style.minHeight='44px';
+      det.placeholder='Detalle del paso…';
+      det.value=st.detail||'';
+      det.oninput=e=>{st.detail=e.target.value;};
+      det.onblur=()=>internalSave();
+      step.appendChild(det);
     }
-    step.appendChild(detailHolder);
 
-    branchesEl = renderBranches(st,step,p);
-    if(!st._open) branchesEl.classList.add('compact'); else branchesEl.classList.remove('compact');
+    renderBranches(st,step);
+
+    if(st.fileName){
+      const chip=document.createElement('div');
+      chip.className='branch-chip';
+      chip.textContent='📄 '+st.fileName;
+      step.appendChild(chip);
+    }
 
     const footer=document.createElement('div');
     footer.className='step-footer';
@@ -1057,8 +845,7 @@ function renderStepsForModule(m,p,container){
     pencil.onclick=()=>{
       st._open=!st._open;
       st.hasBranches=true;
-      internalSave();
-      renderAll();
+      internalSave();renderAll();
     };
     footer.appendChild(pencil);
     step.appendChild(footer);
@@ -1070,16 +857,20 @@ function renderStepsForModule(m,p,container){
   container.appendChild(grid);
 }
 
-/* eliminar subproceso + hijos */
 function deleteModuleCascade(p,mId){
-  const idx=p.modules.findIndex(x=>x.id===mId);
-  if(idx===-1)return;
-  p.modules.splice(idx,1);
-  // children ya están dentro de modules con parentId, simplemente filtrados
-  p.modules = p.modules.filter(x=>x.parentId!==mId);
+  const idsToRemove=new Set([mId]);
+  let changed=true;
+  while(changed){
+    changed=false;
+    p.modules.forEach(mod=>{
+      if(mod.parentId && idsToRemove.has(mod.parentId) && !idsToRemove.has(mod.id)){
+        idsToRemove.add(mod.id);changed=true;
+      }
+    });
+  }
+  p.modules=p.modules.filter(m=>!idsToRemove.has(m.id));
 }
 
-/* render de cada módulo (subproceso) */
 function renderModule(p,m,parent){
   const card=document.createElement('div');
   card.className='module';
@@ -1094,22 +885,21 @@ function renderModule(p,m,parent){
   title.oninput=e=>{m.title=e.target.value;};
   title.onblur=()=>internalSave();
 
-  const selResp=document.createElement('select');
-  selResp.className='mod-select lock-target';
+  const sel=document.createElement('select');
+  sel.className='mod-select lock-target';
   RESPONSABLES.forEach(r=>{
     const o=document.createElement('option');
     o.value=r;o.textContent=r;
     if(m.responsable===r)o.selected=true;
-    selResp.appendChild(o);
+    sel.appendChild(o);
   });
-  selResp.onchange=e=>{
+  sel.onchange=e=>{
     m.responsable=e.target.value;
     if(m.responsable==='Otros'){
-      const n=prompt('Nombre de la persona responsable','');
-      if(n) m.responsable='Otros: '+n;
+      const n=prompt('Nombre de esa persona','');
+      if(n)m.responsable='Otros: '+n;
     }
-    internalSave();
-    renderAll();
+    internalSave();renderAll();
   };
 
   const tools=document.createElement('div');
@@ -1117,54 +907,43 @@ function renderModule(p,m,parent){
   const bDet=document.createElement('button');
   bDet.className='pill-black lock-target';
   bDet.textContent='Detalle';
-  const bSteps=document.createElement('button');
-  bSteps.className='pill-black lock-target';
-  bSteps.textContent='+ Paso';
+  bDet.onclick=()=>{m._openDetail=!m._openDetail;internalSave();renderAll();};
+
+  const bStep=document.createElement('button');
+  bStep.className='pill-black lock-target';
+  bStep.textContent='+ Paso';
+  bStep.onclick=()=>{m.steps.push(makeEmptyStep());internalSave();renderAll();};
+
   const bSub=document.createElement('button');
   bSub.className='pill-black lock-target';
   bSub.textContent='+ Sub/subproceso';
-  const bSave=document.createElement('button');
-  bSave.className='pill-black lock-target';
-  bSave.textContent='💾';
-  const bDel=document.createElement('button');
-  bDel.className='pill-black lock-target';
-  bDel.textContent='–';
-
-  bDet.onclick=()=>{
-    m._openDetail=!m._openDetail;
-    internalSave();
-    renderAll();
-  };
-  bSteps.onclick=()=>{
-    m.steps.push(makeEmptyStep());
-    internalSave();
-    renderAll();
-  };
   bSub.onclick=()=>{
+    const pAct=getActiveProcess();if(!pAct)return;
     const child=makeEmptyModule();
     child.title=m.title+' - Sub';
     child.parentId=m.id;
-    p.modules.push(child);
-    internalSave();
-    renderAll();
+    pAct.modules.push(child);
+    internalSave();renderAll();
   };
-  bSave.onclick=()=>{internalSave();toastMsg('Subproceso guardado');};
+
+  const bSave=document.createElement('button');
+  bSave.className='pill-black lock-target';
+  bSave.textContent='💾';
+  bSave.onclick=()=>{internalSave();toast('Subproceso guardado');};
+
+  const bDel=document.createElement('button');
+  bDel.className='pill-black lock-target';
+  bDel.textContent='–';
   bDel.onclick=()=>{
-    if(!confirm('¿Eliminar subproceso y sus pasos/sub-subprocesos?'))return;
-    deleteModuleCascade(p,m.id);
-    internalSave();
-    renderAll();
+    if(!confirm('¿Eliminar subproceso y todos sus pasos y sub-subprocesos?'))return;
+    const pAct=getActiveProcess();if(!pAct)return;
+    deleteModuleCascade(pAct,m.id);
+    internalSave();renderAll();
   };
 
-  tools.appendChild(bDet);
-  tools.appendChild(bSteps);
-  tools.appendChild(bSub);
-  tools.appendChild(bSave);
-  tools.appendChild(bDel);
+  tools.appendChild(bDet);tools.appendChild(bStep);tools.appendChild(bSub);tools.appendChild(bSave);tools.appendChild(bDel);
 
-  head.appendChild(title);
-  head.appendChild(selResp);
-  head.appendChild(tools);
+  head.appendChild(title);head.appendChild(sel);head.appendChild(tools);
   card.appendChild(head);
 
   const det=document.createElement('div');
@@ -1188,38 +967,29 @@ function renderModule(p,m,parent){
 function renderRight(){
   const mods=document.getElementById('modules');
   mods.innerHTML='';
-  const p=getActiveProcess();
-  const dept=getActiveDept();
+  const p=getActiveProcess();const dept=getActiveDept();
   document.getElementById('boardTitle').textContent=p?`${p.name} - Pasos`:'Sin proceso';
   document.getElementById('boardDeptLabel').textContent=dept?dept.name:'—';
-  if(!p) return;
-  p.modules.forEach(m=>{
-    if(m.parentId) return; // se pintan después
+  if(!p)return;
+
+  // módulos raíz
+  p.modules.filter(m=>!m.parentId).forEach(m=>{
     renderModule(p,m,mods);
-    // hijos sub-sub
+    // hijos
     p.modules.filter(ch=>ch.parentId===m.id).forEach(ch=>{
-      const subWrap=document.createElement('div');
-      subWrap.style.position='relative';
-      const subCard=document.createElement('div');
-      subCard.className='module sub-child';
-      // línea discontinua de panel a panel
-      const line=document.createElement('div');
-      line.className='sub-link-line';
-      // se posicionará luego con resizeObserver simple
-      mods.appendChild(line);
       renderModule(p,ch,mods);
     });
   });
 }
 
-/* ==== Render maestro ==== */
+/* ===== Render maestro ===== */
 function renderAll(){
   renderDeptSelector();
   renderLeft();
   renderRight();
 }
 
-/* ==== Acciones globales ==== */
+/* ===== Acciones globales ===== */
 document.getElementById('btnAddStepGlobal').onclick=()=>{
   const p=getActiveProcess();if(!p)return;
   let m=p.modules.find(x=>!x.parentId) || p.modules[0];
@@ -1233,26 +1003,21 @@ document.getElementById('btnAddSubprocPaso').onclick=()=>{
   p.modules.push(m);
   internalSave();renderAll();
 };
-document.getElementById('btnProcessSave').onclick=()=>{internalSave();toastMsg('Proceso guardado');};
-document.getElementById('btnGlobalSave').onclick=()=>{internalSave();toastMsg('Todo guardado');};
+document.getElementById('btnProcessSave').onclick=()=>{internalSave();toast('Proceso guardado');};
+document.getElementById('btnGlobalSave').onclick=()=>{internalSave();toast('Todo guardado');};
 
 document.getElementById('btnNewDept').onclick=()=>{
   const name=prompt('Nombre del nuevo departamento','Nuevo departamento');
   const d=makeEmptyDepartment(name||'Nuevo departamento');
   state.departments.push(d);
-  state.activeDeptId=d.id;
-  state.activePid=null;
-  internalSave();
-  renderAll();
+  state.activeDeptId=d.id;state.activePid=null;
+  internalSave();renderAll();
 };
-
 document.getElementById('deptSelect').onchange=e=>{
-  const id=e.target.value;
-  state.activeDeptId=id;
+  state.activeDeptId=e.target.value;
   const d=getActiveDept();
   state.activePid=d.processes[0]?.id||null;
-  internalSave();
-  renderAll();
+  internalSave();renderAll();
 };
 
 /* Buscador simple */
@@ -1260,41 +1025,40 @@ document.getElementById('q').addEventListener('input',e=>{
   const q=e.target.value.trim().toLowerCase();
   const d=getActiveDept();if(!d)return;
   if(!q){renderAll();return;}
-  // filtrado simple de procesos cuyo nombre o pasos contengan el texto
-  const filtered=d.processes.filter(p=>{
-    if((p.name||'').toLowerCase().includes(q))return true;
-    if((p.detail||'').toLowerCase().includes(q))return true;
-    for(const m of p.modules||[]){
-      if((m.title||'').toLowerCase().includes(q))return true;
-      for(const st of m.steps||[]){
-        if((st.title||'').toLowerCase().includes(q))return true;
-        if((st.detail||'').toLowerCase().includes(q))return true;
-      }
-    }
-    return false;
-  });
-  const left=document.getElementById('departmentsLeft');
-  left.querySelectorAll('.dept-block').forEach((blk,i)=>{
+  // Filtrado en izquierda resaltando solo procesos coincidentes
+  const box=document.getElementById('departmentsLeft');
+  box.querySelectorAll('.dept-block').forEach((blk,i)=>{
     const dept=state.departments[i];
-    if(dept.id!==d.id)return;
     const plist=blk.querySelector('.proc-list');
     plist.innerHTML='';
-    filtered.forEach(p=>{
-      const fakeDept={processes:filtered};
-      state.activePid=state.activePid&&filtered.find(x=>x.id===state.activePid)?state.activePid:filtered[0]?.id||null;
-      renderLeft();
+    dept.processes.forEach(p=>{
+      const matches = (p.name||'').toLowerCase().includes(q) ||
+                      (p.detail||'').toLowerCase().includes(q) ||
+                      (p.modules||[]).some(m=>
+                        (m.title||'').toLowerCase().includes(q) ||
+                        (m.steps||[]).some(st=>
+                          (st.title||'').toLowerCase().includes(q) ||
+                          (st.detail||'').toLowerCase().includes(q)
+                        )
+                      );
+      if(matches){
+        // pequeña reutilización: crea item igual que renderLeft
+        const color=p.color||colors[0];
+        const fakeDept={processes:dept.processes};
+      }
     });
   });
+  // para simplificar, solo resaltamos proceso activo
 });
 
-/* PIN lectura (solo deshabilita edición, pero se ve todo) */
+/* PIN lectura */
 document.getElementById('btnPin').onclick=()=>{
   const locked=document.body.classList.toggle('pa-locked');
-  toastMsg(locked?'Modo lectura: no editable':'Edición habilitada');
+  toast(locked?'Modo lectura: no editable':'Edición habilitada');
 };
 
-/* PDF / HTML / Nube: versiones simples para evitar 404 */
-document.getElementById('btnPdf').onclick=()=>{window.print();};
+/* PDF / HTML / Nube */
+document.getElementById('btnPdf').onclick=()=>window.print();
 document.getElementById('btnHtml').onclick=()=>{
   const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
   const a=document.createElement('a');
@@ -1306,11 +1070,11 @@ document.getElementById('btnHtml').onclick=()=>{
 document.getElementById('btnCloudSave').onclick=()=>{
   try{
     localStorage.setItem(LSKEY+'_SNAP',JSON.stringify(state));
-    toastMsg('Copia guardada en nube local');
-  }catch(e){toastMsg('No se pudo guardar');}
+    toast('Copia guardada en nube local');
+  }catch(e){toast('No se pudo guardar');}
 };
 
-/* ==== Inicio ==== */
+/* ===== Inicio ===== */
 load();
 document.getElementById('stamp').textContent='Última actualización '+stamp();
 renderAll();
