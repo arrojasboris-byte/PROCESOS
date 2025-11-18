@@ -237,17 +237,17 @@
   .module.module-subchild::before{
     content:"";
     position:absolute;
-    left:70px;
-    top:-26px;
-    height:26px;
+    left:42px;            /* alineado con margen del panel negro */
+    top:-22px;
+    height:22px;
     border-left:1.5px dashed rgba(148,163,184,.9);
   }
   .module.module-subchild::after{
     content:"";
     position:absolute;
     left:0;
-    top:-26px;
-    width:70px;
+    top:-22px;
+    width:42px;           /* hasta el inicio visual del panel negro padre */
     border-top:1.5px dashed rgba(148,163,184,.9);
   }
   .module-subchild .mod-head{
@@ -607,7 +607,7 @@
 
   /* Faldón "ver más" en gris */
   .branch-indicator{
-    margin:3px 0 0 36px;
+    margin:6px 0 0 46px;          /* un poco más abajo y algo desplazado */
     font-size:11px;
     color:#374151;
     cursor:pointer;
@@ -619,6 +619,7 @@
     border-radius:999px;
     border:1px solid #d1d5db;
     box-shadow:0 1px 3px rgba(148,163,184,.7);
+    z-index:4;
   }
   .branch-indicator:hover{
     background:#d1d5db;
@@ -859,7 +860,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina (3 columnas fijas) ===== */
+/* ===== Layout serpentina (3 columnas adaptadas al ancho) ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -874,12 +875,11 @@ function layoutStepsSerpentine(container){
   if(!firstStep) return;
 
   const cardW = firstStep.offsetWidth || 290;
-  const gapX = 34;
+  const desiredGapX = 34;
   const gapY = 24;
 
-  const containerWidthRaw = container.clientWidth || (cardW+gapX);
+  const containerWidthRaw = container.clientWidth || (cardW+desiredGapX);
 
-  /* siempre 3 pasos horizontales cuando haya ≥3 */
   const cols = Math.min(3, wrappers.length);
 
   const heights = wrappers.map(w => w.offsetHeight);
@@ -905,7 +905,18 @@ function layoutStepsSerpentine(container){
   rows.forEach((idxs,r)=>{
     const dirRight = r%2===0;
     const itemsInRow = idxs.length;
-    const baseX = 10;
+
+    const availableWidth = Math.max(containerWidthRaw - 20, cardW*itemsInRow);
+    let gapX = desiredGapX;
+    let totalWidth = cardW*itemsInRow + gapX*(itemsInRow-1);
+
+    if(totalWidth > availableWidth && itemsInRow>1){
+      gapX = Math.max(16, (availableWidth - cardW*itemsInRow)/(itemsInRow-1));
+      totalWidth = cardW*itemsInRow + gapX*(itemsInRow-1);
+    }
+
+    let baseX = (containerWidthRaw - totalWidth)/2;
+    if(baseX < 6) baseX = 6;
 
     idxs.forEach((idx,pos)=>{
       const wrap = wrappers[idx];
@@ -994,10 +1005,32 @@ function drawFlowForSteps(container){
     }
   }
 
+  /* rect combinado de panel SÍ/NO abierto o faldón "ver más" */
   function getBranchesRectForStep(stepEl){
     if(!stepEl || !stepEl.parentElement) return null;
-    const br = stepEl.parentElement.querySelector('.branches');
-    return br ? br.getBoundingClientRect() : null;
+    const parent = stepEl.parentElement;
+    const br = parent.querySelector('.branches');
+    const ind = parent.querySelector('.branch-indicator');
+    if(!br && !ind) return null;
+
+    let top = Infinity, bottom = -Infinity, left = Infinity, right = -Infinity;
+
+    if(br && !br.classList.contains('hide')){
+      const r = br.getBoundingClientRect();
+      top = Math.min(top, r.top);
+      bottom = Math.max(bottom, r.bottom);
+      left = Math.min(left, r.left);
+      right = Math.max(right, r.right);
+    }
+    if(ind && !ind.classList.contains('hide')){
+      const r = ind.getBoundingClientRect();
+      top = Math.min(top, r.top);
+      bottom = Math.max(bottom, r.bottom);
+      left = Math.min(left, r.left);
+      right = Math.max(right, r.right);
+    }
+    if(bottom===-Infinity) return null;
+    return {top,bottom,left,right};
   }
 
   for(let i=0;i<rects.length-1;i++){
@@ -1038,7 +1071,7 @@ function drawFlowForSteps(container){
       let yDown = bottomA.y + 14;
       if(brRect){
         const brBottom = brRect.bottom - cRect.top;
-        if(brBottom + 14 > yDown) yDown = brBottom + 14;
+        if(brBottom + 16 > yDown) yDown = brBottom + 16;  /* flecha siempre por debajo del SÍ/NO o "ver más" */
       }
 
       let yUp = topB.y - 14;
