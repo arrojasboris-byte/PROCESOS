@@ -6,26 +6,17 @@
 <title>PROCESOS AUDIO</title>
 <style>
   :root{
-    --bg:#f3f4f6;
-    --surface:#ffffff;
-    --ink:#0b1120;
-    --muted:#667085;
-    --soft:#eceff3;
-    --shadow:0 8px 20px rgba(0,0,0,.1);
-    --ring:0 0 0 2px rgba(248,113,113,.2);
-    --grad:linear-gradient(90deg,#111827 0%,#4b5563 40%,#111827 100%);
+    --bg:#d1d5db; /* <── FONDO GENERAL GRIS (ANTES era #f5f6f8) */
+    --surface:#ffffff; --ink:#1b1d24;
+    --muted:#667085; --soft:#eceff3;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --ring:0 0 0 2px rgba(59,130,246,.15);
+    --grad:linear-gradient(90deg,#6f1d1b 0%,#b23a3a 50%,#6f1d1b 100%);
     --pillGrad:linear-gradient(180deg,#ffffff 0%,#f2f4f8 100%);
-    --accent:#ef4444;
-    --accent-dark:#b91c1c;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
-  }
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
 
   /* ===== Top bar ===== */
   .topbar{
@@ -35,292 +26,77 @@
     display:flex;
     flex-wrap:wrap;
     align-items:center;
-    gap:.7rem;
-    padding:.6rem .9rem .75rem;
+    gap:.75rem;
+    padding:.65rem .9rem .75rem;
     background:var(--grad);
-    color:#f9fafb;
-    box-shadow:0 8px 20px rgba(0,0,0,.45);
-    border-bottom:1px solid rgba(15,23,42,.8);
+    color:#fff;
+    box-shadow:var(--shadow)
   }
   .title{
     display:flex;
     align-items:center;
-    gap:.4rem;
+    gap:.5rem;
     font-weight:900;
     font-size:22px;
     flex:1 1 auto;
-    letter-spacing:.03em;
-    text-shadow:0 1px 2px rgba(0,0,0,.6);
   }
-  .title .ear{
-    font-size:28px;
-    line-height:1;
-    display:inline-block;
-    transform:translateY(2px);
-    filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
-  }
-  .btn3d{
-    display:inline-flex;
-    align-items:center;
-    gap:.45rem;
-    padding:.55rem 1rem;
-    border:0;
-    border-radius:9999px;
-    color:#f9fafb;
-    background:linear-gradient(180deg,var(--accent) 0%,var(--accent-dark) 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.25),
-      0 4px 0 rgba(0,0,0,.65),
-      0 12px 24px rgba(0,0,0,.6);
-    cursor:pointer;
-    font-weight:700;
-    font-size:14px;
-  }
-  .btn3d:active{
-    transform:translateY(1px);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.18),
-      0 2px 0 rgba(0,0,0,.6),
-      0 8px 16px rgba(0,0,0,.6);
-  }
+  .title .ear{font-size:30px;line-height:1;display:inline-block;transform:translateY(2px)}
+  .btn3d{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border:0;border-radius:9999px;color:#fff;
+    background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.28),0 12px 24px rgba(0,0,0,.2);cursor:pointer}
+  .btn3d:active{transform:translateY(1px)}
   .bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
-  .stamp{
-    color:#f9fafb;
-    opacity:.9;
-    font-size:12px;
-    background:rgba(15,23,42,.8);
-    border-radius:9999px;
-    padding:.3rem .75rem;
-    box-shadow:0 2px 8px rgba(0,0,0,.5);
-  }
-  .bar-right .btn3d svg{width:15px;height:15px}
+  .stamp{color:#fff;opacity:.9;font-size:12px;background:rgba(255,255,255,.14);border-radius:9999px;padding:.35rem .75rem}
+  .bar-right .btn3d svg{width:14px;height:14px}
   .search{
     flex:1 1 100%;
     display:flex;
     align-items:center;
-    background:rgba(15,23,42,.55);
-    padding:.35rem .75rem;
+    background:rgba(255,255,255,.18);
+    padding:.4rem .6rem;
     border-radius:9999px;
     margin-top:.3rem;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
   }
-  .search input{
-    width:100%;
-    border:0;
-    background:transparent;
-    outline:0;
-    color:#e5e7eb;
-    font-weight:600;
-    font-size:13px;
-  }
-  .search input::placeholder{color:rgba(209,213,219,.82);}
+  .search input{width:100%;border:0;background:transparent;outline:0;color:#fff;font-weight:600}
 
   /* ===== Layout ===== */
-  .wrap{
-    display:grid;
-    grid-template-columns:280px minmax(0,1fr);
-    gap:0;
-    padding:0 0 10px 0;
-    min-height:calc(100dvh - 60px);
-    width:100%;
-  }
-  .left,.right{
-    background:var(--surface);
-  }
-  .left{
-    padding:8px 6px 8px 8px;
-    border-right:1px solid #e5e7eb;
-    box-shadow:var(--shadow);
-    border-radius:0;
-    display:flex;
-    flex-direction:column;
-    max-height:calc(100dvh - 60px);
-    overflow-y:auto;
-  }
-  .right{
-    padding:10px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    position:relative;
-    max-height:calc(100dvh - 60px);
-    overflow:auto;
-    border-radius:0;
-    box-shadow:var(--shadow);
-  }
-  #processList{
-    flex:1 1 auto;
-  }
-  @media (max-width:1020px){
-    .wrap{
-      grid-template-columns:1fr;
-    }
-    .left{
-      max-height:none;
-      border-right:0;
-      border-bottom:1px solid #e5e7eb;
-    }
-    .right{
-      max-height:none;
-    }
-  }
+  .wrap{display:grid;grid-template-columns:360px 1fr;gap:14px;padding:14px;min-height:calc(100dvh - 64px)}
+  .left,.right{background:var(--surface);border-radius:14px;box-shadow:var(--shadow)}
+  .left{padding:10px}
+  .right{padding:10px;display:flex;flex-direction:column;gap:12px}
+  @media (max-width:1020px){ .wrap{grid-template-columns:1fr} }
 
-  /* ===== Lista de procesos ===== */
-  .proc-item{
-    display:flex;
-    flex-direction:column;
-    gap:.4rem;
-    background:var(--pillGrad);
-    border-radius:14px;
-    padding:.5rem .7rem;
-    margin:.35rem 0;
-    box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);
-    border:2px solid transparent;
-  }
-  .proc-item.activo{
-    border-color:rgba(248,113,113,.4);
-    box-shadow:var(--ring),0 1px 0 rgba(0,0,0,.06);
-  }
-  .proc-row{display:flex;align-items:center;gap:.45rem;cursor:pointer}
-  .dot{
-    width:10px;
-    height:10px;
-    border-radius:50%;
-    background:#ddd;
-    box-shadow:inset 0 0 0 2px rgba(0,0,0,.08);
-  }
-  .proc-name{flex:1;font-weight:800;font-size:14px}
-  .proc-acts{display:flex;align-items:center;gap:.3rem}
-  .icon-btn{
-    width:28px;
-    height:28px;
-    border-radius:11px;
-    border:0;
-    background:#f2f4f8;
-    box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(0,0,0,.13);
-    cursor:pointer;
-    font-size:13px;
-  }
+  /* ===== Lista de procesos (izquierda) ===== */
+  .proc-item{display:flex;flex-direction:column;gap:.45rem;background:var(--pillGrad);border-radius:14px;
+    padding:.55rem .7rem;margin:.45rem 0;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);border:2px solid transparent}
+  .proc-item.activo{border-color:rgba(59,130,246,.35);box-shadow:var(--ring),0 1px 0 rgba(0,0,0,.06)}
+  .proc-row{display:flex;align-items:center;gap:.55rem;cursor:pointer}
+  .dot{width:10px;height:10px;border-radius:50%;background:#ddd;box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
+  .proc-name{flex:1;font-weight:800}
+  .proc-acts{display:flex;align-items:center;gap:.35rem}
+  .icon-btn{width:28px;height:28px;border-radius:12px;border:0;background:#f2f4f8;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);cursor:pointer}
   .icon-btn:active{transform:translateY(1px)}
   .proc-detail{display:none}
-  .proc-detail textarea{
-    width:100%;
-    min-height:64px;
-    border-radius:10px;
-    border:1px solid #e6e8ec;
-    padding:.45rem;
-    background:#fff;
-    font-size:12px;
-  }
+  .proc-detail textarea{width:100%;min-height:72px;border-radius:10px;border:1px solid #e6e8ec;padding:.5rem;background:#fff}
 
-  /* ===== Subproceso ===== */
-  .module{
-    position:relative;
-    background:var(--pillGrad);
-    border-radius:14px;
-    box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    padding:8px;
-    margin-bottom:10px;
-  }
-  .module.module-subchild{
-    margin-left:46px;
-    max-width:calc(100% - 60px);
-    border:1px dashed rgba(148,163,184,.85);
-    box-shadow:0 4px 12px rgba(15,23,42,.12);
-    padding:6px 6px 8px;
-    position:relative;
-  }
-  /* línea discontinua desde panel negro padre -> panel negro sub */
-  .module.module-subchild::before{
-    content:"";
-    position:absolute;
-    left:70px;
-    top:-26px;
-    height:26px;
-    border-left:1.5px dashed rgba(148,163,184,.9);
-  }
-  .module.module-subchild::after{
-    content:"";
-    position:absolute;
-    left:0;
-    top:-26px;
-    width:70px;
-    border-top:1.5px dashed rgba(148,163,184,.9);
-  }
-  .module-subchild .mod-head{
-    margin:2px 22px 4px 22px;
-  }
-
-  .mod-head{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    gap:.45rem;
-    background:linear-gradient(135deg,#020617 0%,#1f2937 50%,#020617 100%);
-    color:#e5e7eb;
-    border-radius:12px;
-    padding:.45rem .7rem;
-    box-shadow:0 4px 10px rgba(0,0,0,.45);
-    border-left:4px solid var(--proc,#ef4444);
-  }
-  .mod-title{
-    flex:1;
-    font-weight:900;
-    border:0;
-    background:transparent;
-    color:#f9fafb;
-    outline:0;
-    font-size:14px;
-  }
-  .mod-title::placeholder{color:#9ca3af}
-  .sel{
-    border:1px solid #4b5563;
-    background:#0f172a;
-    color:#e5e7eb;
-    border-radius:10px;
-    padding:.3rem .5rem;
-    font-size:13px;
-    box-shadow:0 1px 0 rgba(255,255,255,.1);
-  }
-  .pill{
-    height:32px;
-    padding:0 .75rem;
-    background:#111827;
-    border-radius:9999px;
-    color:#f9fafb;
-    border:0;
-    cursor:pointer;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.06),
-      0 4px 0 rgba(0,0,0,.7),
-      0 12px 22px rgba(0,0,0,.75);
-    font-size:13px;
-    font-weight:700;
-  }
+  /* ===== Subproceso (módulo) derecha ===== */
+  .module{position:relative;background:var(--pillGrad);border-radius:14px;box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);display:flex;flex-direction:column;gap:8px;padding:10px}
+  .mod-head{display:flex;align-items:center;gap:.5rem;background:var(--proc,#333);color:#111;border-radius:12px;padding:.5rem .7rem}
+  .mod-title{flex:1;font-weight:900;border:0;background:transparent;color:#111;outline:0}
+  .sel{border:1px solid #e6e8ec;background:#fff;border-radius:10px;padding:.35rem .5rem}
+  .pill{height:34px;padding:0 .75rem;background:#222;border-radius:9999px;color:#fff;border:0;cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 3px 0 rgba(0,0,0,.3),0 12px 24px rgba(0,0,0,.2)}
   .pill:active{transform:translateY(1px)}
-  .badge-diana{margin-left:.2rem;}
+  .badge-diana{margin-left:.25rem}
 
   .mod-detail{display:none}
-  .mod-detail textarea{
-    width:100%;
-    min-height:50px;
-    border:1px solid #e6e8ec;
-    border-radius:10px;
-    padding:.45rem;
-    background:#fff;
-    font-size:12px;
-  }
+  .mod-detail textarea{width:100%;min-height:60px;border:1px solid #e6e8ec;border-radius:10px;padding:.5rem;background:#fff}
 
-  /* ===== Pasos ===== */
+  /* ===== Pasos (cajas pequeñas 3D) ===== */
   .steps{
     position:relative;
-    z-index:0;
+    z-index:0;            /* contexto para flechas detrás */
     display:block;
-    padding:8px 4px 18px;
-    width:100%;
+    padding:10px 6px 20px;
   }
   .steps > div{
     display:flex;
@@ -328,36 +104,23 @@
     align-items:flex-start;
     gap:4px;
   }
-
   .step{
     position:relative;
-    z-index:2;
+    z-index:2;            /* por encima de las flechas */
     display:flex;
     flex-direction:column;
     align-items:flex-start;
-    background:#ffffff;
-    border-radius:13px;
-    padding:7px 10px 9px 14px;
+    background:linear-gradient(180deg,#ffffff 0%,#f3f4f6 100%);
+    border-radius:14px;
+    padding:7px 9px 9px;
     box-shadow:
       inset 0 1px 0 #fff,
-      0 3px 0 rgba(15,23,42,.24),
-      0 8px 16px rgba(15,23,42,.16);
-    width:290px;
-    min-height:58px;
+      0 2px 0 rgba(15,23,42,.22),
+      0 8px 16px rgba(15,23,42,.14);
+    width:180px;
+    min-height:60px;
     border:1px solid rgba(148,163,184,.7);
   }
-  .step::before{
-    content:"";
-    position:absolute;
-    left:0;
-    top:0;
-    bottom:0;
-    width:7px;
-    border-radius:13px 0 0 13px;
-    background:var(--proc,#e5e7eb);
-    opacity:0.95;
-  }
-
   .bubble{
     min-width:22px;
     height:22px;
@@ -368,33 +131,28 @@
     place-items:center;
     font-weight:900;
     font-size:11px;
-    margin-bottom:3px;
+    margin-bottom:2px;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,.6),
       0 2px 0 rgba(15,23,42,.35),
-      0 4px 7px rgba(15,23,42,.35);
+      0 5px 8px rgba(15,23,42,.35);
     padding:0 2px;
     z-index:1;
   }
   .step.selected{
     box-shadow:
-      0 0 0 2px rgba(37,99,235,.3),
+      0 0 0 2px rgba(37,99,235,.35),
       0 3px 0 rgba(15,23,42,.3),
-      0 10px 20px rgba(15,23,42,.24);
+      0 10px 20px rgba(15,23,42,.26);
   }
-  .step .title{
+  .step input.title{
     font-weight:800;
     border:0;
     background:transparent;
     outline:0;
     width:100%;
     margin-top:1px;
-    font-size:13.5px;
-    resize:none;
-    overflow:hidden;
-    line-height:1.3;
-    white-space:pre-wrap;
-    word-break:break-word;
+    font-size:12.5px;
   }
   .minis{
     display:flex;
@@ -405,70 +163,30 @@
   .mini{
     width:24px;
     height:24px;
-    border-radius:8px;
+    border-radius:9px;
     border:0;
     background:#f2f4f8;
     cursor:pointer;
-    box-shadow:inset 0 1px 0 #fff,0 3px 0 rgba(0,0,0,.2);
-    font-size:13px;
+    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.18);
   }
   .mini:active{transform:translateY(1px)}
 
+  /* Etiqueta META en el último paso */
   .step.is-meta-step::after{
     content:"🎯 META";
     position:absolute;
-    top:4px;
     right:6px;
+    bottom:6px;
     font-size:11px;
     font-weight:800;
     color:#0f172a;
-    padding:2px 7px;
+    padding:2px 8px;
     border-radius:999px;
     background:rgba(255,255,255,.97);
     box-shadow:0 2px 4px rgba(15,23,42,.25);
   }
 
-  .step-menu{
-    position:absolute;
-    right:6px;
-    bottom:32px;
-    background:#020617;
-    border-radius:10px;
-    padding:4px 5px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:3px;
-    box-shadow:0 7px 18px rgba(15,23,42,.75);
-    z-index:5;
-  }
-  .step-menu button{
-    width:24px;
-    height:24px;
-    border-radius:7px;
-    border:0;
-    background:#111827;
-    color:#e5e7eb;
-    font-size:13px;
-    cursor:pointer;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 3px 0 rgba(0,0,0,.7);
-  }
-  .step-menu button:active{transform:translateY(1px)}
-
-  .step-detail{
-    margin:4px 0 0 26px;
-    width:calc(100% - 26px);
-  }
-  .step-detail textarea{
-    width:100%;
-    min-height:46px;
-    border-radius:9px;
-    border:1px solid #e6e8ec;
-    padding:.35rem .45rem;
-    font-size:12px;
-    background:#fff;
-    resize:vertical;
-  }
-
+  /* Flechas SVG (detrás de las cajas) */
   .flow-svg{
     position:absolute;
     inset:0;
@@ -476,224 +194,61 @@
     height:100%;
     pointer-events:none;
     overflow:visible;
-    z-index:0;
+    z-index:0;       /* por detrás de step y branches */
   }
 
-  .chip{
-    display:inline-flex;
-    align-items:center;
-    gap:.3rem;
-    font-weight:800;
-    border-radius:9999px;
-    padding:.18rem .5rem;
-    color:#111;
-    font-size:11px;
-  }
+  .chip{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;border-radius:9999px;padding:.2rem .55rem;color:#111}
 
-  /* ===== SÍ / NO ===== */
+  /* ===== Si / No ===== */
   .branches{
-    margin:6px 0 0 18px;
-    padding:5px 7px;
-    border-radius:10px;
-    border:1px dashed rgba(148,163,184,.85);
-    background:rgba(248,250,252,.96);
-    box-shadow:0 1px 4px rgba(15,23,42,.08);
+    margin:8px 0 0 24px;
+    padding:10px 10px 8px;
+    border-radius:12px;
+    border:1px dashed #cbd5e1;
+    background:rgba(255,255,255,.97);
+    box-shadow:0 2px 6px rgba(15,23,42,.1);
     position:relative;
-    z-index:3;
-    max-width:100%;
-    font-size:11px;
+    z-index:2;        /* panel SI/NO por encima de flechas */
+    max-width:260px;
   }
   .branches::before{
     content:"";
     position:absolute;
-    top:-8px;
-    left:28px;
+    top:-12px;
+    left:40px;
     width:0;
-    height:8px;
-    border-left:1px dashed rgba(148,163,184,.85);
+    height:12px;
+    border-left:2px solid #cbd5e1;
   }
   .branches-inner{
     display:flex;
-    flex-wrap:wrap;
-    gap:5px;
-    align-items:flex-start;
-  }
-  .branch{
-    background:#fff;
-    border-radius:8px;
-    padding:.35rem .4rem .4rem;
-    box-shadow:inset 0 1px 0 #fff;
-    flex:1 1 48%;
-    max-width:calc(50% - 4px);
-    min-width:220px;
-    position:relative;
-  }
-  .branch.branch-has-content{
-    border:1px solid rgba(248,113,113,.6);
-  }
-  .branch.yes .bh-label{font-size:11px;font-weight:700;opacity:.85;text-transform:uppercase;}
-  .branch.no .bh-label{font-size:12px;font-weight:900;text-transform:uppercase;}
-  .branch.branch-has-content .bh-label{
-    color:#b91c1c;
-  }
-  .bh-top{
-    display:flex;
-    align-items:center;
-    gap:.25rem;
-    margin-bottom:.25rem;
-    flex-wrap:wrap;
-  }
-  .bh-top-right{
-    margin-left:auto;
-    display:flex;
-    align-items:center;
-    gap:.18rem;
-  }
-  .plist{
-    display:flex;
     flex-direction:column;
-    gap:.22rem;
+    gap:8px;
   }
-  .point{
-    display:flex;
-    align-items:center;
-    gap:.25rem;
-    flex-wrap:wrap;
-  }
-  .point .num{
-    min-width:30px;
-    font-weight:900;
-    opacity:.6;
-    font-size:10px;
-  }
-  .pt-input{
-    flex:1 1 260px;
-    border:1px solid #e6e8ec;
-    border-radius:7px;
-    padding:.18rem .35rem;
-    min-width:150px;
-    font-size:11px;
-  }
-  .p-actions{
-    display:flex;
-    align-items:center;
-    gap:.12rem;
-  }
-  .p-mini{
-    width:22px;
-    height:22px;
-    border-radius:7px;
-    border:0;
-    background:#f2f4f8;
-    cursor:pointer;
-    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);
-    font-size:11px;
-  }
+  .branch{background:#fff;border-radius:10px;padding:.45rem .5rem;box-shadow:inset 0 1px 0 #fff}
+  .branch.yes .bh-label{font-size:12px;font-weight:700;opacity:.8}
+  .branch.no .bh-label{font-size:14px;font-weight:900}
+  .bh-top{display:flex;align-items:center;gap:.35rem;margin-bottom:.35rem}
+  .plist{display:flex;flex-direction:column;gap:.35rem}
+  .point{display:flex;align-items:center;gap:.4rem}
+  .point .num{min-width:44px;font-weight:900;opacity:.7}
+  .pt-input{flex:1;border:1px solid #e6e8ec;border-radius:8px;padding:.25rem .45rem}
+  .p-mini{width:24px;height:24px;border-radius:8px;border:0;background:#f2f4f8;cursor:pointer;box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1)}
   .p-mini:active{transform:translateY(1px)}
-  .p-toggle{
-    background:#e5e7eb;
-    font-weight:900;
-  }
-  .p-extra{
-    display:flex;
-    gap:.16rem;
-  }
-  .children{
-    margin-left:30px;
-    display:flex;
-    flex-direction:column;
-    gap:.16rem;
-  }
-
-  /* Faldón "ver más" en gris */
-  .branch-indicator{
-    margin:3px 0 0 36px;
-    font-size:11px;
-    color:#374151;
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    background:#e5e7eb;
-    padding:2px 9px;
-    border-radius:999px;
-    border:1px solid #d1d5db;
-    box-shadow:0 1px 3px rgba(148,163,184,.7);
-  }
-  .branch-indicator:hover{
-    background:#d1d5db;
-    color:#111827;
-  }
-
-  /* Botón "ver menos" dentro del panel abierto */
-  .branch-collapse{
-    margin:3px 0 4px auto;
-    font-size:10px;
-    color:#374151;
-    cursor:pointer;
-    background:#e5e7eb;
-    padding:1px 8px;
-    border-radius:999px;
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    border:1px solid #d1d5db;
-  }
-  .branch-collapse:hover{
-    background:#d1d5db;
-    color:#111827;
-  }
+  .children{margin-left:44px;display:flex;flex-direction:column;gap:.2rem}
 
   .hide{display:none!important}
 
-  .pa-toast{
-    position:fixed;
-    right:12px;
-    bottom:14px;
-    background:#111;
-    color:#fff;
-    padding:.5rem .7rem;
-    border-radius:9px;
-    box-shadow:0 6px 18px rgba(0,0,0,.2);
-    opacity:0;
-    transform:translateY(6px);
-    transition:all .2s;
-    z-index:99999;
-    font:13px system-ui;
-  }
+  /* ===== Toast pequeño ===== */
+  .pa-toast{position:fixed;right:14px;bottom:16px;background:#111;color:#fff;padding:.6rem .8rem;border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);opacity:0;transform:translateY(6px);transition:all .2s;z-index:99999;font:14px system-ui}
   .pa-toast.show{opacity:1;transform:translateY(0)}
+  @media print{ .pa-tools-hide{display:none!important} }
 
-  @media print{
-    .pa-tools-hide,
-    .topbar,
-    .left,
-    .search{
-      display:none!important;
-    }
-    body{
-      background:#fff;
-    }
-    .wrap{
-      grid-template-columns:1fr;
-      padding:0;
-    }
-    .right{
-      box-shadow:none;
-      border-radius:0;
-      padding:0;
-      max-height:none;
-      overflow:visible;
-    }
-    .module{
-      page-break-inside:avoid;
-      margin-bottom:10mm;
-    }
-  }
-
+  /* ===== Modo bloqueado por PIN ===== */
   body.pa-locked .is-readonly{opacity:.6;filter:saturate(.6)}
   body.pa-locked .lock-block{ pointer-events:none !important; opacity:.6; }
-  body.pa-locked input[readonly],
-  body.pa-locked textarea[readonly]{background:#f7f7f7}
+  body.pa-locked input[readonly], body.pa-locked textarea[readonly]{background:#f7f7f7}
 </style>
 </head>
 <body>
@@ -743,18 +298,18 @@
       <div style="font-weight:800;margin:.2rem .2rem .6rem">Selecciona proceso destino</div>
       <div id="procModalList" style="display:flex;flex-direction:column;gap:.35rem"></div>
       <div style="display:flex;justify-content:flex-end;margin-top:.6rem">
-        <button id="pmCancel" class="btn3d" style="background:#ddd;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.25)">Cancelar</button>
+        <button id="pmCancel" class="btn3d" style="background:#ddd;color:#111">Cancelar</button>
       </div>
     </div>
   </div>
 
 <script>
-/* ===== util visibilidad ===== */
+/* ===== Utilidades de visibilidad ===== */
 function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
 function hideBlock(el){ if(!el) return; el.classList.add('hide'); el.style.display='none'; el.setAttribute('aria-hidden','true'); }
 function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
 
-/* ===== Estado ===== */
+/* ===== Estado / Persistencia ===== */
 const LSKEY='pa_v3_connectors_3d';
 const RESPONSABLES=['Audiólogo','Responsable','Otros'];
 const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6ff','#a0e7e5','#c7f9cc','#fbcfe8','#fde68a','#bbf7d0'];
@@ -774,17 +329,10 @@ function load(){
   if(!activePid && state.processes[0]) activePid=state.processes[0].id;
 }
 
-/* ===== helper auto-resize títulos de paso ===== */
-function autoResize(el){
-  if(!el) return;
-  el.style.height='auto';
-  const h = el.scrollHeight || 24;
-  el.style.height = h + 'px';
-}
-
-/* ===== Procesos izquierda ===== */
+/* ===== Izquierda: procesos ===== */
 function procRow(p){
   const wrap=document.createElement('div'); wrap.className='proc-item'+(p.id===activePid?' activo':'');
+
   wrap.dataset.pid = p.id;
   const row=document.createElement('div'); row.className='proc-row';
   row.innerHTML=`<span class="dot" style="background:${p.color}"></span>
@@ -796,12 +344,12 @@ function procRow(p){
     </div>`;
   row.onclick=e=>{ if(e.target.closest('.icon-btn')) return; activePid=p.id; render(); };
 
-  const det=document.createElement('div');
+  const det=document.createElement('div'); 
   det.className='proc-detail'+(p._openDetail?'':' hide');
   det.setAttribute('aria-hidden', p._openDetail ? 'false':'true');
   det.innerHTML=`<textarea placeholder="Detalle del proceso…">${p.detail||''}</textarea>`;
   const ta=det.querySelector('textarea');
-  ta.oninput=e=>{ p.detail=e.target.value; ta.title=p.detail||''; save(); };
+  ta.oninput=e=>{ p.detail=e.target.value; save(); };
 
   const [bDet,bRen,bDel]=row.querySelectorAll('.icon-btn');
   bDet.onclick=e=>{
@@ -838,28 +386,12 @@ function openProcPicker(onPick){
 }
 
 /* ===== helpers ===== */
-function makeStep(){
-  return {
-    id:uid(),
-    title:'Nuevo paso',
-    detail:'',
-    link:null,
-    links:[],
-    docs:[],
-    yes:[],
-    no:[],
-    yesLink:null,
-    noLink:null,
-    _openBranches:false,
-    _editingBranches:false,
-    _openDetailStep:false
-  };
-}
+function makeStep(){ return {id:uid(),title:'Nuevo paso',link:null,yes:[],no:[],_openBranches:false}; }
 function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
-function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
+function pushSubPoint(pt){ pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina (3 columnas fijas) ===== */
+/* ===== Layout serpentina ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -873,70 +405,60 @@ function layoutStepsSerpentine(container){
   const firstStep = wrappers[0].querySelector('.step');
   if(!firstStep) return;
 
-  const cardW = firstStep.offsetWidth || 290;
-  const gapX = 34;
-  const gapY = 24;
-
-  const containerWidthRaw = container.clientWidth || (cardW+gapX);
-
-  /* siempre 3 pasos horizontales cuando haya ≥3 */
-  const cols = Math.min(3, wrappers.length);
+  const cardW = firstStep.offsetWidth;
+  const gapX = 24;
+  const gapY = 40;
+  const innerWidth = container.clientWidth || (cardW + gapX);
+  const cols = Math.max(1, Math.floor((innerWidth + gapX) / (cardW + gapX)));
 
   const heights = wrappers.map(w => w.offsetHeight);
 
-  const rows = [];
-  wrappers.forEach((w,idx)=>{
-    const r = Math.floor(idx / cols);
-    if(!rows[r]) rows[r]=[];
-    rows[r].push(idx);
-  });
-
   const rowHeights = [];
-  rows.forEach((idxs,r)=>{
-    let maxH = 0;
-    idxs.forEach(i=>{
-      if(heights[i]>maxH) maxH = heights[i];
-    });
-    rowHeights[r] = maxH + 8;
-  });
+  const rowsIndex = [];
+  for(let i=0;i<wrappers.length;i++){
+    const r = Math.floor(i / cols);
+    rowsIndex[i] = r;
+    if(!rowHeights[r]) rowHeights[r]=0;
+    rowHeights[r] = Math.max(rowHeights[r], heights[i]);
+  }
+  const totalRows = rowHeights.length;
 
   let y = 0;
-
-  rows.forEach((idxs,r)=>{
-    const dirRight = r%2===0;
-    const itemsInRow = idxs.length;
-    const baseX = 10;
-
-    idxs.forEach((idx,pos)=>{
-      const wrap = wrappers[idx];
-      const colInRow = dirRight ? pos : (itemsInRow-1-pos);
-      const left = baseX + colInRow*(cardW+gapX);
+  for(let r=0;r<totalRows;r++){
+    const dirRight = r % 2 === 0;
+    const rowStartIndex = r*cols;
+    const rowEndIndex = Math.min(rowStartIndex+cols, wrappers.length);
+    for(let k=rowStartIndex;k<rowEndIndex;k++){
+      const wrap = wrappers[k];
+      const idxInRow = k - rowStartIndex;
+      const col = dirRight ? idxInRow : (cols - 1 - idxInRow);
+      const left = col * (cardW + gapX);
 
       wrap.style.position='absolute';
-      wrap.style.left = left+'px';
-      wrap.style.top  = y+'px';
+      wrap.style.left = left + 'px';
+      wrap.style.top  = y + 'px';
 
       const step = wrap.querySelector('.step');
       if(step){
         step.dataset.row = r;
-        step.dataset.rowDir = dirRight ? '1':'-1';
+        step.dataset.rowDir = dirRight ? '1' : '-1';
       }
-    });
-
+    }
     y += rowHeights[r] + gapY;
-  });
+  }
 
-  container.style.height = y + 18 + 'px';
+  container.style.height = y + 20 + 'px';
 }
 function layoutAllSteps(){
   document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ===== Flechas ===== */
+/* ===== Dibujo de flechas ===== */
 function drawFlowForSteps(container){
   const steps = Array.from(container.querySelectorAll('.step'));
   if(!steps.length) return;
 
+  // limpiar etiqueta META previa
   steps.forEach(s=>s.classList.remove('is-meta-step'));
 
   const old = container.querySelector('.flow-svg');
@@ -966,6 +488,7 @@ function drawFlowForSteps(container){
 
   const rects = steps.map(s => s.getBoundingClientRect());
 
+  // marcar último paso con etiqueta META
   const lastStepEl = steps[steps.length-1];
   lastStepEl.classList.add('is-meta-step');
 
@@ -974,7 +497,7 @@ function drawFlowForSteps(container){
     path.setAttribute('d',d);
     path.setAttribute('fill','none');
     path.setAttribute('stroke','#cbd5e1');
-    path.setAttribute('stroke-width','2.4');
+    path.setAttribute('stroke-width','3');
     path.setAttribute('marker-end','url(#arrowHead)');
     svg.appendChild(path);
   }
@@ -993,13 +516,13 @@ function drawFlowForSteps(container){
       case 'bottom': return {x:xMid,y:yBottom};
     }
   }
-
   function getBranchesRectForStep(stepEl){
     if(!stepEl || !stepEl.parentElement) return null;
-    const br = stepEl.parentElement.querySelector('.branches');
+    const br = stepEl.parentElement.querySelector('.branches:not(.hide)');
     return br ? br.getBoundingClientRect() : null;
   }
 
+  /* conexiones entre pasos */
   for(let i=0;i<rects.length-1;i++){
     const a = rects[i];
     const b = rects[i+1];
@@ -1011,6 +534,7 @@ function drawFlowForSteps(container){
     let d;
 
     if(rowA === rowB){
+      // Misma fila: flecha lateral limpia
       let start,end;
       if(a.left < b.left){
         start = anchor(a,'right');
@@ -1029,30 +553,31 @@ function drawFlowForSteps(container){
              L ${end.x} ${end.y}`;
       }
     }else{
+      // Cambio de fila: flecha desde mitad inferior, rodeando caja SÍ/NO si existe
       const bottomA = anchor(a,'bottom');
       const topB    = anchor(b,'top');
       const brRect  = getBranchesRectForStep(stepA);
 
       const start = {x:bottomA.x, y:bottomA.y};
 
-      let yDown = bottomA.y + 14;
+      let yDown = bottomA.y + 16;
       if(brRect){
         const brBottom = brRect.bottom - cRect.top;
-        if(brBottom + 14 > yDown) yDown = brBottom + 14;
+        if(brBottom + 16 > yDown) yDown = brBottom + 16;
       }
 
-      let yUp = topB.y - 14;
+      let yUp = topB.y - 16;
 
       const allLefts  = rects.map(r => r.left - cRect.left);
       const allRights = rects.map(r => r.right - cRect.left);
       const minX = Math.min.apply(null,allLefts);
       const maxX = Math.max.apply(null,allRights);
-      let corridorX = start.x - 70;
-      if(corridorX < minX - 30){
-        corridorX = minX - 30;
+      let corridorX = start.x - 80;
+      if(corridorX < minX - 40){
+        corridorX = minX - 40;
       }
-      if(corridorX < 8){
-        corridorX = maxX + 34;
+      if(corridorX < 10){
+        corridorX = maxX + 40;
       }
 
       d = `M ${start.x} ${start.y}
@@ -1071,46 +596,24 @@ function drawAllFlows(){
   document.querySelectorAll('.steps').forEach(drawFlowForSteps);
 }
 
-/* ===== SÍ / NO ===== */
+/* ===== Si / No ===== */
 function branchBox(p,m,st,kind,idx){
-  const isYes = kind==='yes';
+  const isYes=kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
   const wrap=document.createElement('div'); wrap.className='branch '+(isYes?'yes':'no');
 
-  const hasContent = arr.length>0 || (st[kind+'Link'] && st[kind+'Link'].pid);
-  if(hasContent) wrap.classList.add('branch-has-content');
-
   const top=document.createElement('div'); top.className='bh-top';
   const label=document.createElement('div'); label.className='bh-label'; label.textContent=isYes?'SÍ':'NO';
-  const right=document.createElement('div'); right.className='bh-top-right';
-
   const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
   const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
-  const delBranch=document.createElement('button'); delBranch.className='p-mini'; delBranch.textContent='🗑'; delBranch.title='Borrar rama';
-
-  add.onclick=()=>{ st._openBranches=true; st._editingBranches=true; pushPoint(arr); save(); renderModules(); };
-  flag.onclick=()=>{ st._openBranches=true; st._editingBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
-  delBranch.onclick=()=>{
-    if(!arr.length && !st[kind+'Link']) return;
-    if(confirm('¿Borrar puntos de esta rama y su bandera?')){
-      st[kind]=[];
-      delete st[kind+'Link'];
-      save();
-      renderModules();
-    }
-  };
-
-  right.appendChild(add);
-  right.appendChild(flag);
-  right.appendChild(delBranch);
-
-  top.appendChild(label);
-  top.appendChild(right);
+  add.onclick=()=>{ st._openBranches=true; pushPoint(arr); save(); renderModules(); };
+  flag.onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
+  top.appendChild(label); top.appendChild(add); top.appendChild(flag);
 
   if(st[kind+'Link']?.pid){
     const dest=state.processes.find(x=>x.id===st[kind+'Link'].pid);
     if(dest){
-      const chip=document.createElement('span'); chip.className='chip'; chip.style.background=dest.color; chip.style.marginLeft='.25rem';
+      const chip=document.createElement('span'); chip.className='chip'; chip.style.background=dest.color; chip.style.marginLeft='.35rem';
       chip.innerHTML=`→ <small>Proceso:</small> <strong>${dest.name}</strong>`;
       top.appendChild(chip);
     }
@@ -1118,169 +621,39 @@ function branchBox(p,m,st,kind,idx){
   wrap.appendChild(top);
 
   const list=document.createElement('div'); list.className='plist';
-
-  arr.forEach((pt)=>{
-    if(!Array.isArray(pt.children)) pt.children=[];
+  arr.forEach((pt,i)=>{
     const li=document.createElement('div'); li.className='point';
-
-    const numSpan=document.createElement('span');
-    numSpan.className='num';
-    numSpan.textContent='';
-
-    const input=document.createElement('input');
-    input.className='pt-input';
-    input.placeholder='Escribe…';
-    input.value=pt.text||'';
-    input.title=pt.text||'';
-    input.oninput=e=>{ pt.text=e.target.value; input.title=pt.text||''; save(); };
-
-    const actions=document.createElement('div');
-    actions.className='p-actions';
-
-    const toggle=document.createElement('button');
-    toggle.className='p-mini p-toggle';
-    toggle.title='Más opciones';
-    toggle.textContent='＋';
-
-    const extra=document.createElement('div');
-    extra.className='p-extra hide';
-
-    const bSub=document.createElement('button');
-    bSub.className='p-mini';
-    bSub.title='Subpunto';
-    bSub.textContent='＋';
-    bSub.onclick=()=>{
-      st._openBranches=true;
-      st._editingBranches=true;
-      pushSubPoint(pt);
-      save();
-      renderModules();
-    };
-
-    const bFlag=document.createElement('button');
-    bFlag.className='p-mini';
-    bFlag.title='Bandera';
-    bFlag.textContent='🚩';
-    bFlag.onclick=()=>{
-      st._openBranches=true;
-      st._editingBranches=true;
-      openProcPicker(pid=>{
-        pt.link={pid};
-        save();
-        renderModules();
-      });
-    };
-
-    const bDel=document.createElement('button');
-    bDel.className='p-mini';
-    bDel.title='Borrar';
-    bDel.textContent='🗑';
-    bDel.onclick=()=>{
-      st._openBranches=true;
-      st._editingBranches=true;
-      delFromArray(arr,pt.id);
-      save();
-      renderModules();
-    };
-
-    extra.appendChild(bSub);
-    extra.appendChild(bFlag);
-    extra.appendChild(bDel);
-
-    toggle.onclick=()=>{
-      st._openBranches=true;
-      st._editingBranches=true;
-      extra.classList.toggle('hide');
-    };
-
-    actions.appendChild(toggle);
-    actions.appendChild(extra);
-
-    li.appendChild(numSpan);
-    li.appendChild(input);
-    li.appendChild(actions);
+    const num=`${idx+1}.${i+1}`;
+    li.innerHTML=`<span class="num">${num}</span>
+      <input class="pt-input" placeholder="Escribe…" value="${pt.text||''}">
+      <button class="p-mini" title="Subpunto">＋</button>
+      <button class="p-mini" title="Bandera">🚩</button>
+      <button class="p-mini" title="Borrar">🗑</button>`;
+    li.querySelector('.pt-input').oninput=e=>{ pt.text=e.target.value; save(); };
+    li.querySelectorAll('.p-mini')[0].onclick=()=>{ st._openBranches=true; pushSubPoint(pt); save(); renderModules(); };
+    li.querySelectorAll('.p-mini')[1].onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ pt.link={pid}; save(); renderModules(); }); };
+    li.querySelectorAll('.p-mini')[2].onclick=()=>{ st._openBranches=true; delFromArray(arr,pt.id); save(); renderModules(); };
 
     if(pt.link?.pid){
       const dest=state.processes.find(x=>x.id===pt.link.pid);
       if(dest){
-        const pc=document.createElement('span'); pc.className='chip'; pc.style.background=dest.color; pc.style.marginLeft='.25rem';
+        const pc=document.createElement('span'); pc.className='chip'; pc.style.background=dest.color; pc.style.marginLeft='.35rem';
         pc.innerHTML=`→ <small>${dest.name}</small>`;
         li.appendChild(pc);
       }
     }
 
-    list.appendChild(li);
-
     const kids=document.createElement('div'); kids.className='children';
-    pt.children.forEach((ch)=>{
+    pt.children.forEach((ch,j)=>{
       const cli=document.createElement('div'); cli.className='point';
-
-      const cNumSpan=document.createElement('span');
-      cNumSpan.className='num';
-      cNumSpan.textContent='';
-
-      const cInput=document.createElement('input');
-      cInput.className='pt-input';
-      cInput.placeholder='Subpunto…';
-      cInput.value=ch.text||'';
-      cInput.title=ch.text||'';
-      cInput.oninput=e=>{ ch.text=e.target.value; cInput.title=ch.text||''; save(); };
-
-      const cActions=document.createElement('div');
-      cActions.className='p-actions';
-
-      const cToggle=document.createElement('button');
-      cToggle.className='p-mini p-toggle';
-      cToggle.title='Más opciones';
-      cToggle.textContent='＋';
-
-      const cExtra=document.createElement('div');
-      cExtra.className='p-extra hide';
-
-      const cbFlag=document.createElement('button');
-      cbFlag.className='p-mini';
-      cbFlag.title='Bandera';
-      cbFlag.textContent='🚩';
-      cbFlag.onclick=()=>{
-        st._openBranches=true;
-        st._editingBranches=true;
-        openProcPicker(pid=>{
-          ch.link={pid};
-          save();
-          renderModules();
-        });
-      };
-
-      const cbDel=document.createElement('button');
-      cbDel.className='p-mini';
-      cbDel.title='Borrar';
-      cbDel.textContent='🗑';
-      cbDel.onclick=()=>{
-        st._openBranches=true;
-        st._editingBranches=true;
-        const k=pt.children.indexOf(ch);
-        if(k>-1){
-          pt.children.splice(k,1);
-          save();
-          renderModules();
-        }
-      };
-
-      cExtra.appendChild(cbFlag);
-      cExtra.appendChild(cbDel);
-
-      cToggle.onclick=()=>{
-        st._openBranches=true;
-        st._editingBranches=true;
-        cExtra.classList.toggle('hide');
-      };
-
-      cActions.appendChild(cToggle);
-      cActions.appendChild(cExtra);
-
-      cli.appendChild(cNumSpan);
-      cli.appendChild(cInput);
-      cli.appendChild(cActions);
+      const cnum=`${num}.${j+1}`;
+      cli.innerHTML=`<span class="num">${cnum}</span>
+        <input class="pt-input" placeholder="Subpunto…" value="${ch.text||''}">
+        <button class="p-mini" title="Bandera">🚩</button>
+        <button class="p-mini" title="Borrar">🗑</button>`;
+      cli.querySelector('.pt-input').oninput=e=>{ ch.text=e.target.value; save(); };
+      cli.querySelectorAll('.p-mini')[0].onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ ch.link={pid}; save(); renderModules(); }); };
+      cli.querySelectorAll('.p-mini')[1].onclick=()=>{ st._openBranches=true; const k=pt.children.indexOf(ch); if(k>-1){ pt.children.splice(k,1); save(); renderModules(); } };
 
       if(ch.link?.pid){
         const dest=state.processes.find(x=>x.id===ch.link.pid);
@@ -1289,27 +662,24 @@ function branchBox(p,m,st,kind,idx){
           cli.appendChild(cc);
         }
       }
-
       kids.appendChild(cli);
     });
 
-    list.appendChild(kids);
+    list.appendChild(li); list.appendChild(kids);
   });
-
   wrap.appendChild(list);
   return wrap;
 }
-
-/* ===== Paso ===== */
 function stepRow(p,m,st,index){
   const row=document.createElement('div');
-
   const sc=document.createElement('div'); sc.className='step';
   sc.innerHTML=`
     <div class="bubble">${index+1}</div>
-    <textarea class="title" rows="1"></textarea>
+    <input class="title" value="${st.title}">
     <div class="minis">
-      <button class="mini" data-act="menu-toggle" title="Opciones de paso">✏️</button>
+      <button class="mini" title="Bandera paso">🚩</button>
+      <button class="mini" title="Si / No">❓</button>
+      <button class="mini" title="Eliminar">–</button>
     </div>`;
   sc.style.setProperty('--proc',p.color);
   sc.addEventListener('click', (e)=>{
@@ -1318,113 +688,25 @@ function stepRow(p,m,st,index){
     sc.classList.add('selected');
   });
 
-  const titleInput = sc.querySelector('.title');
-  titleInput.value = st.title || '';
-  titleInput.title = st.title || '';
-  autoResize(titleInput);
-  titleInput.addEventListener('input', e=>{
-    st.title = e.target.value;
-    titleInput.title = st.title || '';
-    autoResize(titleInput);
-    save();
-  });
+  sc.querySelector('.title').oninput=e=>{ st.title=e.target.value; save(); };
+  sc.querySelectorAll('.mini')[2].onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
+  sc.querySelectorAll('.mini')[0].onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
 
-  const menu=document.createElement('div');
-  menu.className='step-menu hide';
-  menu.innerHTML=`
-    <button data-act="menu-flag" title="Bandera proceso">🚩</button>
-    <button data-act="menu-branches" title="SÍ / NO">❓</button>
-    <button data-act="menu-detail" title="Detalle del paso">📝</button>
-    <button data-act="menu-delete" title="Eliminar paso">🗑</button>
-    <button data-act="menu-link" title="Adjuntar enlace">🔗</button>
-    <button data-act="menu-doc"  title="Adjuntar documento">📎</button>
-  `;
-  sc.appendChild(menu);
+  const branchesWrapper=document.createElement('div'); 
+  branchesWrapper.className='branches'+(st._openBranches?'':' hide');
 
-  const stepDetail=document.createElement('div');
-  stepDetail.className='step-detail'+(st._openDetailStep?'':' hide');
-  stepDetail.innerHTML=`<textarea placeholder="Detalle del paso…">${st.detail||''}</textarea>`;
-  const sdTa = stepDetail.querySelector('textarea');
-  sdTa.title = st.detail || '';
-  sdTa.oninput = e=>{ st.detail = e.target.value; sdTa.title=st.detail||''; save(); };
+  const branchesInner=document.createElement('div');
+  branchesInner.className='branches-inner';
+  branchesInner.appendChild(branchBox(p,m,st,'no',index));
+  branchesInner.appendChild(branchBox(p,m,st,'yes',index));
+  branchesWrapper.appendChild(branchesInner);
 
-  if(!Array.isArray(st.links)) st.links=[];
-  if(!Array.isArray(st.docs))  st.docs=[];
-
-  const miniMenu = sc.querySelector('[data-act="menu-toggle"]');
-
-  function doFlag(){
-    openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
-  }
-  function doBranches(){
-    const yesHas = (st.yes && st.yes.length>0) || (st.yesLink && st.yesLink.pid);
-    const noHas  = (st.no  && st.no.length>0)  || (st.noLink  && st.noLink.pid);
-    const hasAny = yesHas || noHas;
-
-    if(st._editingBranches){
-      st._editingBranches=false;
-      st._openBranches=false;
-    }else{
-      st._editingBranches=true;
-      st._openBranches=true;
-      if(!hasAny){
-        if(!Array.isArray(st.yes)) st.yes=[];
-        if(st.yes.length===0) pushPoint(st.yes);
-      }
-    }
-    save();
-    renderModules();
-  }
-  function doDetail(){
-    st._openDetailStep = !st._openDetailStep;
-    save();
-    renderModules();
-  }
-  function doDelete(){
-    m.steps.splice(index,1);
-    save();
-    renderModules();
-  }
-
-  miniMenu.onclick=(ev)=>{
-    ev.stopPropagation();
-    menu.classList.toggle('hide');
+  sc.querySelectorAll('.mini')[1].onclick=()=>{ 
+    st._openBranches=!st._openBranches; 
+    save(); 
+    toggleBlock(branchesWrapper,st._openBranches); 
+    requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
   };
-
-  const menuFlag     = menu.querySelector('[data-act="menu-flag"]');
-  const menuBranches = menu.querySelector('[data-act="menu-branches"]');
-  const menuDetail   = menu.querySelector('[data-act="menu-detail"]');
-  const menuDelete   = menu.querySelector('[data-act="menu-delete"]');
-  const menuLink     = menu.querySelector('[data-act="menu-link"]');
-  const menuDoc      = menu.querySelector('[data-act="menu-doc"]');
-
-  menuFlag.onclick = ()=>{ doFlag(); menu.classList.add('hide'); };
-  menuBranches.onclick = ()=>{ doBranches(); menu.classList.add('hide'); };
-  menuDetail.onclick = ()=>{ doDetail(); menu.classList.add('hide'); };
-  menuDelete.onclick = ()=>{ if(confirm('¿Eliminar paso?')) doDelete(); menu.classList.add('hide'); };
-
-  menuLink.onclick=()=>{
-    const url = prompt('Enlace a adjuntar (URL o referencia):', '');
-    if(url){
-      st.links.push(url);
-      miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
-      save();
-    }
-    menu.classList.add('hide');
-  };
-  menuDoc.onclick=()=>{
-    const doc = prompt('Nombre/ubicación del documento:', '');
-    if(doc){
-      st.docs.push(doc);
-      miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
-      save();
-    }
-    menu.classList.add('hide');
-  };
-
-  if(st.links.length || st.docs.length){
-    miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
-  }
 
   row.appendChild(sc);
 
@@ -1432,70 +714,19 @@ function stepRow(p,m,st,index){
     const dest=state.processes.find(x=>x.id===st.link.pid);
     if(dest){
       const chip=document.createElement('div');
-      chip.className='chip'; chip.style.background=dest.color; chip.style.margin='3px 0 0 48px';
+      chip.className='chip'; chip.style.background=dest.color; chip.style.margin='4px 0 0 54px';
       chip.innerHTML=`→ <small>Ir al proceso:</small> <strong>${dest.name}</strong>`;
       row.appendChild(chip);
     }
   }
 
-  row.appendChild(stepDetail);
-
-  if(!Array.isArray(st.yes)) st.yes=[];
-  if(!Array.isArray(st.no))  st.no=[];
-
-  const yesHas = (st.yes && st.yes.length>0) || (st.yesLink && st.yesLink.pid);
-  const noHas  = (st.no  && st.no.length>0)  || (st.noLink  && st.noLink.pid);
-  const hasAny = yesHas || noHas;
-
-  const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
-
-  const branchesWrapper=document.createElement('div');
-  branchesWrapper.className='branches';
-  const branchesInner=document.createElement('div');
-  branchesInner.className='branches-inner';
-
-  if((locked && hasAny) || st._editingBranches){
-    if(st._editingBranches && !locked){
-      const collapse = document.createElement('div');
-      collapse.className='branch-collapse';
-      collapse.innerHTML='<span>ver menos</span><span>▲</span>';
-      collapse.onclick=()=>{
-        st._editingBranches=false;
-        st._openBranches=false;
-        save();
-        renderModules();
-      };
-      branchesWrapper.appendChild(collapse);
-    }
-
-    branchesInner.appendChild(branchBox(p,m,st,'no',index));
-    branchesInner.appendChild(branchBox(p,m,st,'yes',index));
-    branchesWrapper.appendChild(branchesInner);
-    row.appendChild(branchesWrapper);
-  }else if(hasAny){
-    const indicator = document.createElement('div');
-    indicator.className='branch-indicator';
-    indicator.innerHTML='<span>ver más</span><span>👇</span>';
-    indicator.onclick=()=>{
-      if(sessionStorage.getItem('PA_PIN_OK')!=='1'){
-        return;
-      }
-      st._editingBranches=true;
-      st._openBranches=true;
-      save();
-      renderModules();
-    };
-    row.appendChild(indicator);
-  }
-
+  row.appendChild(branchesWrapper);
   return row;
 }
 
-/* ===== Subprocesos ===== */
+/* ===== Subproceso (módulo) ===== */
 function modCard(p,m){
-  const card=document.createElement('div');
-  card.className='module';
-  if(m.isSub) card.classList.add('module-subchild');
+  const card=document.createElement('div'); card.className='module';
   card.style.setProperty('--proc',p.color);
   card.dataset.mid = m.id;
   card.dataset.pid = p.id;
@@ -1505,24 +736,14 @@ function modCard(p,m){
   head.innerHTML=`<input class="mod-title" value="${m.title}">
     <select class="sel">${RESPONSABLES.map(r=>`<option ${m.responsable===r?'selected':''}>${r}</option>`).join('')}</select>
     <button class="pill" data-act="toggle-detail" aria-expanded="${m._openDetail?'true':'false'}">▾ Detalle</button>
-    <button class="pill" data-act="toggle-steps" aria-expanded="${m._openSteps===false?'false':'true'}">▾ Pasos</button>
-    <button class="pill" data-act="add-submodule">+ Sub/subproceso</button>
     <button class="pill" data-act="add-step">+ Paso</button>
     <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
     <button class="pill" data-act="del">–</button>`;
   const titleEl=head.querySelector('.mod-title');
-  titleEl.oninput=e=>{ m.title=e.target.value; titleEl.title=m.title||''; save(); };
-  titleEl.title = m.title || '';
+  titleEl.oninput=e=>{ m.title=e.target.value; save(); };
   titleEl.ondblclick=()=>{ m._openDetail=!m._openDetail; toggleBlock(det,m._openDetail); if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
   head.querySelector('select').onchange=e=>{ m.responsable=e.target.value; save(); };
-
-  head.querySelector('[data-act="add-step"]').onclick=()=>{
-    m.steps.push(makeStep());
-    m._openSteps = true;
-    save();
-    renderModules();
-  };
-
+  head.querySelector('[data-act="add-step"]').onclick=()=>{ m.steps.push(makeStep()); save(); renderModules(); };
   head.querySelector('[data-act="toggle-detail"]').onclick=(ev)=>{
     m._openDetail=!m._openDetail;
     ev.currentTarget.setAttribute('aria-expanded', m._openDetail?'true':'false');
@@ -1532,77 +753,20 @@ function modCard(p,m){
   };
   head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
   head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
-
-  const btnSub = head.querySelector('[data-act="add-submodule"]');
-  if(btnSub){
-    btnSub.onclick=()=>{
-      const idx = p.modules.findIndex(x=>x.id===m.id);
-      const subModule = {
-        id:uid(),
-        title: (m.title || 'Subproceso') + ' - Sub',
-        responsable: m.responsable || RESPONSABLES[0],
-        detail:'',
-        steps:[makeStep()],
-        completed:false,
-        _openDetail:false,
-        _openSteps:true,
-        isSub:true,
-        parentId:m.id
-      };
-      if(idx>-1){
-        p.modules.splice(idx+1,0,subModule);
-      }else{
-        p.modules.push(subModule);
-      }
-      save();
-      renderModules();
-    };
-  }
-
   card.appendChild(head);
 
-  const det=document.createElement('div');
+  const det=document.createElement('div'); 
   det.className='mod-detail'+(m._openDetail?'':' hide');
   det.setAttribute('aria-hidden', m._openDetail ? 'false':'true');
   det.innerHTML=`<textarea placeholder="Descripción del subproceso…">${m.detail||''}</textarea>`;
   const mta=det.querySelector('textarea');
-  mta.title = m.detail || '';
-  mta.oninput=e=>{ m.detail=e.target.value; mta.title=m.detail||''; save(); };
+  mta.oninput=e=>{ m.detail=e.target.value; save(); };
   card.appendChild(det);
 
   const steps=document.createElement('div'); steps.className='steps';
   steps.style.setProperty('--proc',p.color);
-  m.steps.forEach((st,idx)=>{
-    if(typeof st.detail === 'undefined') st.detail='';
-    if(typeof st._openDetailStep === 'undefined') st._openDetailStep=false;
-    if(typeof st._openBranches === 'undefined') st._openBranches=false;
-    if(typeof st._editingBranches === 'undefined') st._editingBranches=false;
-    if(!Array.isArray(st.yes)) st.yes=[];
-    if(!Array.isArray(st.no))  st.no=[];
-    if(!Array.isArray(st.links)) st.links=[];
-    if(!Array.isArray(st.docs))  st.docs=[];
-    steps.appendChild(stepRow(p,m,st,idx));
-  });
+  m.steps.forEach((st,idx)=> steps.appendChild(stepRow(p,m,st,idx)));
   card.appendChild(steps);
-
-  if(m._openSteps === false){
-    hideBlock(steps);
-  }else{
-    showBlock(steps);
-  }
-  const btnSteps = head.querySelector('[data-act="toggle-steps"]');
-  if(btnSteps){
-    btnSteps.setAttribute('aria-expanded', m._openSteps===false?'false':'true');
-    btnSteps.onclick=(ev)=>{
-      const current = (m._openSteps === false) ? false : true;
-      const next = !current;
-      m._openSteps = next;
-      btnSteps.setAttribute('aria-expanded', next ? 'true' : 'false');
-      toggleBlock(steps, next);
-      save();
-      requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
-    };
-  }
 
   if(m.completed){
     const d=document.createElement('span'); d.className='badge-diana'; d.textContent='🎯';
@@ -1617,23 +781,16 @@ function renderModules(){
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
   p.modules.forEach(m=> box.appendChild(modCard(p,m)));
 
-  requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
+  requestAnimationFrame(()=>{
+    layoutAllSteps();
+    drawAllFlows();
+  });
 }
 
 /* ===== Acciones globales ===== */
 function createModuleForProcess(pid,titleOverride){
   const p=state.processes.find(x=>x.id===pid); if(!p) return null;
-  const defaultTitle = titleOverride || (p.name ? `${p.name} - Pasos` : 'Nuevo subproceso');
-  const m={
-    id:uid(),
-    title:defaultTitle,
-    responsable:RESPONSABLES[0],
-    detail:'',
-    steps:[makeStep()],
-    completed:false,
-    _openDetail:false,
-    _openSteps:true
-  };
+  const m={id:uid(),title:titleOverride||'Nuevo subproceso',responsable:RESPONSABLES[0],detail:'',steps:[makeStep()],completed:false,_openDetail:false};
   p.modules.push(m); save(); renderModules(); return m;
 }
 function addProcess(){
@@ -1645,11 +802,8 @@ function addStepGlobal(){
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
   if(!p){ alert('Primero crea un proceso'); return; }
   let m=p.modules[p.modules.length-1];
-  if(!m) m=createModuleForProcess(p.id, `${p.name} - Pasos`);
-  m.steps.push(makeStep());
-  m._openSteps = true;
-  save();
-  renderModules();
+  if(!m) m=createModuleForProcess(p.id,'Pasos');
+  m.steps.push(makeStep()); save(); renderModules();
 }
 
 /* ===== Render maestro ===== */
@@ -1661,26 +815,21 @@ function render(){
 
 /* ===== Boot ===== */
 load(); document.getElementById('stamp').textContent='Última actualización '+stamp();
-window.applyPinLockUI = window.applyPinLockUI || function(){};
+window.applyPinLockUI = window.applyPinLockUI || function(){}; // placeholder; real impl at bottom
 render();
 document.getElementById('btnAddProcess').onclick=addProcess;
-document.getElementById('btnAddSubprocPaso').onclick=()=>{
-  const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
-  if(!p){alert('Crea un proceso');return;}
-  createModuleForProcess(p.id,'Nuevo subproceso');
-};
+document.getElementById('btnAddSubprocPaso').onclick=()=>{ const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p){alert('Crea un proceso');return;} createModuleForProcess(p.id,'Nuevo subproceso'); };
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
 
-/* Redibujar al redimensionar */
+/* Recalcular al redimensionar */
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
 
-/* ===== Buscador ===== */
+/* ===== MATCHERS PARA BUSCADOR ===== */
 function stepMatches(st, q){
   if(!q) return true;
   const ql = q.toLowerCase();
   if((st.title||'').toLowerCase().includes(ql)) return true;
-  if((st.detail||'').toLowerCase().includes(ql)) return true;
 
   const checkPoints = (list=[])=>{
     for(const pt of list){
@@ -1723,6 +872,7 @@ function processMatches(p, q){
   return false;
 }
 
+/* ===== Buscador global ===== */
 document.getElementById('q').addEventListener('input',e=>{
   const q = e.target.value.trim().toLowerCase();
 
@@ -1780,7 +930,7 @@ document.getElementById('q').addEventListener('input',e=>{
       b.toggleAttribute('disabled', locked);
     });
 
-    document.querySelectorAll('.title, .mod-title, textarea, .pt-input').forEach(el=>{
+    document.querySelectorAll('input.title, .mod-title, textarea, .pt-input').forEach(el=>{
       el.toggleAttribute('readonly', locked);
       el.classList.toggle('is-readonly', locked);
     });
@@ -1794,6 +944,11 @@ document.getElementById('q').addEventListener('input',e=>{
       b.toggleAttribute('disabled', locked);
     });
 
+    document.querySelectorAll('.step .mini[title="Eliminar"], .step .mini[title="Bandera paso"]').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+
     document.querySelectorAll('.branch .p-mini').forEach(b=>{
       b.classList.toggle('lock-block', locked);
       b.toggleAttribute('disabled', locked);
@@ -1803,19 +958,18 @@ document.getElementById('q').addEventListener('input',e=>{
   function cancelIfLocked(e){
     const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
     if(!locked) return;
-    const t = e.target.closest('button, textarea, select, .title, .mod-title, .pt-input');
+    const t = e.target.closest('button, input, textarea, select');
     if(!t) return;
-
     const denySel = [
       '#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso',
       '.proc-item .icon-btn[title="Renombrar"]',
       '.proc-item .icon-btn[title="Eliminar"]',
       '[data-act="add-step"]','[data-act="close"]','[data-act="del"]',
-      '.branch .p-mini',
-      '.title','.mod-title','.pt-input','textarea'
+      '.step .mini[title="Eliminar"]','.step .mini[title="Bandera paso"]',
+      '.branch .p-mini'
     ].join(',');
-
-    if(t.matches(denySel)){
+    if(t.matches(denySel) || (t.tagName==='SELECT') || (t.tagName==='INPUT' && t.classList.contains('title')) ||
+       (t.tagName==='TEXTAREA') || t.classList.contains('pt-input')){
       e.stopPropagation(); e.preventDefault();
       toast('Modo lectura: bloqueado por PIN');
     }
@@ -1829,7 +983,7 @@ document.getElementById('q').addEventListener('input',e=>{
 
   function printAll(){
     const opened=[];
-    document.querySelectorAll('.proc-detail, .mod-detail, .branches, .step-detail, details').forEach(b=>{
+    document.querySelectorAll('.proc-detail, .mod-detail, .branches, details').forEach(b=>{
       const wasHidden = (b.classList && (b.classList.contains('hide') || b.style.display==='none')) || (b.tagName==='DETAILS' && !b.open);
       if(wasHidden){
         if(b.tagName==='DETAILS') b.open=true; else showBlock(b);
@@ -1880,7 +1034,7 @@ document.getElementById('q').addEventListener('input',e=>{
       sessionStorage.removeItem('PA_PIN_OK');
       pinBtn.classList.remove('locked');
       applyPinLockUI();
-      toast('Edición bloqueada (vista lectura)');
+      toast('Edición bloqueada');
     }else{
       const v=prompt('Introduce PIN para editar:');
       if(v===PIN_CODE){ sessionStorage.setItem('PA_PIN_OK','1'); pinBtn.classList.add('locked'); applyPinLockUI(); toast('Edición habilitada'); }
