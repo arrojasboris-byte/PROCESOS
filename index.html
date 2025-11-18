@@ -229,23 +229,27 @@
     margin-left:46px;
     max-width:calc(100% - 60px);
     border:1px dashed rgba(148,163,184,.85);
-    box-shadow:0 4px 12px rgba(15,23,42,.1);
+    box-shadow:0 4px 12px rgba(15,23,42,.12);
+    padding:6px 6px 8px;
   }
   .module.module-subchild::before{
     content:"";
     position:absolute;
-    left:-28px;
-    top:20px;
-    width:22px;
-    border-bottom:1.5px dashed rgba(148,163,184,.85);
+    left:-20px;
+    top:26px;
+    width:18px;
+    border-bottom:1.5px dashed rgba(148,163,184,.9);
   }
   .module.module-subchild::after{
     content:"";
     position:absolute;
-    left:-28px;
-    top:-18px;
-    height:38px;
-    border-left:1.5px dashed rgba(148,163,184,.85);
+    left:-20px;
+    top:-6px;
+    height:32px;
+    border-left:1.5px dashed rgba(148,163,184,.9);
+  }
+  .module-subchild .mod-head{
+    margin:2px 22px 4px 22px;
   }
 
   .mod-head{
@@ -519,7 +523,7 @@
     box-shadow:inset 0 1px 0 #fff;
     flex:1 1 48%;
     max-width:calc(50% - 4px);
-    min-width:240px;
+    min-width:220px;
     position:relative;
   }
   .branch.branch-has-content{
@@ -547,35 +551,6 @@
     display:flex;
     flex-direction:column;
     gap:.22rem;
-    transition:max-height .18s ease;
-  }
-  .branch.branch-collapsed .plist{
-    max-height:34px;
-    overflow:hidden;
-  }
-  .branch.branch-collapsed::after{
-    content:"";
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:14px;
-    height:10px;
-    background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);
-    pointer-events:none;
-  }
-  .branch-foot{
-    margin-top:2px;
-    text-align:center;
-    font-size:10px;
-    color:#6b7280;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:3px;
-  }
-  .branch:not(.branch-collapsed) .branch-foot{
-    display:none;
   }
   .point{
     display:flex;
@@ -626,6 +601,22 @@
     display:flex;
     flex-direction:column;
     gap:.16rem;
+  }
+
+  .branch-indicator{
+    margin:3px 0 0 36px;
+    font-size:11px;
+    color:#6b7280;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+  .branch-indicator span:first-child{
+    font-weight:700;
+  }
+  .branch-indicator:hover{
+    color:#111827;
   }
 
   .hide{display:none!important}
@@ -832,6 +823,8 @@ function makeStep(){
     docs:[],
     yes:[],
     no:[],
+    yesLink:null,
+    noLink:null,
     _openBranches:false,
     _editingBranches:false,
     _openDetailStep:false
@@ -841,7 +834,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina (3 columnas compactas) ===== */
+/* ===== Layout serpentina (3 columnas) ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -862,7 +855,7 @@ function layoutStepsSerpentine(container){
 
   const containerWidthRaw = container.clientWidth || (cardW+gapX);
   const containerWidth = Math.max(120, containerWidthRaw - 20);
-  const rowMaxCols = Math.min(
+  const cols = Math.min(
     maxCols,
     Math.max(1, Math.floor(containerWidth / (cardW + gapX)))
   );
@@ -870,16 +863,11 @@ function layoutStepsSerpentine(container){
   const heights = wrappers.map(w => w.offsetHeight);
 
   const rows = [];
-  let current = [];
   wrappers.forEach((w,idx)=>{
-    const hasBranches = !!w.querySelector('.branches:not(.hide)');
-    current.push(idx);
-    if(hasBranches || current.length===rowMaxCols){
-      rows.push(current);
-      current=[];
-    }
+    const r = Math.floor(idx / cols);
+    if(!rows[r]) rows[r]=[];
+    rows[r].push(idx);
   });
-  if(current.length) rows.push(current);
 
   const rowHeights = [];
   rows.forEach((idxs,r)=>{
@@ -986,7 +974,7 @@ function drawFlowForSteps(container){
 
   function getBranchesRectForStep(stepEl){
     if(!stepEl || !stepEl.parentElement) return null;
-    const br = stepEl.parentElement.querySelector('.branches:not(.hide)');
+    const br = stepEl.parentElement.querySelector('.branches');
     return br ? br.getBoundingClientRect() : null;
   }
 
@@ -1065,60 +1053,36 @@ function drawAllFlows(){
 function branchBox(p,m,st,kind,idx){
   const isYes = kind==='yes';
   const arr = st[kind] || (st[kind]=[]);
-  const editing = st._editingBranches === true;
   const wrap=document.createElement('div'); wrap.className='branch '+(isYes?'yes':'no');
 
-  const hasContent = arr.length>0 || !!st[kind+'Link'];
-
-  if(hasContent && typeof st[kind+'Collapsed']==='undefined' && !editing){
-    st[kind+'Collapsed']=true;
-  }
-  if(!hasContent){
-    st[kind+'Collapsed']=false;
-  }
-
-  const collapsed = st[kind+'Collapsed'] === true;
-
+  const hasContent = arr.length>0 || (st[kind+'Link'] && st[kind+'Link'].pid);
   if(hasContent) wrap.classList.add('branch-has-content');
-  if(collapsed) wrap.classList.add('branch-collapsed');
 
   const top=document.createElement('div'); top.className='bh-top';
   const label=document.createElement('div'); label.className='bh-label'; label.textContent=isYes?'SÍ':'NO';
-
   const right=document.createElement('div'); right.className='bh-top-right';
-
-  const toggleBranch=document.createElement('button');
-  toggleBranch.className='p-mini';
-  toggleBranch.textContent = collapsed ? '👉' : '▾';
-  toggleBranch.title='Abrir/cerrar detalle de la rama';
 
   const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
   const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
-  const delBranch=document.createElement('button'); delBranch.className='p-mini'; delBranch.textContent='−'; delBranch.title='Borrar rama';
+  const delBranch=document.createElement('button'); delBranch.className='p-mini'; delBranch.textContent='🗑'; delBranch.title='Borrar rama';
 
-  add.onclick=()=>{ st._openBranches=true; st._editingBranches=true; pushPoint(arr); st[kind+'Collapsed']=false; save(); renderModules(); };
+  add.onclick=()=>{ st._openBranches=true; st._editingBranches=true; pushPoint(arr); save(); renderModules(); };
   flag.onclick=()=>{ st._openBranches=true; st._editingBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
   delBranch.onclick=()=>{
     if(!arr.length && !st[kind+'Link']) return;
-    if(confirm('¿Borrar todos los puntos de esta rama y su bandera?')){
+    if(confirm('¿Borrar puntos de esta rama y su bandera?')){
       st[kind]=[];
       delete st[kind+'Link'];
       save();
       renderModules();
     }
   };
-  toggleBranch.onclick=()=>{
-    const nowCollapsed = (st[kind+'Collapsed'] === true);
-    st[kind+'Collapsed'] = !nowCollapsed;
-    save();
-    renderModules();
-  };
 
-  top.appendChild(label);
-  right.appendChild(toggleBranch);
   right.appendChild(add);
   right.appendChild(flag);
   right.appendChild(delBranch);
+
+  top.appendChild(label);
   top.appendChild(right);
 
   if(st[kind+'Link']?.pid){
@@ -1167,7 +1131,6 @@ function branchBox(p,m,st,kind,idx){
       st._openBranches=true;
       st._editingBranches=true;
       pushSubPoint(pt);
-      st[kind+'Collapsed']=false;
       save();
       renderModules();
     };
@@ -1312,21 +1275,6 @@ function branchBox(p,m,st,kind,idx){
   });
 
   wrap.appendChild(list);
-
-  if(hasContent){
-    const foot=document.createElement('div');
-    foot.className='branch-foot';
-    foot.innerHTML='<span>ver más</span><span>👇</span>';
-    foot.onclick=()=>{
-      st._openBranches=true;
-      st._editingBranches=true;
-      st[kind+'Collapsed']=false;
-      save();
-      renderModules();
-    };
-    wrap.appendChild(foot);
-  }
-
   return wrap;
 }
 
@@ -1371,33 +1319,6 @@ function stepRow(p,m,st,index){
   `;
   sc.appendChild(menu);
 
-  const branchesWrapper=document.createElement('div');
-  branchesWrapper.className='branches'+(st._openBranches?'':' hide');
-
-  const branchesInner=document.createElement('div');
-  branchesInner.className='branches-inner';
-
-  const yesHas = (st.yes && st.yes.length>0) || !!(st.yesLink && st.yesLink.pid);
-  const noHas  = (st.no  && st.no.length>0)  || !!(st.noLink  && st.noLink.pid);
-  const editing = st._editingBranches === true;
-
-  if(editing){
-    branchesInner.appendChild(branchBox(p,m,st,'no',index));
-    branchesInner.appendChild(branchBox(p,m,st,'yes',index));
-  }else{
-    if(yesHas || noHas){
-      if(noHas)  branchesInner.appendChild(branchBox(p,m,st,'no',index));
-      if(yesHas) branchesInner.appendChild(branchBox(p,m,st,'yes',index));
-    }else{
-      st._openBranches=false;
-      branchesWrapper.classList.add('hide');
-    }
-  }
-
-  if(editing || yesHas || noHas){
-    branchesWrapper.appendChild(branchesInner);
-  }
-
   const stepDetail=document.createElement('div');
   stepDetail.className='step-detail'+(st._openDetailStep?'':' hide');
   stepDetail.innerHTML=`<textarea placeholder="Detalle del paso…">${st.detail||''}</textarea>`;
@@ -1414,9 +1335,21 @@ function stepRow(p,m,st,index){
     openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
   }
   function doBranches(){
-    const next = !st._openBranches;
-    st._openBranches = next;
-    st._editingBranches = next;
+    const yesHas = (st.yes && st.yes.length>0) || (st.yesLink && st.yesLink.pid);
+    const noHas  = (st.no  && st.no.length>0)  || (st.noLink  && st.noLink.pid);
+    const hasAny = yesHas || noHas;
+
+    if(st._editingBranches){
+      st._editingBranches=false;
+      st._openBranches=false;
+    }else{
+      st._editingBranches=true;
+      st._openBranches=true;
+      if(!hasAny){
+        if(!Array.isArray(st.yes)) st.yes=[];
+        if(st.yes.length===0) pushPoint(st.yes);
+      }
+    }
     save();
     renderModules();
   }
@@ -1484,7 +1417,42 @@ function stepRow(p,m,st,index){
   }
 
   row.appendChild(stepDetail);
-  if(editing || yesHas || noHas) row.appendChild(branchesWrapper);
+
+  if(!Array.isArray(st.yes)) st.yes=[];
+  if(!Array.isArray(st.no))  st.no=[];
+
+  const yesHas = (st.yes && st.yes.length>0) || (st.yesLink && st.yesLink.pid);
+  const noHas  = (st.no  && st.no.length>0)  || (st.noLink  && st.noLink.pid);
+  const hasAny = yesHas || noHas;
+
+  const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
+
+  const branchesWrapper=document.createElement('div');
+  branchesWrapper.className='branches';
+  const branchesInner=document.createElement('div');
+  branchesInner.className='branches-inner';
+
+  if((locked && hasAny) || st._editingBranches){
+    branchesInner.appendChild(branchBox(p,m,st,'no',index));
+    branchesInner.appendChild(branchBox(p,m,st,'yes',index));
+    branchesWrapper.appendChild(branchesInner);
+    row.appendChild(branchesWrapper);
+  }else if(hasAny){
+    const indicator = document.createElement('div');
+    indicator.className='branch-indicator';
+    indicator.innerHTML='<span>ver más</span><span>👇</span>';
+    indicator.onclick=()=>{
+      if(sessionStorage.getItem('PA_PIN_OK')!=='1'){
+        return;
+      }
+      st._editingBranches=true;
+      st._openBranches=true;
+      save();
+      renderModules();
+    };
+    row.appendChild(indicator);
+  }
+
   return row;
 }
 
@@ -1766,12 +1734,6 @@ document.getElementById('q').addEventListener('input',e=>{
   window.applyPinLockUI = function applyPinLockUI(){
     const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
     document.body.classList.toggle('pa-locked', locked);
-
-    if(locked){
-      // En lectura: todo visible y desplegado
-      document.querySelectorAll('.proc-detail, .mod-detail, .step-detail, .branches').forEach(showBlock);
-      document.querySelectorAll('.branch').forEach(b=> b.classList.remove('branch-collapsed'));
-    }
 
     ['#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso'].forEach(sel=>{
       const b=document.querySelector(sel);
