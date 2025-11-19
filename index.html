@@ -158,6 +158,45 @@
     }
   }
 
+  /* ===== Departamentos izquierda ===== */
+  #deptList{
+    padding:4px 4px 6px;
+    margin-bottom:6px;
+    border-bottom:1px solid #e5e7eb;
+  }
+  .dept-label{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:#6b7280;
+    margin:0 2px 4px;
+  }
+  .dept-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:4px;
+  }
+  .dept-pill{
+    border-radius:9999px;
+    border:1px solid #e5e7eb;
+    background:#f9fafb;
+    padding:2px 9px;
+    font-size:11px;
+    cursor:pointer;
+    box-shadow:0 1px 2px rgba(15,23,42,.08);
+    color:#374151;
+  }
+  .dept-pill:hover{
+    background:#e5e7eb;
+  }
+  .dept-pill-active{
+    background:#111827;
+    color:#f9fafb;
+    border-color:#111827;
+    box-shadow:0 2px 6px rgba(15,23,42,.35);
+  }
+
   /* ===== Lista de procesos ===== */
   .proc-item{
     display:flex;
@@ -226,7 +265,6 @@
     padding:6px 6px 8px;
     position:relative;
   }
-  /* línea discontinua desde panel negro padre -> panel negro sub */
   .module.module-subchild::before{
     content:"";
     position:absolute;
@@ -629,7 +667,6 @@
     color:#111827;
   }
 
-  /* Botón "ver menos" */
   .branch-collapse{
     margin:3px 0 4px auto;
     font-size:10px;
@@ -723,9 +760,12 @@
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 18a4 4 0 110-8 5 5 0 119.9 1H18a3 3 0 110 6H7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Nube
       </button>
-      <button id="paLoadCloud" class="btn3d pa-tools-hide" title="Abrir copia guardada">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6M20 8a8 8 0 10-3.17 6.34" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Actualizar
+      <!-- Nuevo botón Departamentos+ en lugar de Actualizar -->
+      <button id="paDeptBtn" class="btn3d pa-tools-hide" title="Añadir departamentos">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 5h16M4 11h10M4 17h7M16 9v4m-2-2h4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Departamentos+
       </button>
 
       <span id="stamp" class="stamp">—</span>
@@ -736,7 +776,10 @@
   </div>
 
   <div class="wrap">
-    <div class="left"><div id="processList"></div></div>
+    <div class="left">
+      <div id="deptList"></div>
+      <div id="processList"></div>
+    </div>
     <div class="right" id="modules"></div>
   </div>
 
@@ -766,18 +809,58 @@ const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6
 const uid=()=>'p'+Math.random().toString(36).slice(2,9);
 const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/${p(d.getMonth()+1)}/${p(d.getFullYear())}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`};
 
-const state={processes:[]};
+const state={processes:[],departments:[],activeDeptId:null};
 let activePid=null;
 let pendingDocTarget=null;
 
-function save(){ localStorage.setItem(LSKEY,JSON.stringify(state)); document.getElementById('stamp').textContent='Última actualización '+stamp(); }
+function save(){
+  localStorage.setItem(LSKEY,JSON.stringify(state));
+  document.getElementById('stamp').textContent='Última actualización '+stamp();
+}
 function load(){
   const raw=localStorage.getItem(LSKEY);
   if(!raw){
-    state.processes.push({id:uid(),name:'Revisión auditiva',color:colors[0],detail:'',modules:[],_openDetail:false});
+    const deptId=uid();
+    state.departments.push({id:deptId,name:'Audiología'});
+    const procId=uid();
+    state.processes.push({
+      id:procId,
+      name:'Revisión auditiva',
+      color:colors[0],
+      detail:'',
+      modules:[],
+      _openDetail:false,
+      deptId
+    });
+    state.activeDeptId = deptId;
+    activePid = procId;
     save();
-  }else{ try{ Object.assign(state,JSON.parse(raw)); }catch{} }
-  if(!activePid && state.processes[0]) activePid=state.processes[0].id;
+  }else{
+    try{
+      const parsed = JSON.parse(raw);
+      Object.assign(state, parsed);
+    }catch(e){}
+    if(!Array.isArray(state.departments) || !state.departments.length){
+      const deptId=uid();
+      state.departments=[{id:deptId,name:'Audiología'}];
+      if(Array.isArray(state.processes)){
+        state.processes.forEach(p=>{
+          if(!p.deptId) p.deptId = deptId;
+        });
+      }
+      state.activeDeptId = deptId;
+    }
+    if(!state.activeDeptId && state.departments.length){
+      state.activeDeptId = state.departments[0].id;
+    }
+    const fallbackDept = state.activeDeptId || (state.departments[0] && state.departments[0].id);
+    if(Array.isArray(state.processes) && fallbackDept){
+      state.processes.forEach(p=>{
+        if(!p.deptId) p.deptId = fallbackDept;
+      });
+    }
+    if(!activePid && state.processes[0]) activePid=state.processes[0].id;
+  }
 }
 
 /* ===== helper auto-resize títulos de paso ===== */
@@ -818,14 +901,67 @@ function procRow(p){
     save();
   };
   bRen.onclick=e=>{ e.stopPropagation(); const nn=prompt('Nombre del proceso',p.name); if(nn){p.name=nn;save();render();} };
-  bDel.onclick=e=>{ e.stopPropagation(); if(confirm('¿Eliminar proceso y sus módulos?')){ const i=state.processes.findIndex(x=>x.id===p.id); if(i>-1){ state.processes.splice(i,1); activePid=state.processes[0]?.id||null; save(); render(); } } };
+  bDel.onclick=e=>{
+    e.stopPropagation();
+    if(confirm('¿Eliminar proceso y sus módulos?')){
+      const i=state.processes.findIndex(x=>x.id===p.id);
+      if(i>-1){
+        state.processes.splice(i,1);
+        const remaining = state.processes.filter(pp=>pp.deptId===state.activeDeptId);
+        activePid = remaining[0]?.id || state.processes[0]?.id || null;
+        save(); render();
+      }
+    }
+  };
 
   wrap.appendChild(row); wrap.appendChild(det);
   return wrap;
 }
+
+function renderDepartments(){
+  const box=document.getElementById('deptList');
+  if(!box) return;
+  box.innerHTML='';
+  if(!state.departments || !state.departments.length) return;
+
+  const label=document.createElement('div');
+  label.className='dept-label';
+  label.textContent='Departamentos';
+  box.appendChild(label);
+
+  const row=document.createElement('div');
+  row.className='dept-row';
+
+  const activeId = state.activeDeptId || state.departments[0].id;
+
+  state.departments.forEach(d=>{
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='dept-pill'+(d.id===activeId?' dept-pill-active':'');
+    btn.textContent=d.name;
+    btn.onclick=()=>{
+      state.activeDeptId = d.id;
+      const procs = state.processes.filter(p=>p.deptId===d.id);
+      activePid = procs[0]?.id || null;
+      save();
+      render();
+    };
+    row.appendChild(btn);
+  });
+
+  box.appendChild(row);
+}
+
 function renderProcesses(){
   const box=document.getElementById('processList'); box.innerHTML='';
-  state.processes.forEach(p=>box.appendChild(procRow(p)));
+  if(!Array.isArray(state.processes)) return;
+  const activeDeptId = state.activeDeptId || (state.departments[0] && state.departments[0].id) || null;
+  const list = activeDeptId ? state.processes.filter(p=>p.deptId===activeDeptId) : state.processes.slice();
+
+  if(list.length && (!activePid || !list.some(p=>p.id===activePid))){
+    activePid = list[0].id;
+  }
+  list.forEach(p=>box.appendChild(procRow(p)));
 }
 
 /* ===== Modal bandera ===== */
@@ -1122,7 +1258,7 @@ function branchBox(p,m,st,kind,idx){
   const right=document.createElement('div'); right.className='bh-top-right';
 
   const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
-  const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
+  const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; add.title='Añadir punto'; flag.title='Bandera rama';
   const delBranch=document.createElement('button'); delBranch.className='p-mini'; delBranch.textContent='🗑'; delBranch.title='Borrar rama';
 
   add.onclick=()=>{ st._openBranches=true; st._editingBranches=true; pushPoint(arr); save(); renderModules(); };
@@ -1512,7 +1648,7 @@ function stepRow(p,m,st,index){
   }else if(hasAny){
     const indicator = document.createElement('div');
     indicator.className='branch-indicator';
-    indicator.innerHTML='<span>ver más</span><span>👇</span>';
+    indicator.innerHTML='<span><strong>ver más</strong></span><span>👇</span>';
     indicator.onclick=()=>{
       if(sessionStorage.getItem('PA_PIN_OK')!=='1'){
         return;
@@ -1676,7 +1812,19 @@ function modCard(p,m){
 /* ===== Render derecha ===== */
 function renderModules(){
   const box=document.getElementById('modules'); box.innerHTML='';
-  const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
+  const activeDeptId = state.activeDeptId || (state.departments[0] && state.departments[0].id) || null;
+
+  let p = null;
+  if(activePid){
+    p = state.processes.find(x=>x.id===activePid) || null;
+  }
+  if(!p && activeDeptId){
+    const list = state.processes.filter(x=>x.deptId===activeDeptId);
+    if(list.length) p=list[0]; else p=null;
+  }
+  if(!p) return;
+  activePid = p.id;
+
   p.modules.forEach(m=> box.appendChild(modCard(p,m)));
 
   requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
@@ -1701,8 +1849,12 @@ function createModuleForProcess(pid,titleOverride){
 }
 function addProcess(){
   const color=colors[state.processes.length%colors.length];
-  const p={id:uid(),name:'Nuevo proceso',color,detail:'',modules:[],_openDetail:false};
-  state.processes.push(p); activePid=p.id; save(); render();
+  const deptId = state.activeDeptId || (state.departments[0] && state.departments[0].id);
+  const p={id:uid(),name:'Nuevo proceso',color,detail:'',modules:[],_openDetail:false,deptId};
+  state.processes.push(p);
+  activePid=p.id;
+  save();
+  render();
 }
 function addStepGlobal(){
   const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
@@ -1714,9 +1866,20 @@ function addStepGlobal(){
   save();
   renderModules();
 }
+function addDepartment(){
+  const name = prompt('Nombre del nuevo departamento','Nuevo departamento');
+  if(!name) return;
+  const id = uid();
+  if(!Array.isArray(state.departments)) state.departments=[];
+  state.departments.push({id,name});
+  state.activeDeptId = id;
+  save();
+  render();
+}
 
 /* ===== Render maestro ===== */
 function render(){
+  renderDepartments();
   renderProcesses();
   renderModules();
   if (window.applyPinLockUI) window.applyPinLockUI();
@@ -1724,7 +1887,7 @@ function render(){
 
 /* ===== Boot ===== */
 load(); document.getElementById('stamp').textContent='Última actualización '+stamp();
-window.applyPinLockUI = window.applyPinLockUI || function(){};
+window.applyPinLockUI = window.applyPinLockUI || function(){}; 
 render();
 document.getElementById('btnAddProcess').onclick=addProcess;
 document.getElementById('btnAddSubprocPaso').onclick=()=>{
@@ -1734,6 +1897,7 @@ document.getElementById('btnAddSubprocPaso').onclick=()=>{
 };
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
+document.getElementById('paDeptBtn')?.addEventListener('click', addDepartment);
 
 /* Redibujar al redimensionar */
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
@@ -1842,13 +2006,12 @@ if(filePicker){
   const pdfBtn  = document.getElementById('paPdfBtn');
   const htmlBtn = document.getElementById('paHtmlBtn');
   const saveBtn = document.getElementById('paSaveCloud');
-  const loadBtn = document.getElementById('paLoadCloud');
 
   window.applyPinLockUI = function applyPinLockUI(){
     const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
     document.body.classList.toggle('pa-locked', locked);
 
-    ['#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso'].forEach(sel=>{
+    ['#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso','#paDeptBtn'].forEach(sel=>{
       const b=document.querySelector(sel);
       if(b){ b.classList.toggle('lock-block', locked); b.toggleAttribute('disabled', locked); }
     });
@@ -1876,6 +2039,11 @@ if(filePicker){
       b.classList.toggle('lock-block', locked);
       b.toggleAttribute('disabled', locked);
     });
+
+    document.querySelectorAll('.step-menu button, .mini[data-act="menu-toggle"], [data-act="add-submodule"]').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
   };
 
   function cancelIfLocked(e){
@@ -1885,11 +2053,14 @@ if(filePicker){
     if(!t) return;
 
     const denySel = [
-      '#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso',
+      '#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso','#paDeptBtn',
       '.proc-item .icon-btn[title="Renombrar"]',
       '.proc-item .icon-btn[title="Eliminar"]',
       '[data-act="add-step"]','[data-act="close"]','[data-act="del"]',
+      '[data-act="add-submodule"]',
       '.branch .p-mini',
+      '.step-menu button',
+      '.mini[data-act="menu-toggle"]',
       '.title','.mod-title','.pt-input','textarea'
     ].join(',');
 
@@ -1940,17 +2111,6 @@ if(filePicker){
     }catch(e){ console.error(e); toast('No se pudo guardar'); }
   }
 
-  function loadFromCloud(){
-    const raw=localStorage.getItem(SNAP_KEY);
-    if(!raw){ toast('No hay copia en nube'); return; }
-    try{
-      const {html}=JSON.parse(raw)||{};
-      if(!html){ toast('Copia inválida'); return; }
-      const url = URL.createObjectURL(new Blob([html],{type:'text/html'}));
-      window.open(url,'_blank','noopener');
-    }catch(e){ console.error(e); toast('Copia dañada'); }
-  }
-
   function togglePin(){
     if(sessionStorage.getItem('PA_PIN_OK')==='1'){
       sessionStorage.removeItem('PA_PIN_OK');
@@ -1968,7 +2128,6 @@ if(filePicker){
   pdfBtn?.addEventListener('click',  printAll);
   htmlBtn?.addEventListener('click', downloadHTML);
   saveBtn?.addEventListener('click', saveToCloud);
-  loadBtn?.addEventListener('click', loadFromCloud);
 
   if(sessionStorage.getItem('PA_PIN_OK')!=='1'){ applyPinLockUI(); }
 })();
