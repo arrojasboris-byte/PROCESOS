@@ -5,1040 +5,1702 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>PROCESOS AUDIO</title>
 <style>
-:root{
-  --bg:#e5e7eb;
-  --main-bg:#ffffff;
-  --ink:#111827;
-  --muted:#6b7280;
+  :root{
+    --bg:#f3f4f6;
+    --surface:#ffffff;
+    --ink:#0b1120;
+    --muted:#667085;
+    --soft:#eceff3;
+    --shadow:0 8px 20px rgba(0,0,0,.1);
+    --ring:0 0 0 2px rgba(248,113,113,.2);
+    --grad:linear-gradient(90deg,#111827 0%,#4b5563 40%,#111827 100%);
+    --pillGrad:linear-gradient(180deg,#ffffff 0%,#f2f4f8 100%);
+    --accent:#ef4444;
+    --accent-dark:#b91c1c;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font:14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+  }
 
-  --top-grad:linear-gradient(90deg,#7b1f1f 0%,#b91c1c 45%,#7b1f1f 100%);
+  /* ===== Top bar ===== */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:30;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:.6rem;
+    padding:.5rem .8rem .65rem;
+    background:var(--grad);
+    color:#f9fafb;
+    box-shadow:0 8px 20px rgba(0,0,0,.45);
+    border-bottom:1px solid rgba(15,23,42,.8);
+  }
+  .title{
+    display:flex;
+    align-items:center;
+    gap:.4rem;
+    font-weight:900;
+    font-size:20px;
+    flex:1 1 auto;
+    letter-spacing:.03em;
+    text-shadow:0 1px 2px rgba(0,0,0,.6);
+  }
+  .title .ear{
+    font-size:26px;
+    line-height:1;
+    display:inline-block;
+    transform:translateY(2px);
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
+  }
+  .btn3d{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    padding:.5rem .9rem;
+    border:0;
+    border-radius:9999px;
+    color:#f9fafb;
+    background:linear-gradient(180deg,var(--accent) 0%,var(--accent-dark) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.22),
+      0 3px 0 rgba(0,0,0,.6),
+      0 10px 20px rgba(0,0,0,.55);
+    cursor:pointer;
+    font-weight:700;
+    font-size:13px;
+  }
+  .btn3d:active{
+    transform:translateY(1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.15),
+      0 1px 0 rgba(0,0,0,.5),
+      0 6px 12px rgba(0,0,0,.6);
+  }
+  .bar-right{margin-left:auto;display:flex;align-items:center;gap:.4rem}
+  .stamp{
+    color:#f9fafb;
+    opacity:.85;
+    font-size:11px;
+    background:rgba(15,23,42,.75);
+    border-radius:9999px;
+    padding:.25rem .6rem;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);
+  }
+  .bar-right .btn3d svg{width:13px;height:13px}
+  .search{
+    flex:1 1 100%;
+    display:flex;
+    align-items:center;
+    background:rgba(15,23,42,.55);
+    padding:.3rem .6rem;
+    border-radius:9999px;
+    margin-top:.25rem;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  .search input{
+    width:100%;
+    border:0;
+    background:transparent;
+    outline:0;
+    color:#e5e7eb;
+    font-weight:600;
+    font-size:13px;
+  }
+  .search input::placeholder{color:rgba(209,213,219,.8);}
 
-  --panel-dark:#111827;
-  --panel-dark-soft:#020617;
+  /* ===== Layout ===== */
+  .wrap{
+    display:grid;
+    grid-template-columns:330px 1fr;
+    gap:12px;
+    padding:12px;
+    min-height:calc(100dvh - 60px);
+    transform:scale(.95);
+    transform-origin:top center;
+  }
+  .left,.right{
+    background:var(--surface);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+  }
+  .left{padding:8px}
+  .right{padding:8px;display:flex;flex-direction:column;gap:10px}
+  @media (max-width:1020px){
+    .wrap{grid-template-columns:1fr;transform:scale(1);}
+  }
 
-  --card:#ffffff;
+  /* ===== Lista de procesos ===== */
+  .proc-item{
+    display:flex;
+    flex-direction:column;
+    gap:.35rem;
+    background:var(--pillGrad);
+    border-radius:14px;
+    padding:.45rem .6rem;
+    margin:.35rem 0;
+    box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);
+    border:2px solid transparent;
+  }
+  .proc-item.activo{
+    border-color:rgba(248,113,113,.4);
+    box-shadow:var(--ring),0 1px 0 rgba(0,0,0,.06);
+  }
+  .proc-row{display:flex;align-items:center;gap:.45rem;cursor:pointer}
+  .dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#ddd;
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.08);
+  }
+  .proc-name{flex:1;font-weight:800;font-size:13px}
+  .proc-acts{display:flex;align-items:center;gap:.25rem}
+  .icon-btn{
+    width:26px;
+    height:26px;
+    border-radius:11px;
+    border:0;
+    background:#f2f4f8;
+    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);
+    cursor:pointer;
+    font-size:12px;
+  }
+  .icon-btn:active{transform:translateY(1px)}
+  .proc-detail{display:none}
+  .proc-detail textarea{
+    width:100%;
+    min-height:62px;
+    border-radius:10px;
+    border:1px solid #e6e8ec;
+    padding:.4rem;
+    background:#fff;
+    font-size:12px;
+  }
 
-  --accent:#ef4444;
-  --accent-soft:#fecaca;
+  /* ===== Subproceso ===== */
+  .module{
+    position:relative;
+    background:var(--pillGrad);
+    border-radius:14px;
+    box-shadow:inset 0 1px 0 #fff,0 1px 0 rgba(0,0,0,.06);
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding:8px;
+  }
+  .mod-head{
+    display:flex;
+    align-items:center;
+    gap:.4rem;
+    background:linear-gradient(135deg,#020617 0%,#1f2937 50%,#020617 100%);
+    color:#e5e7eb;
+    border-radius:12px;
+    padding:.4rem .6rem;
+    box-shadow:0 4px 10px rgba(0,0,0,.45);
+    border-left:4px solid var(--proc,#ef4444);
+  }
+  .mod-title{
+    flex:1;
+    font-weight:900;
+    border:0;
+    background:transparent;
+    color:#f9fafb;
+    outline:0;
+    font-size:13px;
+  }
+  .mod-title::placeholder{color:#9ca3af}
+  .sel{
+    border:1px solid #4b5563;
+    background:#0f172a;
+    color:#e5e7eb;
+    border-radius:9px;
+    padding:.25rem .4rem;
+    font-size:12px;
+    box-shadow:0 1px 0 rgba(255,255,255,.1);
+  }
+  .pill{
+    height:30px;
+    padding:0 .6rem;
+    background:#111827;
+    border-radius:9999px;
+    color:#f9fafb;
+    border:0;
+    cursor:pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 3px 0 rgba(0,0,0,.6),
+      0 10px 20px rgba(0,0,0,.6);
+    font-size:12px;
+    font-weight:700;
+  }
+  .pill:active{transform:translateY(1px)}
+  .badge-diana{margin-left:.2rem;}
 
-  --shadow-soft:0 10px 24px rgba(15,23,42,.25);
-  --shadow-card:0 6px 16px rgba(15,23,42,.28);
-}
+  .mod-detail{display:none}
+  .mod-detail textarea{
+    width:100%;
+    min-height:50px;
+    border:1px solid #e6e8ec;
+    border-radius:10px;
+    padding:.4rem;
+    background:#fff;
+    font-size:12px;
+  }
 
-/* RESET */
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
-  font-size:14px;
-  background:var(--bg);
-  color:var(--ink);
-}
+  /* ===== Pasos ===== */
+  .steps{
+    position:relative;
+    z-index:0;
+    display:block;
+    padding:8px 4px 16px;
+  }
+  .steps > div{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:3px;
+  }
+  .step{
+    position:relative;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    background:linear-gradient(180deg,var(--proc,#e5e7eb) 0%,#ffffff 42%,#f3f4f6 100%);
+    border-radius:13px;
+    padding:6px 8px 8px;
+    box-shadow:
+      inset 0 1px 0 #fff,
+      0 2px 0 rgba(15,23,42,.22),
+      0 7px 14px rgba(15,23,42,.14);
+    width:260px;
+    min-height:54px;
+    border:1px solid rgba(148,163,184,.7);
+  }
+  .bubble{
+    min-width:20px;
+    height:20px;
+    border-radius:9999px;
+    background:linear-gradient(180deg,var(--proc,#2563eb) 0%,#1d4ed8 100%);
+    color:#fff;
+    display:grid;
+    place-items:center;
+    font-weight:900;
+    font-size:10px;
+    margin-bottom:2px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.6),
+      0 2px 0 rgba(15,23,42,.35),
+      0 4px 7px rgba(15,23,42,.35);
+    padding:0 2px;
+    z-index:1;
+  }
+  .step.selected{
+    box-shadow:
+      0 0 0 2px rgba(37,99,235,.3),
+      0 3px 0 rgba(15,23,42,.3),
+      0 9px 18px rgba(15,23,42,.24);
+  }
+  .step input.title{
+    font-weight:800;
+    border:0;
+    background:transparent;
+    outline:0;
+    width:100%;
+    margin-top:1px;
+    font-size:12px;
+  }
+  .minis{
+    display:flex;
+    gap:.2rem;
+    margin-top:4px;
+    margin-left:auto;
+  }
+  .mini{
+    width:22px;
+    height:22px;
+    border-radius:8px;
+    border:0;
+    background:#f2f4f8;
+    cursor:pointer;
+    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.18);
+    font-size:11px;
+  }
+  .mini:active{transform:translateY(1px)}
 
-/* =================== TOPBAR =================== */
-.topbar{
-  position:sticky;top:0;z-index:50;
-  display:flex;align-items:center;gap:.75rem;
-  padding:.45rem .9rem .55rem;
-  background:var(--top-grad);
-  color:#fff;
-  box-shadow:0 10px 24px rgba(0,0,0,.4);
-}
-.logo{
-  display:flex;align-items:center;gap:.55rem;
-  font-size:22px;font-weight:900;letter-spacing:.03em;
-}
-.logo .ear{font-size:30px;line-height:1}
-.top-actions{
-  display:flex;align-items:center;gap:.45rem;
-  margin-left:auto;
-}
+  .step.is-meta-step::after{
+    content:"🎯 META";
+    position:absolute;
+    top:4px;
+    right:4px;
+    font-size:10px;
+    font-weight:800;
+    color:#0f172a;
+    padding:2px 6px;
+    border-radius:999px;
+    background:rgba(255,255,255,.97);
+    box-shadow:0 2px 4px rgba(15,23,42,.25);
+  }
 
-/* Botones 3D rojos pequeños y alineados */
-.btn3d{
-  display:inline-flex;align-items:center;gap:.3rem;
-  padding:.35rem .75rem;
-  border-radius:9999px;
-  border:none;
-  background:#ef4444;
-  color:#fff;
-  font-size:13px;
-  font-weight:700;
-  cursor:pointer;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.55),
-    0 3px 0 rgba(127,29,29,.9),
-    0 10px 18px rgba(0,0,0,.45);
-}
-.btn3d span.icon{font-size:15px}
-.btn3d:active{
-  transform:translateY(1px);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.45),
-    0 1px 0 rgba(127,29,29,.9),
-    0 6px 10px rgba(0,0,0,.45);
-}
+  /* Menú del lápiz */
+  .step-menu{
+    position:absolute;
+    right:6px;
+    bottom:30px;
+    background:#020617;
+    border-radius:10px;
+    padding:3px 4px;
+    display:flex;
+    gap:2px;
+    box-shadow:0 6px 16px rgba(15,23,42,.7);
+    z-index:5;
+  }
+  .step-menu button{
+    width:22px;
+    height:22px;
+    border-radius:7px;
+    border:0;
+    background:#111827;
+    color:#e5e7eb;
+    font-size:11px;
+    cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 2px 0 rgba(0,0,0,.6);
+  }
+  .step-menu button:active{transform:translateY(1px)}
 
-.stamp{
-  font-size:12px;
-  padding:.2rem .65rem;
-  border-radius:9999px;
-  background:rgba(0,0,0,.28);
-}
+  /* Detalle paso */
+  .step-detail{
+    margin:3px 0 0 24px;
+    width:calc(100% - 24px);
+  }
+  .step-detail textarea{
+    width:100%;
+    min-height:44px;
+    border-radius:9px;
+    border:1px solid #e6e8ec;
+    padding:.3rem .4rem;
+    font-size:11px;
+    background:#fff;
+    resize:vertical;
+  }
 
-/* buscador global */
-.searchbar-wrap{
-  padding:.35rem .8rem .55rem;
-  background:#f9fafb;
-  box-shadow:0 4px 10px rgba(0,0,0,.06);
-}
-.searchbar{
-  display:flex;align-items:center;
-  padding:.45rem .7rem;
-  border-radius:9999px;
-  background:#e5e7eb;
-}
-.searchbar input{
-  flex:1;border:none;background:transparent;outline:none;
-  font-weight:600;color:#374151;
-}
+  .flow-svg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    overflow:visible;
+    z-index:0;
+  }
 
-/* =================== LAYOUT =================== */
-.app{
-  display:grid;
-  grid-template-columns:320px 1fr;
-  min-height:calc(100vh - 96px);
-}
-.sidebar{
-  background:#0b1120;
-  color:#e5e7eb;
-  padding:.8rem .7rem 1.2rem;
-  box-shadow:4px 0 18px rgba(0,0,0,.55);
-  overflow-y:auto;
-}
-.main{
-  background:var(--main-bg);
-  padding:.8rem 1rem 1.2rem 1rem;
-  overflow:auto;
-}
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:.3rem;
+    font-weight:800;
+    border-radius:9999px;
+    padding:.15rem .45rem;
+    color:#111;
+    font-size:11px;
+  }
 
-/* =================== SIDEBAR =================== */
-.dept-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:.4rem;
-  font-weight:800;font-size:15px;
-}
-.dept-header small{font-size:11px;opacity:.7}
+  /* ===== SÍ / NO compacto y horizontal con semicolapso ===== */
+  .branches{
+    margin:6px 0 0 18px;
+    padding:4px 6px;
+    border-radius:10px;
+    border:1px dashed rgba(148,163,184,.85);
+    background:rgba(248,250,252,.96);
+    box-shadow:0 1px 4px rgba(15,23,42,.08);
+    position:relative;
+    z-index:3;
+    max-width:min(520px,100%);
+    font-size:10px;
+  }
+  .branches::before{
+    content:"";
+    position:absolute;
+    top:-8px;
+    left:28px;
+    width:0;
+    height:8px;
+    border-left:1px dashed rgba(148,163,184,.85);
+  }
+  .branches-inner{
+    display:flex;
+    flex-wrap:wrap;
+    gap:4px;
+    align-items:flex-start;
+  }
+  .branch{
+    background:#fff;
+    border-radius:8px;
+    padding:.3rem .35rem;
+    box-shadow:inset 0 1px 0 #fff;
+    flex:1 1 48%;
+    max-width:calc(50% - 4px);
+    min-width:200px;
+    position:relative;
+  }
+  .branch.branch-has-content{
+    border:1px solid rgba(248,113,113,.55);
+  }
+  .branch.yes .bh-label{font-size:10px;font-weight:700;opacity:.8;text-transform:uppercase;}
+  .branch.no .bh-label{font-size:11px;font-weight:900;text-transform:uppercase;}
+  .branch.branch-has-content .bh-label{
+    color:#b91c1c;
+  }
+  .bh-top{display:flex;align-items:center;gap:.2rem;margin-bottom:.25rem;flex-wrap:wrap}
+  .plist{display:flex;flex-direction:column;gap:.22rem;transition:max-height .18s ease;}
+  .branch.branch-collapsed .plist{
+    max-height:34px;
+    overflow:hidden;
+  }
+  .branch.branch-collapsed::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:14px;
+    background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);
+    pointer-events:none;
+  }
+  .point{
+    display:flex;
+    align-items:center;
+    gap:.25rem;
+    flex-wrap:wrap;
+  }
+  .point .num{min-width:32px;font-weight:900;opacity:.7;font-size:10px}
+  .pt-input{
+    flex:1 1 230px;
+    border:1px solid #e6e8ec;
+    border-radius:7px;
+    padding:.16rem .30rem;
+    min-width:110px;
+    font-size:10px;
+  }
+  .p-actions{
+    display:flex;
+    align-items:center;
+    gap:.1rem;
+  }
+  .p-mini{
+    width:20px;
+    height:20px;
+    border-radius:7px;
+    border:0;
+    background:#f2f4f8;
+    cursor:pointer;
+    box-shadow:inset 0 1px 0 #fff,0 2px 0 rgba(0,0,0,.1);
+    font-size:10px;
+  }
+  .p-mini:active{transform:translateY(1px)}
+  .p-toggle{
+    background:#e5e7eb;
+    font-weight:900;
+  }
+  .p-extra{
+    display:flex;
+    gap:.16rem;
+  }
+  .children{
+    margin-left:32px;
+    display:flex;
+    flex-direction:column;
+    gap:.16rem;
+  }
 
-.dept-block{
-  margin-bottom:1rem;
-  border-top:1px solid rgba(148,163,184,.5);
-  padding-top:.6rem;
-}
-.dept-title-row{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:.4rem;
-}
-.dept-title-row strong{font-size:14px}
-.dept-title-row button{
-  background:#020617;border-radius:999px;border:none;color:#e5e7eb;
-  padding:.15rem .45rem;font-size:11px;cursor:pointer;
-}
+  .hide{display:none!important}
 
-.proc-list{display:flex;flex-direction:column;gap:.3rem}
-.proc-item{
-  display:flex;align-items:center;gap:.5rem;
-  padding:.45rem .6rem;
-  border-radius:12px;
-  background:#020617;
-  box-shadow:0 1px 0 rgba(255,255,255,.06),0 4px 10px rgba(0,0,0,.5);
-  cursor:pointer;
-}
-.proc-item.active{
-  outline:2px solid var(--accent-soft);
-  box-shadow:0 0 0 1px rgba(248,250,252,.4),0 4px 14px rgba(0,0,0,.75);
-}
-.proc-dot{
-  width:10px;height:10px;border-radius:999px;
-  background:#22c55e;
-  box-shadow:0 0 0 2px rgba(15,23,42,.8);
-}
-.proc-name{flex:1;font-weight:700;font-size:13px}
-.proc-acts{display:flex;align-items:center;gap:.25rem}
-.icon-pill{
-  width:26px;height:26px;border-radius:999px;
-  border:none;cursor:pointer;
-  background:#111827;color:#e5e7eb;
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;
-  box-shadow:0 2px 5px rgba(0,0,0,.65);
-}
-.icon-pill:active{transform:translateY(1px)}
+  .pa-toast{
+    position:fixed;
+    right:12px;
+    bottom:14px;
+    background:#111;
+    color:#fff;
+    padding:.5rem .7rem;
+    border-radius:9px;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);
+    opacity:0;
+    transform:translateY(6px);
+    transition:all .2s;
+    z-index:99999;
+    font:13px system-ui;
+  }
+  .pa-toast.show{opacity:1;transform:translateY(0)}
 
-/* =================== CABECERA PROCESO =================== */
-.proc-header{
-  background:var(--panel-dark);
-  color:#f9fafb;
-  border-radius:14px;
-  padding:.6rem .9rem;
-  box-shadow:var(--shadow-soft);
-  margin-bottom:.8rem;
-  display:flex;align-items:center;gap:.7rem;
-}
-.proc-header h1{
-  font-size:18px;font-weight:900;margin-right:.6rem;
-}
-.proc-header small{font-size:11px;opacity:.7}
-.proc-header-right{
-  margin-left:auto;
-  display:flex;align-items:center;gap:.4rem;
-}
-.proc-header-right select{
-  border-radius:999px;border:none;
-  padding:.25rem .7rem;
-  font-size:13px;
-}
+  /* Vista impresión: sólo proceso activo y sus módulos */
+  @media print{
+    .pa-tools-hide,
+    .topbar,
+    .left,
+    .search{
+      display:none!important;
+    }
+    body{
+      background:#fff;
+    }
+    .wrap{
+      grid-template-columns:1fr;
+      padding:0;
+      transform:none;
+    }
+    .right{
+      box-shadow:none;
+      border-radius:0;
+      padding:0;
+    }
+    .module{
+      page-break-inside:avoid;
+      margin-bottom:10mm;
+    }
+  }
 
-/* =================== SUBPROCESOS =================== */
-.sub-block{
-  position:relative;
-  margin-bottom:1.2rem;
-  border-radius:14px;
-  background:#ffffff;                  /* FONDO BLANCO */
-  border:1px solid #e5e7eb;
-  box-shadow:0 6px 16px rgba(15,23,42,.18);
-}
-.sub-head{
-  display:flex;align-items:center;gap:.6rem;
-  padding:.5rem .8rem;
-  border-radius:14px 14px 0 0;
-  background:var(--panel-dark);
-  color:#f9fafb;
-  font-weight:800;
-}
-.sub-head-title{flex:1}
-.sub-head select{
-  border-radius:999px;border:none;
-  padding:.2rem .6rem;
-  font-size:13px;
-}
-.sub-head .head-actions{
-  display:flex;align-items:center;gap:.35rem;
-}
-.badge-save{
-  display:inline-flex;align-items:center;gap:.25rem;
-  padding:.25rem .6rem;
-  border-radius:9999px;
-  background:#0b1120;
-  color:#f9fafb;
-  font-size:12px;
-}
-.badge-save span.icon{font-size:13px}
-
-/* SUB-SUBPROCESO, más pequeño, blanco */
-.sub-child{
-  position:relative;
-  margin:.75rem .9rem .9rem .9rem;
-  border-radius:12px;
-  background:#ffffff;                    /* BLANCO */
-  border:1px dashed rgba(148,163,184,.9);
-  box-shadow:0 4px 12px rgba(15,23,42,.18);
-}
-.sub-child-head{
-  display:flex;align-items:center;gap:.6rem;
-  padding:.45rem .75rem;
-  border-radius:12px 12px 0 0;
-  background:#1f2937;
-  color:#f9fafb;
-  font-weight:800;
-}
-.sub-child .badge-save{background:#020617}
-
-/* línea discontinua desde faldón padre hasta faldón hijo */
-.sub-child::before{
-  content:"";
-  position:absolute;
-  top:-18px;left:40px;
-  width:0;height:18px;
-  border-left:2px dashed rgba(148,163,184,.95);
-}
-.sub-child::after{
-  content:"";
-  position:absolute;
-  top:-4px;left:34px;
-  width:12px;height:12px;
-  border-right:2px dashed rgba(148,163,184,.95);
-  border-bottom:2px dashed rgba(148,163,184,.95);
-  transform:rotate(45deg);
-}
-
-/* =================== STEPS =================== */
-.steps-area{
-  position:relative;
-  padding:.7rem .9rem 1.1rem .9rem;
-}
-
-/* ahora layout manual serpentina, no grid */
-.steps-grid{
-  position:relative;
-  min-height:120px;
-}
-.step-wrap{
-  position:absolute;          /* colocado por JS */
-  padding-bottom:18px;
-}
-
-/* tarjeta de paso */
-.step-card{
-  position:relative;
-  background:var(--card);
-  border-radius:16px;
-  box-shadow:var(--shadow-card);
-  padding:.6rem .65rem .7rem .65rem;
-  border:1px solid rgba(148,163,184,.7);
-}
-.step-strip{
-  position:absolute;
-  inset:0 auto 0 0;
-  width:10px;
-  border-radius:16px 0 0 16px;
-  background:#fde68a; /* se sobrescribe por proceso */
-}
-
-/* número circular */
-.step-badge{
-  position:relative;
-  z-index:2;
-  width:26px;height:26px;
-  border-radius:999px;
-  background:#e5e7eb;  /* color por proceso en JS */
-  box-shadow:0 3px 6px rgba(15,23,42,.45);
-  display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:13px;
-  color:#111827;
-  margin-bottom:.25rem;
-}
-
-/* título del paso: multilinea, no crece a lo ancho */
-.step-title{
-  position:relative;
-  z-index:2;
-  font-weight:800;
-  font-size:14px;
-  line-height:1.25;
-  margin-right:40px;
-  word-wrap:break-word;
-}
-.step-title[contenteditable="true"]{outline:none}
-
-/* lápiz flotante */
-.step-edit{
-  position:absolute;
-  right:10px;bottom:10px;
-  width:32px;height:32px;
-  border-radius:999px;
-  border:none;
-  background:#111827;
-  color:#f97316;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;
-  cursor:pointer;
-  box-shadow:0 4px 10px rgba(0,0,0,.55);
-}
-.step-edit:active{transform:translateY(1px)}
-
-/* menú del lápiz */
-.edit-menu{
-  position:absolute;
-  right:6px;bottom:50px;
-  padding:.25rem .35rem;
-  border-radius:9999px;
-  background:#020617;
-  display:flex;align-items:center;gap:.25rem;
-  box-shadow:0 6px 16px rgba(0,0,0,.8);
-}
-.edit-menu button{
-  width:26px;height:26px;
-  border-radius:999px;
-  border:none;
-  background:#111827;
-  color:#e5e7eb;
-  font-size:13px;
-  cursor:pointer;
-}
-.edit-menu button:active{transform:translateY(1px)}
-
-/* pill ver más */
-.more-pill{
-  position:absolute;
-  left:50%;transform:translateX(-50%);
-  bottom:0;
-  padding:.1rem .55rem;
-  font-size:11px;
-  border-radius:999px;
-  background:#e5e7eb;
-  color:#111827;
-  display:inline-flex;align-items:center;gap:.25rem;
-  cursor:pointer;
-  box-shadow:0 2px 5px rgba(0,0,0,.35);
-}
-.more-pill strong{font-weight:800}
-.more-pill .hand{font-size:13px}
-
-/* bloque detalle SÍ/NO */
-.step-detail{
-  margin-top:.55rem;
-  padding:.4rem .45rem .5rem;
-  border-radius:12px;
-  background:#fefce8;
-  border:1px dashed #e5e7eb;
-  display:none;
-}
-.step-detail.open{display:block;}
-
-.sn-row{display:flex;gap:.45rem;margin-bottom:.35rem}
-.sn-col{
-  flex:1;
-  background:#fff;
-  border-radius:10px;
-  padding:.3rem .35rem .45rem;
-  box-shadow:inset 0 1px 0 #f9fafb;
-}
-.sn-col h4{
-  font-size:12px;
-  font-weight:800;
-  margin-bottom:.2rem;
-}
-.sn-col textarea{
-  width:100%;min-height:40px;
-  border-radius:8px;
-  border:1px solid #e5e7eb;
-  padding:.25rem .35rem;
-  resize:vertical;
-  font-size:12px;
-}
-
-.next-proc{
-  margin-top:.25rem;
-  font-size:11px;
-  font-weight:700;
-}
-
-/* =================== FLECHAS ENTRE PASOS =================== */
-.flow-svg{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  overflow:visible;
-}
-
-/* =================== PIN LECTURA =================== */
-body.pa-locked .lock-block{pointer-events:none;opacity:.55}
-body.pa-locked [contenteditable]{pointer-events:none}
-body.pa-locked textarea{pointer-events:none}
-body.pa-locked .edit-menu{display:none!important}
-
-/* TOAST */
-.pa-toast{
-  position:fixed;right:16px;bottom:18px;
-  padding:.55rem .75rem;
-  border-radius:10px;
-  background:#111827;
-  color:#f9fafb;
-  box-shadow:0 8px 18px rgba(0,0,0,.55);
-  opacity:0;transform:translateY(6px);
-  transition:.18s;
-  font-size:13px;
-  z-index:9999;
-}
-.pa-toast.show{opacity:1;transform:translateY(0)}
-
-@media (max-width:1024px){
-  .app{grid-template-columns:260px 1fr}
-}
-@media (max-width:820px){
-  .app{grid-template-columns:1fr}
-  .sidebar{order:2}
-  .main{order:1}
-}
+  body.pa-locked .is-readonly{opacity:.6;filter:saturate(.6)}
+  body.pa-locked .lock-block{ pointer-events:none !important; opacity:.6; }
+  body.pa-locked input[readonly],
+  body.pa-locked textarea[readonly]{background:#f7f7f7}
 </style>
 </head>
 <body>
-  <!-- TOPBAR -->
   <div class="topbar">
-    <div class="logo"><span class="ear">🎧</span> PROCESOS AUDIO</div>
-    <div class="top-actions">
-      <button id="btnNewDept" class="btn3d"><span class="icon">🏢</span>Nuevo departamento</button>
-      <button id="btnPin" class="btn3d"><span class="icon">🔒</span>PIN</button>
-      <button id="btnPdf" class="btn3d"><span class="icon">📄</span>PDF</button>
-      <button id="btnHtml" class="btn3d"><span class="icon">⬇️</span>HTML</button>
-      <button id="btnCloudSave" class="btn3d"><span class="icon">☁️</span>Nube</button>
+    <div class="title"><span class="ear">🎧</span> PROCESOS AUDIO</div>
+
+    <button id="btnAddProcess" class="btn3d">+ Procesos</button>
+    <button id="btnAddSubprocPaso" class="btn3d">+ Subproceso + Paso</button>
+    <button id="btnAddStepGlobal" class="btn3d" title="Añadir paso al subproceso abierto">+ Paso</button>
+
+    <div class="bar-right">
+      <button id="paPinBtn" class="btn3d pa-tools-hide" title="PIN (AR4321)">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 8V7a5 5 0 10-10 0v1M6 8h12v12H6V8z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        PIN
+      </button>
+      <button id="paPdfBtn" class="btn3d pa-tools-hide" title="Imprimir / Guardar PDF">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9V4h12v5M6 18h12M6 14h12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        PDF
+      </button>
+      <button id="paHtmlBtn" class="btn3d pa-tools-hide" title="Descargar HTML idéntico">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        HTML
+      </button>
+      <button id="paSaveCloud" class="btn3d pa-tools-hide" title="Guardar copia en nube (local)">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 18a4 4 0 110-8 5 5 0 119.9 1H18a3 3 0 110 6H7z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Nube
+      </button>
+      <button id="paLoadCloud" class="btn3d pa-tools-hide" title="Abrir copia guardada">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6M20 8a8 8 0 10-3.17 6.34" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Actualizar
+      </button>
+
       <span id="stamp" class="stamp">—</span>
-      <button id="btnGlobalSave" class="btn3d"><span class="icon">💾</span>Guardar todo</button>
+      <button id="btnSave" class="btn3d">💾 Guardar</button>
     </div>
+
+    <div class="search"><input id="q" placeholder="Buscar…"></div>
   </div>
 
-  <!-- BUSCADOR -->
-  <div class="searchbar-wrap">
-    <div class="searchbar">
-      <input id="globalSearch" placeholder="Buscar departamento, proceso, subproceso, paso…">
-    </div>
+  <div class="wrap">
+    <div class="left"><div id="processList"></div></div>
+    <div class="right" id="modules"></div>
   </div>
 
-  <!-- LAYOUT -->
-  <div class="app">
-    <aside class="sidebar">
-      <div class="dept-header">
-        <span>Departamentos</span>
-        <small>Selecciona para ver sus procesos</small>
+  <div id="procModal" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;z-index:50">
+    <div style="background:#fff;border-radius:14px;min-width:320px;max-width:92vw;padding:10px;box-shadow:0 20px 40px rgba(0,0,0,.2)">
+      <div style="font-weight:800;margin:.2rem .2rem .6rem">Selecciona proceso destino</div>
+      <div id="procModalList" style="display:flex;flex-direction:column;gap:.35rem"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:.6rem">
+        <button id="pmCancel" class="btn3d" style="background:#ddd;color:#111;box-shadow:0 2px 8px rgba(0,0,0,.25)">Cancelar</button>
       </div>
-      <div id="deptContainer"></div>
-    </aside>
-
-    <main class="main">
-      <div id="procHeader"></div>
-      <div id="subContainer"></div>
-    </main>
+    </div>
   </div>
-
-  <div id="toast" class="pa-toast"></div>
 
 <script>
-/* ======= UTILIDADES ======= */
-const LSKEY='pa_departamentos_v1';
-const PIN_CODE='AR4321';
+/* ===== util visibilidad ===== */
+function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
+function hideBlock(el){ if(!el) return; el.classList.add('hide'); el.style.display='none'; el.setAttribute('aria-hidden','true'); }
+function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
 
-const PROC_COLORS=[
-  '#fee2e2','#ffedd5','#fef3c7',
-  '#dcfce7','#bfdbfe','#e0e7ff',
-  '#fce7f3','#e0f2fe'
-];
-let procColorIndex=0;
+/* ===== Estado ===== */
+const LSKEY='pa_v3_connectors_3d';
+const RESPONSABLES=['Audiólogo','Responsable','Otros'];
+const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6ff','#a0e7e5','#c7f9cc','#fbcfe8','#fde68a','#bbf7d0'];
+const uid=()=>'p'+Math.random().toString(36).slice(2,9);
+const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/${p(d.getMonth()+1)}/${p(d.getFullYear())}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`};
 
-const uid=()=> 'id'+Math.random().toString(36).slice(2,9);
-const nowStamp=()=>{
-  const d=new Date(),p=n=>String(n).padStart(2,'0');
-  return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
-};
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),2300);
+const state={processes:[]};
+let activePid=null;
+
+function save(){ localStorage.setItem(LSKEY,JSON.stringify(state)); document.getElementById('stamp').textContent='Última actualización '+stamp(); }
+function load(){
+  const raw=localStorage.getItem(LSKEY);
+  if(!raw){
+    state.processes.push({id:uid(),name:'Revisión auditiva',color:colors[0],detail:'',modules:[],_openDetail:false});
+    save();
+  }else{ try{ Object.assign(state,JSON.parse(raw)); }catch{} }
+  if(!activePid && state.processes[0]) activePid=state.processes[0].id;
 }
 
-/* ======= ESTADO ======= */
-const state={depts:[],activeDeptId:null,activeProcId:null};
+/* ===== Procesos izquierda ===== */
+function procRow(p){
+  const wrap=document.createElement('div'); wrap.className='proc-item'+(p.id===activePid?' activo':'');
+  wrap.dataset.pid = p.id;
+  const row=document.createElement('div'); row.className='proc-row';
+  row.innerHTML=`<span class="dot" style="background:${p.color}"></span>
+    <span class="proc-name">${p.name}</span>
+    <div class="proc-acts">
+      <button class="icon-btn" title="Detalle">▾</button>
+      <button class="icon-btn" title="Renombrar">✏️</button>
+      <button class="icon-btn" title="Eliminar" style="box-shadow:inset 0 0 0 #fff">🗑️</button>
+    </div>`;
+  row.onclick=e=>{ if(e.target.closest('.icon-btn')) return; activePid=p.id; render(); };
 
-function defaultDept(){
-  return {id:uid(),name:'Audiología',processes:[]};
+  const det=document.createElement('div');
+  det.className='proc-detail'+(p._openDetail?'':' hide');
+  det.setAttribute('aria-hidden', p._openDetail ? 'false':'true');
+  det.innerHTML=`<textarea placeholder="Detalle del proceso…">${p.detail||''}</textarea>`;
+  const ta=det.querySelector('textarea');
+  ta.oninput=e=>{ p.detail=e.target.value; ta.title=p.detail||''; save(); };
+
+  const [bDet,bRen,bDel]=row.querySelectorAll('.icon-btn');
+  bDet.onclick=e=>{
+    e.stopPropagation();
+    p._openDetail=!p._openDetail;
+    toggleBlock(det,p._openDetail);
+    if(p._openDetail) setTimeout(()=>ta.focus(),0);
+    save();
+  };
+  bRen.onclick=e=>{ e.stopPropagation(); const nn=prompt('Nombre del proceso',p.name); if(nn){p.name=nn;save();render();} };
+  bDel.onclick=e=>{ e.stopPropagation(); if(confirm('¿Eliminar proceso y sus módulos?')){ const i=state.processes.findIndex(x=>x.id===p.id); if(i>-1){ state.processes.splice(i,1); activePid=state.processes[0]?.id||null; save(); render(); } } };
+
+  wrap.appendChild(row); wrap.appendChild(det);
+  return wrap;
 }
-function defaultProcess(name){
-  const color=PROC_COLORS[procColorIndex++ % PROC_COLORS.length];
-  return {id:uid(),name:name||'Nuevo proceso',detail:'',color,modules:[]};
+function renderProcesses(){
+  const box=document.getElementById('processList'); box.innerHTML='';
+  state.processes.forEach(p=>box.appendChild(procRow(p)));
 }
-function defaultModule(isChild=false){
+
+/* ===== Modal bandera ===== */
+function openProcPicker(onPick){
+  const modal=document.getElementById('procModal');
+  const list=document.getElementById('procModalList'); list.innerHTML='';
+  state.processes.forEach(p=>{
+    const b=document.createElement('button');
+    b.className='btn3d'; b.style.cssText='justify-content:flex-start;color:#111;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06);border-radius:12px';
+    b.innerHTML=`<span class="dot" style="background:${p.color}"></span> <strong>${p.name}</strong>`;
+    b.onclick=()=>{ modal.classList.add('hide'); onPick(p.id); };
+    list.appendChild(b);
+  });
+  document.getElementById('pmCancel').onclick=()=>modal.classList.add('hide');
+  modal.classList.remove('hide');
+}
+
+/* ===== helpers ===== */
+function makeStep(){
   return {
     id:uid(),
-    title:isChild?'Nuevo subproceso - Sub':'Nuevo subproceso',
-    owner:'Audiólogo',
+    title:'Nuevo paso',
     detail:'',
-    steps:[],
-    children:[]
+    link:null,
+    links:[],
+    docs:[],
+    yes:[],
+    no:[],
+    _openBranches:false,
+    _openDetailStep:false
   };
 }
-function defaultStep(){
-  return{ id:uid(),title:'Nuevo paso',detail:'',yes:'',no:'',collapsedDetail:true };
-}
+function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
+function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
+function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ======= PERSISTENCIA ======= */
-function saveState(){
-  localStorage.setItem(LSKEY,JSON.stringify(state));
-  document.getElementById('stamp').textContent='Última actualización '+nowStamp();
-}
-function loadState(){
-  const raw=localStorage.getItem(LSKEY);
-  if(raw){
-    try{Object.assign(state,JSON.parse(raw));}catch(e){console.error(e);}
-  }
-  if(!state.depts.length){
-    const d=defaultDept();
-    const p=defaultProcess('Revisión auditiva');
-    const m=defaultModule(false);
-    m.steps.push(defaultStep(),defaultStep(),defaultStep(),defaultStep());
-    p.modules.push(m);
-    d.processes.push(p);
-    state.depts.push(d);
-    state.activeDeptId=d.id;
-    state.activeProcId=p.id;
-  }
+/* ===== Layout serpentina: 3 columnas ===== */
+function layoutStepsSerpentine(container){
+  const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
+  if(!wrappers.length) return;
 
-  /* asegurar colores pastel para procesos antiguos */
-  state.depts.forEach(dept=>{
-    dept.processes.forEach(proc=>{
-      if(!proc.color){
-        proc.color=PROC_COLORS[procColorIndex++ % PROC_COLORS.length];
+  wrappers.forEach(w=>{
+    w.style.position='';
+    w.style.left='';
+    w.style.top='';
+  });
+
+  const firstStep = wrappers[0].querySelector('.step');
+  if(!firstStep) return;
+
+  const cardW = firstStep.offsetWidth || 260;
+  const gapX = 34;
+  const gapY = 34;
+  const maxCols = 3;
+
+  const heights = wrappers.map(w => w.offsetHeight);
+
+  const rows = [];
+  let current = [];
+  wrappers.forEach((w,idx)=>{
+    const hasBranches = !!w.querySelector('.branches:not(.hide)');
+    current.push(idx);
+    if(hasBranches || current.length===maxCols){
+      rows.push(current);
+      current=[];
+    }
+  });
+  if(current.length) rows.push(current);
+
+  const rowHeights = [];
+  rows.forEach((idxs,r)=>{
+    let maxH = 0;
+    let hasBranchesRow = false;
+    idxs.forEach(i=>{
+      if(heights[i]>maxH) maxH = heights[i];
+      if(wrappers[i].querySelector('.branches:not(.hide)')) hasBranchesRow=true;
+    });
+    rowHeights[r] = maxH + (hasBranchesRow ? 80 : 0);
+  });
+
+  let y = 0;
+  const innerWidth = container.clientWidth || (maxCols*cardW + (maxCols-1)*gapX);
+
+  rows.forEach((idxs,r)=>{
+    const dirRight = r%2===0;
+    const itemsInRow = idxs.length;
+    const rowWidth = itemsInRow*cardW + (itemsInRow-1)*gapX;
+    const baseX = Math.max(0,(innerWidth-rowWidth)/2);
+
+    idxs.forEach((idx,pos)=>{
+      const wrap = wrappers[idx];
+      const colInRow = dirRight ? pos : (itemsInRow-1-pos);
+      const left = baseX + colInRow*(cardW+gapX);
+
+      wrap.style.position='absolute';
+      wrap.style.left = left+'px';
+      wrap.style.top  = y+'px';
+
+      const step = wrap.querySelector('.step');
+      if(step){
+        step.dataset.row = r;
+        step.dataset.rowDir = dirRight ? '1':'-1';
       }
     });
+
+    y += rowHeights[r] + gapY;
   });
 
-  if(!state.activeDeptId && state.depts[0]) state.activeDeptId=state.depts[0].id;
-  const dept=state.depts.find(x=>x.id===state.activeDeptId);
-  if(dept && !state.activeProcId && dept.processes[0]) state.activeProcId=dept.processes[0].id;
+  container.style.height = y + 18 + 'px';
+}
+function layoutAllSteps(){
+  document.querySelectorAll('.steps').forEach(layoutStepsSerpentine);
 }
 
-/* ======= SIDEBAR ======= */
-function renderSidebar(){
-  const wrap=document.getElementById('deptContainer');
-  wrap.innerHTML='';
-  state.depts.forEach(dept=>{
-    const block=document.createElement('div');
-    block.className='dept-block';
+/* ===== Flechas ===== */
+function drawFlowForSteps(container){
+  const steps = Array.from(container.querySelectorAll('.step'));
+  if(!steps.length) return;
 
-    const title=document.createElement('div');
-    title.className='dept-title-row';
-    title.innerHTML=`<strong>${dept.name}</strong>
-      <button data-dept="${dept.id}">Procesos (${dept.processes.length}) +</button>`;
-    title.querySelector('button').onclick=()=>{
-      const p=defaultProcess('Nuevo proceso');
-      dept.processes.push(p);
-      state.activeDeptId=dept.id;
-      state.activeProcId=p.id;
-      saveState();renderAll();
-    };
-    block.appendChild(title);
+  steps.forEach(s=>s.classList.remove('is-meta-step'));
 
-    const list=document.createElement('div');
-    list.className='proc-list';
-    dept.processes.forEach(proc=>{
-      const item=document.createElement('div');
-      item.className='proc-item'+(proc.id===state.activeProcId?' active':'');
-      item.onclick=()=>{state.activeDeptId=dept.id;state.activeProcId=proc.id;renderAll();};
-      item.innerHTML=`
-        <span class="proc-dot" style="background:${proc.color||'#a5b4fc'}"></span>
-        <span class="proc-name">${proc.name}</span>
-        <div class="proc-acts">
-          <button class="icon-pill" title="Guardar">💾</button>
-          <button class="icon-pill" title="Renombrar">✏️</button>
-          <button class="icon-pill" title="Eliminar">🗑</button>
-        </div>`;
-      const [bSave,bRen,bDel]=item.querySelectorAll('.icon-pill');
-      bSave.onclick=e=>{e.stopPropagation();saveState();toast('Proceso guardado');};
-      bRen.onclick=e=>{
-        e.stopPropagation();
-        const nn=prompt('Nombre del proceso',proc.name);
-        if(nn){proc.name=nn;saveState();renderAll();}
-      };
-      bDel.onclick=e=>{
-        e.stopPropagation();
-        if(!confirm('¿Eliminar proceso y todos sus subprocesos y pasos?'))return;
-        dept.processes=dept.processes.filter(p=>p.id!==proc.id);
-        if(dept.processes[0]) state.activeProcId=dept.processes[0].id; else state.activeProcId=null;
-        saveState();renderAll();
-      };
-      list.appendChild(item);
-    });
-    block.appendChild(list);
-    wrap.appendChild(block);
-  });
-}
+  const old = container.querySelector('.flow-svg');
+  if(old) old.remove();
 
-/* ======= HELPERS ======= */
-function getActive(){
-  const dept=state.depts.find(d=>d.id===state.activeDeptId)||state.depts[0];
-  const proc=dept?dept.processes.find(p=>p.id===state.activeProcId)||dept.processes[0]:null;
-  if(dept && proc){state.activeDeptId=dept.id;state.activeProcId=proc.id;}
-  return {dept,proc};
-}
+  const cRect = container.getBoundingClientRect();
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS,'svg');
+  svg.classList.add('flow-svg');
+  svg.setAttribute('viewBox',`0 0 ${cRect.width} ${cRect.height}`);
 
-/* ======= CABECERA PROCESO ======= */
-function renderProcHeader(){
-  const {dept,proc}=getActive();
-  const wrap=document.getElementById('procHeader');
-  wrap.innerHTML='';
-  if(!dept||!proc)return;
+  const defs=document.createElementNS(svgNS,'defs');
+  const markerSmall=document.createElementNS(svgNS,'marker');
+  markerSmall.setAttribute('id','arrowHead');
+  markerSmall.setAttribute('markerWidth','7');
+  markerSmall.setAttribute('markerHeight','7');
+  markerSmall.setAttribute('refX','6');
+  markerSmall.setAttribute('refY','3.5');
+  markerSmall.setAttribute('orient','auto');
+  markerSmall.setAttribute('markerUnits','strokeWidth');
+  const headSmall=document.createElementNS(svgNS,'path');
+  headSmall.setAttribute('d','M0,0 L7,3.5 L0,7 Z');
+  headSmall.setAttribute('fill','#cbd5e1');
+  markerSmall.appendChild(headSmall);
+  defs.appendChild(markerSmall);
+  svg.appendChild(defs);
 
-  const box=document.createElement('div');
-  box.className='proc-header';
-  box.innerHTML=`
-    <h1>${proc.name} - Pasos</h1>
-    <small>${dept.name}</small>
-    <div class="proc-header-right">
-      <select id="selOwner">
-        <option>Audiólogo</option>
-        <option>Responsable</option>
-        <option>Otros</option>
-      </select>
-      <button id="btnAddModule" class="btn3d" style="transform:scale(.8)"><span class="icon">➕</span>Subproceso</button>
-      <button id="btnAddStepGlobal" class="btn3d" style="transform:scale(.8)"><span class="icon">➕</span>Paso</button>
-      <button id="btnProcSave" class="btn3d" style="transform:scale(.8)"><span class="icon">🎯</span>Guardar proceso</button>
-    </div>`;
-  wrap.appendChild(box);
+  const rects = steps.map(s => s.getBoundingClientRect());
 
-  document.getElementById('btnAddModule').onclick=()=>{
-    proc.modules.push(defaultModule(false));
-    saveState();renderSubprocs();
-  };
-  document.getElementById('btnAddStepGlobal').onclick=()=>{
-    if(!proc.modules.length)proc.modules.push(defaultModule(false));
-    const m=proc.modules[proc.modules.length-1];
-    m.steps.push(defaultStep());
-    saveState();renderSubprocs();
-  };
-  document.getElementById('btnProcSave').onclick=()=>{saveState();toast('Proceso guardado');};
-}
+  const lastStepEl = steps[steps.length-1];
+  lastStepEl.classList.add('is-meta-step');
 
-/* ======= SUBPROCESOS / SUB-SUBPROCESOS ======= */
-function renderSubprocs(){
-  const {proc}=getActive();
-  const container=document.getElementById('subContainer');
-  container.innerHTML='';
-  if(!proc)return;
-
-  proc.modules.forEach(mod=>{
-    container.appendChild(buildModule(mod,false,proc));
-  });
-
-  requestAnimationFrame(()=>{
-    layoutAllSteps();
-    drawAllFlows();
-  });
-}
-
-function buildModule(mod,isChild,proc){
-  const block=document.createElement('div');
-  block.className=isChild?'sub-child':'sub-block';
-
-  const head=document.createElement('div');
-  head.className=isChild?'sub-child-head':'sub-head';
-  head.innerHTML=`
-    <div class="sub-head-title" contenteditable="true">${mod.title}</div>
-    <select>
-      <option ${mod.owner==='Audiólogo'?'selected':''}>Audiólogo</option>
-      <option ${mod.owner==='Responsable'?'selected':''}>Responsable</option>
-      <option ${mod.owner==='Otros'?'selected':''}>Otros</option>
-    </select>
-    <div class="head-actions">
-      <button class="btn3d" style="transform:scale(.7)"><span class="icon">📝</span>Detalle</button>
-      <button class="btn3d" style="transform:scale(.7)"><span class="icon">➕</span>Paso</button>
-      <button class="btn3d" style="transform:scale(.7)"><span class="icon">➕</span>Sub/subproceso</button>
-      <span class="badge-save"><span class="icon">💾</span>Guardar</span>
-      <button class="btn3d" style="transform:scale(.7)"><span class="icon">✖</span></button>
-    </div>`;
-  const titleEl=head.querySelector('.sub-head-title');
-  titleEl.oninput=()=>{mod.title=titleEl.textContent.trim()||'Subproceso';};
-  const [sel]=head.getElementsByTagName('select');
-  sel.onchange=e=>{mod.owner=e.target.value;saveState();};
-  const [btnDet,btnPaso,btnSubSub,btnSave,btnDel]=head.querySelectorAll('.head-actions > *');
-  btnDet.onclick=()=>{
-    const txt=prompt('Detalle del subproceso',mod.detail||'');
-    if(txt!==null){mod.detail=txt;saveState();}
-  };
-  btnPaso.onclick=()=>{mod.steps.push(defaultStep());saveState();renderSubprocs();};
-  btnSubSub.onclick=()=>{
-    const child=defaultModule(true);
-    mod.children.push(child);
-    saveState();renderSubprocs();
-  };
-  btnSave.onclick=()=>{saveState();toast('Subproceso guardado');};
-  btnDel.onclick=()=>{
-    if(!confirm('¿Eliminar este subproceso con todos sus pasos y sub-subprocesos?'))return;
-    proc.modules=proc.modules.filter(m=>m.id!==mod.id);
-    saveState();renderSubprocs();
-  };
-
-  block.appendChild(head);
-
-  const stepsArea=document.createElement('div');
-  stepsArea.className='steps-area';
-  const grid=document.createElement('div');
-  grid.className='steps-grid';
-  mod.steps.forEach((st,idx)=>grid.appendChild(buildStep(mod,st,idx,proc.color)));
-  stepsArea.appendChild(grid);
-  block.appendChild(stepsArea);
-
-  mod.children.forEach(ch=>block.appendChild(buildModule(ch,true,proc)));
-
-  return block;
-}
-
-/* ======= PASO ======= */
-function buildStep(mod,st,idx,procColor){
-  const wrap=document.createElement('div');
-  wrap.className='step-wrap';
-  wrap.dataset.stepId=st.id;
-
-  const card=document.createElement('div');
-  card.className='step-card';
-  card.innerHTML=`
-    <div class="step-strip"></div>
-    <div class="step-badge">${idx+1}</div>
-    <div class="step-title" contenteditable="true">${st.title}</div>
-    <button class="step-edit">✏️</button>
-    <div class="step-detail ${st.collapsedDetail?'':'open'}">
-      <div class="sn-row">
-        <div class="sn-col">
-          <h4>SÍ</h4>
-          <textarea placeholder="Acciones si se cumple…">${st.yes||''}</textarea>
-        </div>
-        <div class="sn-col">
-          <h4>NO</h4>
-          <textarea placeholder="Acciones si NO se cumple…">${st.no||''}</textarea>
-        </div>
-      </div>
-      <div class="next-proc">Etiqueta “Ir a próximo proceso” (escribe aquí si aplica)</div>
-      <textarea style="width:100%;margin-top:.25rem;min-height:32px;border-radius:8px;border:1px solid #e5e7eb;padding:.25rem .35rem;font-size:12px;">${st.detail||''}</textarea>
-    </div>`;
-
-  /* color pastel del proceso en la banda y el punto */
-  const strip=card.querySelector('.step-strip');
-  const badge=card.querySelector('.step-badge');
-  if(procColor){
-    strip.style.background=procColor;
-    badge.style.background=procColor;
+  function addPath(d){
+    const path=document.createElementNS(svgNS,'path');
+    path.setAttribute('d',d);
+    path.setAttribute('fill','none');
+    path.setAttribute('stroke','#cbd5e1');
+    path.setAttribute('stroke-width','2.4');
+    path.setAttribute('marker-end','url(#arrowHead)');
+    svg.appendChild(path);
   }
 
-  const titleEl=card.querySelector('.step-title');
-  titleEl.oninput=()=>{st.title=titleEl.textContent.trim()||'Paso';};
+  function anchor(rect, side){
+    const xLeft = rect.left - cRect.left;
+    const xRight = rect.right - cRect.left;
+    const yTop = rect.top - cRect.top;
+    const yBottom = rect.bottom - cRect.top;
+    const yMid = (yTop + yBottom)/2;
+    const xMid = (xLeft + xRight)/2;
+    switch(side){
+      case 'left': return {x:xLeft,y:yMid};
+      case 'right': return {x:xRight,y:yMid};
+      case 'top': return {x:xMid,y:yTop};
+      case 'bottom': return {x:xMid,y:yBottom};
+    }
+  }
 
-  const detailBox=card.querySelector('.step-detail');
-  const [yesTA,noTA,detailTA]=detailBox.querySelectorAll('textarea');
-  yesTA.oninput=()=>{st.yes=yesTA.value;saveState();};
-  noTA.oninput=()=>{st.no=noTA.value;saveState();};
-  detailTA.oninput=()=>{st.detail=detailTA.value;saveState();};
+  function getBranchesRectForStep(stepEl){
+    if(!stepEl || !stepEl.parentElement) return null;
+    const br = stepEl.parentElement.querySelector('.branches:not(.hide)');
+    return br ? br.getBoundingClientRect() : null;
+  }
 
-  /* menú lápiz */
-  const editBtn=card.querySelector('.step-edit');
-  let menu=null;
-  editBtn.onclick=e=>{
-    e.stopPropagation();
-    if(menu){menu.remove();menu=null;return;}
-    menu=document.createElement('div');
-    menu.className='edit-menu';
-    menu.innerHTML=`
-      <button title="Guardar">💾</button>
-      <button title="Adjuntar documento">📎</button>
-      <button title="Adjuntar enlace">🔗</button>
-      <button title="Ayuda">❓</button>
-      <button title="Eliminar">🗑</button>`;
-    const [bSave,bDoc,bLink,bHelp,bDel]=menu.querySelectorAll('button');
-    bSave.onclick=()=>{saveState();toast('Paso guardado');};
-    bDoc.onclick=()=>{
-      const inp=document.createElement('input');
-      inp.type='file';
-      inp.onchange=()=>toast('Documento adjuntado (referencia local)');
-      inp.click();
+  for(let i=0;i<rects.length-1;i++){
+    const a = rects[i];
+    const b = rects[i+1];
+    const stepA = steps[i];
+    const stepB = steps[i+1];
+    const rowA = parseInt(stepA.dataset.row || '0',10);
+    const rowB = parseInt(stepB.dataset.row || '0',10);
+
+    let d;
+
+    if(rowA === rowB){
+      let start,end;
+      if(a.left < b.left){
+        start = anchor(a,'right');
+        end   = anchor(b,'left');
+      }else{
+        start = anchor(a,'left');
+        end   = anchor(b,'right');
+      }
+      if(Math.abs(start.y - end.y) < 8){
+        d = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+      }else{
+        const midY = (start.y + end.y) / 2;
+        d = `M ${start.x} ${start.y}
+             L ${start.x} ${midY}
+             L ${end.x} ${midY}
+             L ${end.x} ${end.y}`;
+      }
+    }else{
+      const bottomA = anchor(a,'bottom');
+      const topB    = anchor(b,'top');
+      const brRect  = getBranchesRectForStep(stepA);
+
+      const start = {x:bottomA.x, y:bottomA.y};
+
+      let yDown = bottomA.y + 14;
+      if(brRect){
+        const brBottom = brRect.bottom - cRect.top;
+        if(brBottom + 14 > yDown) yDown = brBottom + 14;
+      }
+
+      let yUp = topB.y - 14;
+
+      const allLefts  = rects.map(r => r.left - cRect.left);
+      const allRights = rects.map(r => r.right - cRect.left);
+      const minX = Math.min.apply(null,allLefts);
+      const maxX = Math.max.apply(null,allRights);
+      let corridorX = start.x - 70;
+      if(corridorX < minX - 30){
+        corridorX = minX - 30;
+      }
+      if(corridorX < 8){
+        corridorX = maxX + 34;
+      }
+
+      d = `M ${start.x} ${start.y}
+           L ${start.x} ${yDown}
+           L ${corridorX} ${yDown}
+           L ${corridorX} ${yUp}
+           L ${topB.x} ${yUp}
+           L ${topB.x} ${topB.y}`;
+    }
+    addPath(d);
+  }
+
+  container.appendChild(svg);
+}
+function drawAllFlows(){
+  document.querySelectorAll('.steps').forEach(drawFlowForSteps);
+}
+
+/* ===== SÍ / NO (lógica con desplegable + manito) ===== */
+function branchBox(p,m,st,kind,idx){
+  const isYes=kind==='yes';
+  const arr = st[kind] || (st[kind]=[]);
+  const wrap=document.createElement('div'); wrap.className='branch '+(isYes?'yes':'no');
+
+  const hasContent = arr.length>0 || !!st[kind+'Link'];
+  if(hasContent) wrap.classList.add('branch-has-content');
+
+  const collapsed = st[kind+'Collapsed'] === true;
+  if(collapsed) wrap.classList.add('branch-collapsed');
+
+  const top=document.createElement('div'); top.className='bh-top';
+  const label=document.createElement('div'); label.className='bh-label'; label.textContent=isYes?'SÍ':'NO';
+
+  const toggleBranch=document.createElement('button');
+  toggleBranch.className='p-mini';
+  toggleBranch.textContent = collapsed ? '👉' : '▾';
+  toggleBranch.title='Haz clic para abrir/cerrar el detalle de la rama';
+
+  const add=document.createElement('button'); add.className='p-mini'; add.textContent='＋'; add.title='Añadir punto';
+  const flag=document.createElement('button'); flag.className='p-mini'; flag.textContent='🚩'; flag.title='Bandera rama';
+  const delBranch=document.createElement('button'); delBranch.className='p-mini'; delBranch.textContent='−'; delBranch.title='Borrar rama';
+
+  add.onclick=()=>{ st._openBranches=true; pushPoint(arr); st[kind+'Collapsed']=false; save(); renderModules(); };
+  flag.onclick=()=>{ st._openBranches=true; openProcPicker(pid=>{ st[kind+'Link']={pid}; save(); renderModules(); }); };
+  delBranch.onclick=()=>{
+    if(!arr.length && !st[kind+'Link']) return;
+    if(confirm('¿Borrar todos los puntos de esta rama y su bandera?')){
+      st[kind]=[];
+      delete st[kind+'Link'];
+      save();
+      renderModules();
+    }
+  };
+  toggleBranch.onclick=()=>{
+    const nowCollapsed = (st[kind+'Collapsed'] === true);
+    st[kind+'Collapsed'] = !nowCollapsed;
+    save();
+    renderModules();
+  };
+
+  top.appendChild(label);
+  top.appendChild(toggleBranch);
+  top.appendChild(add);
+  top.appendChild(flag);
+  top.appendChild(delBranch);
+
+  if(st[kind+'Link']?.pid){
+    const dest=state.processes.find(x=>x.id===st[kind+'Link'].pid);
+    if(dest){
+      const chip=document.createElement('span'); chip.className='chip'; chip.style.background=dest.color; chip.style.marginLeft='.25rem';
+      chip.innerHTML=`→ <small>Proceso:</small> <strong>${dest.name}</strong>`;
+      top.appendChild(chip);
+    }
+  }
+  wrap.appendChild(top);
+
+  const list=document.createElement('div'); list.className='plist';
+
+  arr.forEach((pt,i)=>{
+    if(!Array.isArray(pt.children)) pt.children=[];
+    const li=document.createElement('div'); li.className='point';
+    const num=`${idx+1}.${i+1}`;
+
+    const numSpan=document.createElement('span');
+    numSpan.className='num';
+    numSpan.textContent=num;
+
+    const input=document.createElement('input');
+    input.className='pt-input';
+    input.placeholder='Escribe…';
+    input.value=pt.text||'';
+    input.title=pt.text||'';
+    input.oninput=e=>{ pt.text=e.target.value; input.title=pt.text||''; save(); };
+
+    const actions=document.createElement('div');
+    actions.className='p-actions';
+
+    const toggle=document.createElement('button');
+    toggle.className='p-mini p-toggle';
+    toggle.title='Más opciones';
+    toggle.textContent='＋';
+
+    const extra=document.createElement('div');
+    extra.className='p-extra hide';
+
+    const bSub=document.createElement('button');
+    bSub.className='p-mini';
+    bSub.title='Subpunto';
+    bSub.textContent='＋';
+    bSub.onclick=()=>{
+      st._openBranches=true;
+      pushSubPoint(pt);
+      st[kind+'Collapsed']=false;
+      save();
+      renderModules();
     };
-    bLink.onclick=()=>{
-      const url=prompt('Pega el enlace a adjuntar');
-      if(url)toast('Enlace guardado en el paso');
+
+    const bFlag=document.createElement('button');
+    bFlag.className='p-mini';
+    bFlag.title='Bandera';
+    bFlag.textContent='🚩';
+    bFlag.onclick=()=>{
+      st._openBranches=true;
+      openProcPicker(pid=>{
+        pt.link={pid};
+        save();
+        renderModules();
+      });
     };
-    bHelp.onclick=()=>alert('Puedes usar este paso para documentar instrucciones o ayudas.');
+
+    const bDel=document.createElement('button');
+    bDel.className='p-mini';
+    bDel.title='Borrar';
+    bDel.textContent='🗑';
     bDel.onclick=()=>{
-      if(!confirm('¿Eliminar este paso?'))return;
-      mod.steps=mod.steps.filter(x=>x.id!==st.id);
-      saveState();renderSubprocs();
+      st._openBranches=true;
+      delFromArray(arr,pt.id);
+      save();
+      renderModules();
     };
-    card.appendChild(menu);
-  };
 
-  /* ver más */
-  const pill=document.createElement('div');
-  pill.className='more-pill';
-  pill.innerHTML=`<strong>ver más</strong><span class="hand">👇</span>`;
-  const showPill=()=>{ if(yesTA.value||noTA.value||detailTA.value) pill.style.display='inline-flex'; };
-  if(!st.yes && !st.no && !st.detail && st.collapsedDetail) pill.style.display='none';
-  yesTA.addEventListener('input',showPill);
-  noTA.addEventListener('input',showPill);
-  detailTA.addEventListener('input',showPill);
+    extra.appendChild(bSub);
+    extra.appendChild(bFlag);
+    extra.appendChild(bDel);
 
-  pill.onclick=()=>{
-    st.collapsedDetail=!st.collapsedDetail;
-    if(st.collapsedDetail) detailBox.classList.remove('open');
-    else detailBox.classList.add('open');
-    saveState();
-  };
+    toggle.onclick=()=>{
+      st._openBranches=true;
+      extra.classList.toggle('hide');
+    };
 
-  wrap.appendChild(card);
-  wrap.appendChild(pill);
+    actions.appendChild(toggle);
+    actions.appendChild(extra);
+
+    li.appendChild(numSpan);
+    li.appendChild(input);
+    li.appendChild(actions);
+
+    if(pt.link?.pid){
+      const dest=state.processes.find(x=>x.id===pt.link.pid);
+      if(dest){
+        const pc=document.createElement('span'); pc.className='chip'; pc.style.background=dest.color; pc.style.marginLeft='.25rem';
+        pc.innerHTML=`→ <small>${dest.name}</small>`;
+        li.appendChild(pc);
+      }
+    }
+
+    list.appendChild(li);
+
+    const kids=document.createElement('div'); kids.className='children';
+    pt.children.forEach((ch,j)=>{
+      const cli=document.createElement('div'); cli.className='point';
+      const cnum=`${num}.${j+1}`;
+
+      const cNumSpan=document.createElement('span');
+      cNumSpan.className='num';
+      cNumSpan.textContent=cnum;
+
+      const cInput=document.createElement('input');
+      cInput.className='pt-input';
+      cInput.placeholder='Subpunto…';
+      cInput.value=ch.text||'';
+      cInput.title=ch.text||'';
+      cInput.oninput=e=>{ ch.text=e.target.value; cInput.title=ch.text||''; save(); };
+
+      const cActions=document.createElement('div');
+      cActions.className='p-actions';
+
+      const cToggle=document.createElement('button');
+      cToggle.className='p-mini p-toggle';
+      cToggle.title='Más opciones';
+      cToggle.textContent='＋';
+
+      const cExtra=document.createElement('div');
+      cExtra.className='p-extra hide';
+
+      const cbFlag=document.createElement('button');
+      cbFlag.className='p-mini';
+      cbFlag.title='Bandera';
+      cbFlag.textContent='🚩';
+      cbFlag.onclick=()=>{
+        st._openBranches=true;
+        openProcPicker(pid=>{
+          ch.link={pid};
+          save();
+          renderModules();
+        });
+      };
+
+      const cbDel=document.createElement('button');
+      cbDel.className='p-mini';
+      cbDel.title='Borrar';
+      cbDel.textContent='🗑';
+      cbDel.onclick=()=>{
+        st._openBranches=true;
+        const k=pt.children.indexOf(ch);
+        if(k>-1){
+          pt.children.splice(k,1);
+          save();
+          renderModules();
+        }
+      };
+
+      cExtra.appendChild(cbFlag);
+      cExtra.appendChild(cbDel);
+
+      cToggle.onclick=()=>{
+        st._openBranches=true;
+        cExtra.classList.toggle('hide');
+      };
+
+      cActions.appendChild(cToggle);
+      cActions.appendChild(cExtra);
+
+      cli.appendChild(cNumSpan);
+      cli.appendChild(cInput);
+      cli.appendChild(cActions);
+
+      if(ch.link?.pid){
+        const dest=state.processes.find(x=>x.id===ch.link.pid);
+        if(dest){
+          const cc=document.createElement('span'); cc.className='chip'; cc.style.background=dest.color; cc.innerHTML=`→ <small>${dest.name}</small>`;
+          cli.appendChild(cc);
+        }
+      }
+
+      kids.appendChild(cli);
+    });
+
+    list.appendChild(kids);
+  });
+
+  wrap.appendChild(list);
   return wrap;
 }
 
-/* ======= LAYOUT SERPENTINA 1-2-3 / 6-5-4 ======= */
-function layoutStepsSerpentine(container){
-  const wraps=[...container.querySelectorAll('.step-wrap')];
-  if(!wraps.length)return;
+/* ===== Paso ===== */
+function stepRow(p,m,st,index){
+  const row=document.createElement('div');
 
-  const firstCard=wraps[0].querySelector('.step-card');
-  const cardW=firstCard.offsetWidth||260;
-  const cardH=firstCard.offsetHeight||110;
-  const gapX=24,gapY=40;
-  const cols=3;
-
-  const rows=Math.ceil(wraps.length/cols);
-  for(let i=0;i<wraps.length;i++){
-    const row=Math.floor(i/cols);
-    const idxInRow=i%cols;
-    const col = (row%2===0) ? idxInRow : (cols-1-idxInRow); // fila impar invertida
-
-    const x=col*(cardW+gapX);
-    const y=row*(cardH+gapY);
-    const w=wraps[i];
-    w.style.left=x+'px';
-    w.style.top=y+'px';
-  }
-  container.style.height=rows*(cardH+gapY)+20+'px';
-}
-function layoutAllSteps(){
-  document.querySelectorAll('.steps-grid').forEach(layoutStepsSerpentine);
-}
-
-/* ======= FLECHAS 1→2→3→4 (respeta serpentina) ======= */
-function drawAllFlows(){
-  document.querySelectorAll('.steps-area').forEach(area=>{
-    const old=area.querySelector('.flow-svg');
-    if(old)old.remove();
-    const grid=area.querySelector('.steps-grid');
-    if(!grid)return;
-    const cards=[...grid.querySelectorAll('.step-card')];
-    if(cards.length<2)return;
-
-    const rect=grid.getBoundingClientRect();
-    const svgNS='http://www.w3.org/2000/svg';
-    const svg=document.createElementNS(svgNS,'svg');
-    svg.classList.add('flow-svg');
-    svg.setAttribute('viewBox',`0 0 ${rect.width} ${rect.height}`);
-
-    const defs=document.createElementNS(svgNS,'defs');
-    const marker=document.createElementNS(svgNS,'marker');
-    marker.setAttribute('id','arrowHead');
-    marker.setAttribute('markerWidth','8');
-    marker.setAttribute('markerHeight','8');
-    marker.setAttribute('refX','7');
-    marker.setAttribute('refY','4');
-    marker.setAttribute('orient','auto');
-    const head=document.createElementNS(svgNS,'path');
-    head.setAttribute('d','M0,0 L8,4 L0,8 Z');
-    head.setAttribute('fill','#d1d5db');
-    marker.appendChild(head);
-    defs.appendChild(marker);
-    svg.appendChild(defs);
-
-    const rects=cards.map(c=>c.getBoundingClientRect());
-
-    function anchorRight(r){
-      return {x:r.right-rect.left,y:(r.top+r.bottom)/2-rect.top};
-    }
-    function anchorLeft(r){
-      return {x:r.left-rect.left,y:(r.top+r.bottom)/2-rect.top};
-    }
-
-    for(let i=0;i<cards.length-1;i++){
-      const a=rects[i],b=rects[i+1];
-      const s=anchorRight(a),e=anchorLeft(b);
-      const sameRow=Math.abs(a.top-b.top)<20;
-      const path=document.createElementNS(svgNS,'path');
-      let d;
-
-      if(sameRow){
-        const midX=(s.x+e.x)/2;
-        d=`M ${s.x} ${s.y} C ${midX} ${s.y} ${midX} ${e.y} ${e.x} ${e.y}`;
-      }else{
-        const downY=s.y+20;
-        const upY=e.y-20;
-        const midX=s.x+40;
-        d=`M ${s.x} ${s.y}
-           L ${s.x+20} ${s.y}
-           L ${s.x+20} ${downY}
-           L ${midX} ${downY}
-           L ${midX} ${upY}
-           L ${e.x-10} ${upY}
-           L ${e.x-10} ${e.y}
-           L ${e.x} ${e.y}`;
-      }
-      path.setAttribute('d',d);
-      path.setAttribute('fill','none');
-      path.setAttribute('stroke','#d1d5db');
-      path.setAttribute('stroke-width','3');
-      path.setAttribute('marker-end','url(#arrowHead)');
-      svg.appendChild(path);
-    }
-
-    area.appendChild(svg);
+  const sc=document.createElement('div'); sc.className='step';
+  sc.innerHTML=`
+    <div class="bubble">${index+1}</div>
+    <input class="title" value="${st.title}">
+    <div class="minis">
+      <button class="mini" data-act="menu-toggle" title="Opciones de paso">✏️</button>
+      <button class="mini" data-act="flag-step" title="Bandera paso">🚩</button>
+      <button class="mini" data-act="branches" title="Si / No">❓</button>
+      <button class="mini" data-act="detail" title="Detalle del paso">📝</button>
+      <button class="mini" data-act="delete" title="Eliminar">–</button>
+    </div>`;
+  sc.style.setProperty('--proc',p.color);
+  sc.addEventListener('click', (e)=>{
+    if(e.target.closest('.mini') || e.target.classList.contains('title')) return;
+    sc.closest('.steps').querySelectorAll('.step').forEach(s=>s.classList.remove('selected'));
+    sc.classList.add('selected');
   });
-}
 
-/* ======= PIN LECTURA ======= */
-function applyPin(){
-  const locked=sessionStorage.getItem('PA_PIN_OK')!=='1';
-  document.body.classList.toggle('pa-locked',locked);
-}
-document.getElementById('btnPin').onclick=()=>{
-  if(sessionStorage.getItem('PA_PIN_OK')==='1'){
-    sessionStorage.removeItem('PA_PIN_OK');
-    applyPin();toast('Modo lectura activado');
-  }else{
-    const v=prompt('Introduce PIN para editar (AR4321)');
-    if(v===PIN_CODE){sessionStorage.setItem('PA_PIN_OK','1');applyPin();toast('Edición habilitada');}
-    else if(v!==null)toast('PIN incorrecto');
+  const titleInput = sc.querySelector('.title');
+  titleInput.title = st.title || '';
+  titleInput.oninput=e=>{ st.title=e.target.value; titleInput.title=st.title||''; save(); };
+
+  const menu=document.createElement('div');
+  menu.className='step-menu hide';
+  menu.innerHTML=`
+    <button data-act="menu-flag" title="Bandera proceso">🚩</button>
+    <button data-act="menu-link" title="Adjuntar enlace">🔗</button>
+    <button data-act="menu-doc" title="Adjuntar documento">📎</button>
+  `;
+  sc.appendChild(menu);
+
+  const branchesWrapper=document.createElement('div');
+  branchesWrapper.className='branches'+(st._openBranches?'':' hide');
+
+  const branchesInner=document.createElement('div');
+  branchesInner.className='branches-inner';
+  branchesInner.appendChild(branchBox(p,m,st,'no',index));
+  branchesInner.appendChild(branchBox(p,m,st,'yes',index));
+  branchesWrapper.appendChild(branchesInner);
+
+  const stepDetail=document.createElement('div');
+  stepDetail.className='step-detail'+(st._openDetailStep?'':' hide');
+  stepDetail.innerHTML=`<textarea placeholder="Detalle del paso…">${st.detail||''}</textarea>`;
+  const sdTa = stepDetail.querySelector('textarea');
+  sdTa.title = st.detail || '';
+  sdTa.oninput = e=>{ st.detail = e.target.value; sdTa.title=st.detail||''; save(); };
+
+  if(!Array.isArray(st.links)) st.links=[];
+  if(!Array.isArray(st.docs))  st.docs=[];
+
+  const miniMenu     = sc.querySelector('[data-act="menu-toggle"]');
+  const miniFlag     = sc.querySelector('[data-act="flag-step"]');
+  const miniBranches = sc.querySelector('[data-act="branches"]');
+  const miniDetail   = sc.querySelector('[data-act="detail"]');
+  const miniDelete   = sc.querySelector('[data-act="delete"]');
+
+  miniDelete.onclick=()=>{ m.steps.splice(index,1); save(); renderModules(); };
+  miniFlag.onclick=()=> openProcPicker(pid=>{ st.link={pid}; save(); renderModules(); });
+  miniBranches.onclick=()=>{ 
+    st._openBranches=!st._openBranches; 
+    save(); 
+    toggleBlock(branchesWrapper,st._openBranches); 
+    requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
+  };
+  miniDetail.onclick=()=>{
+    st._openDetailStep = !st._openDetailStep;
+    toggleBlock(stepDetail, st._openDetailStep);
+    save();
+    if(st._openDetailStep){ setTimeout(()=>sdTa.focus(),0); }
+    requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();});
+  };
+
+  miniMenu.onclick=(ev)=>{
+    ev.stopPropagation();
+    menu.classList.toggle('hide');
+  };
+
+  const menuFlag = menu.querySelector('[data-act="menu-flag"]');
+  const menuLink = menu.querySelector('[data-act="menu-link"]');
+  const menuDoc  = menu.querySelector('[data-act="menu-doc"]');
+
+  menuFlag.onclick=()=>{
+    miniFlag.click();
+    menu.classList.add('hide');
+  };
+  menuLink.onclick=()=>{
+    const url = prompt('Enlace a adjuntar (URL o referencia):', '');
+    if(url){
+      st.links.push(url);
+      miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
+      save();
+    }
+    menu.classList.add('hide');
+  };
+  menuDoc.onclick=()=>{
+    const doc = prompt('Nombre/ubicación del documento:', '');
+    if(doc){
+      st.docs.push(doc);
+      miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
+      save();
+    }
+    menu.classList.add('hide');
+  };
+
+  if(st.links.length || st.docs.length){
+    miniMenu.title = `Opciones de paso (enlaces: ${st.links.length}, docs: ${st.docs.length})`;
   }
-};
 
-/* ======= BUSCADOR ======= */
-document.getElementById('globalSearch').addEventListener('input',e=>{
-  const q=e.target.value.toLowerCase().trim();
+  row.appendChild(sc);
+
+  if(st.link?.pid){
+    const dest=state.processes.find(x=>x.id===st.link.pid);
+    if(dest){
+      const chip=document.createElement('div');
+      chip.className='chip'; chip.style.background=dest.color; chip.style.margin='3px 0 0 48px';
+      chip.innerHTML=`→ <small>Ir al proceso:</small> <strong>${dest.name}</strong>`;
+      row.appendChild(chip);
+    }
+  }
+
+  row.appendChild(stepDetail);
+  row.appendChild(branchesWrapper);
+  return row;
+}
+
+/* ===== Subprocesos (módulos) ===== */
+function modCard(p,m){
+  const card=document.createElement('div'); card.className='module';
+  card.style.setProperty('--proc',p.color);
+  card.dataset.mid = m.id;
+  card.dataset.pid = p.id;
+
+  const head=document.createElement('div'); head.className='mod-head';
+  head.style.setProperty('--proc',p.color);
+  head.innerHTML=`<input class="mod-title" value="${m.title}">
+    <select class="sel">${RESPONSABLES.map(r=>`<option ${m.responsable===r?'selected':''}>${r}</option>`).join('')}</select>
+    <button class="pill" data-act="toggle-detail" aria-expanded="${m._openDetail?'true':'false'}">▾ Detalle</button>
+    <button class="pill" data-act="toggle-steps" aria-expanded="${m._openSteps===false?'false':'true'}">▾ Pasos</button>
+    <button class="pill" data-act="add-submodule">+ Sub/subproceso</button>
+    <button class="pill" data-act="add-step">+ Paso</button>
+    <button class="pill" data-act="close">${m.completed?'🎯 Cerrado':'🎯 Guardar'}</button>
+    <button class="pill" data-act="del">–</button>`;
+  const titleEl=head.querySelector('.mod-title');
+  titleEl.oninput=e=>{ m.title=e.target.value; titleEl.title=m.title||''; save(); };
+  titleEl.title = m.title || '';
+  titleEl.ondblclick=()=>{ m._openDetail=!m._openDetail; toggleBlock(det,m._openDetail); if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0);} save(); };
+  head.querySelector('select').onchange=e=>{ m.responsable=e.target.value; save(); };
+  head.querySelector('[data-act="add-step"]').onclick=()=>{ m.steps.push(makeStep()); save(); renderModules(); };
+  head.querySelector('[data-act="toggle-detail"]').onclick=(ev)=>{
+    m._openDetail=!m._openDetail;
+    ev.currentTarget.setAttribute('aria-expanded', m._openDetail?'true':'false');
+    toggleBlock(det,m._openDetail);
+    if(m._openDetail){ setTimeout(()=>det.querySelector('textarea').focus(),0); }
+    save();
+  };
+  head.querySelector('[data-act="close"]').onclick=()=>{ m.completed=!m.completed; save(); renderModules(); };
+  head.querySelector('[data-act="del"]').onclick=()=>{ if(confirm('¿Eliminar subproceso?')){ const i=p.modules.findIndex(x=>x.id===m.id); if(i>-1){ p.modules.splice(i,1); save(); renderModules(); } } };
+
+  const btnSub = head.querySelector('[data-act="add-submodule"]');
+  if(btnSub){
+    btnSub.onclick=()=>{
+      const idx = p.modules.findIndex(x=>x.id===m.id);
+      const subModule = {
+        id:uid(),
+        title: (m.title || 'Subproceso') + ' - Sub',
+        responsable: m.responsable || RESPONSABLES[0],
+        detail:'',
+        steps:[makeStep()],
+        completed:false,
+        _openDetail:false,
+        _openSteps:false
+      };
+      if(idx>-1){
+        p.modules.splice(idx+1,0,subModule);
+      }else{
+        p.modules.push(subModule);
+      }
+      save();
+      renderModules();
+    };
+  }
+
+  card.appendChild(head);
+
+  const det=document.createElement('div');
+  det.className='mod-detail'+(m._openDetail?'':' hide');
+  det.setAttribute('aria-hidden', m._openDetail ? 'false':'true');
+  det.innerHTML=`<textarea placeholder="Descripción del subproceso…">${m.detail||''}</textarea>`;
+  const mta=det.querySelector('textarea');
+  mta.title = m.detail || '';
+  mta.oninput=e=>{ m.detail=e.target.value; mta.title=m.detail||''; save(); };
+  card.appendChild(det);
+
+  const steps=document.createElement('div'); steps.className='steps';
+  steps.style.setProperty('--proc',p.color);
+  m.steps.forEach((st,idx)=>{
+    if(typeof st.detail === 'undefined') st.detail='';
+    if(typeof st._openDetailStep === 'undefined') st._openDetailStep=false;
+    if(typeof st._openBranches === 'undefined') st._openBranches=false;
+    if(!Array.isArray(st.yes)) st.yes=[];
+    if(!Array.isArray(st.no))  st.no=[];
+    if(!Array.isArray(st.links)) st.links=[];
+    if(!Array.isArray(st.docs))  st.docs=[];
+    steps.appendChild(stepRow(p,m,st,idx));
+  });
+  card.appendChild(steps);
+
+  if(m._openSteps === false){
+    hideBlock(steps);
+  }else{
+    showBlock(steps);
+  }
+  const btnSteps = head.querySelector('[data-act="toggle-steps"]');
+  if(btnSteps){
+    btnSteps.setAttribute('aria-expanded', m._openSteps===false?'false':'true');
+    btnSteps.onclick=(ev)=>{
+      const current = (m._openSteps === false) ? false : true;
+      const next = !current;
+      m._openSteps = next;
+      btnSteps.setAttribute('aria-expanded', next ? 'true' : 'false');
+      toggleBlock(steps, next);
+      save();
+      requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
+    };
+  }
+
+  if(m.completed){
+    const d=document.createElement('span'); d.className='badge-diana'; d.textContent='🎯';
+    head.appendChild(d);
+  }
+  return card;
+}
+
+/* ===== Render derecha ===== */
+function renderModules(){
+  const box=document.getElementById('modules'); box.innerHTML='';
+  const p=state.processes.find(x=>x.id===activePid)||state.processes[0]; if(!p) return; activePid=p.id;
+  p.modules.forEach(m=> box.appendChild(modCard(p,m)));
+
+  requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
+}
+
+/* ===== Acciones globales ===== */
+function createModuleForProcess(pid,titleOverride){
+  const p=state.processes.find(x=>x.id===pid); if(!p) return null;
+  const defaultTitle = titleOverride || (p.name ? `${p.name} - Pasos` : 'Nuevo subproceso');
+  const m={
+    id:uid(),
+    title:defaultTitle,
+    responsable:RESPONSABLES[0],
+    detail:'',
+    steps:[makeStep()],
+    completed:false,
+    _openDetail:false,
+    _openSteps:false
+  };
+  p.modules.push(m); save(); renderModules(); return m;
+}
+function addProcess(){
+  const color=colors[state.processes.length%colors.length];
+  const p={id:uid(),name:'Nuevo proceso',color,detail:'',modules:[],_openDetail:false};
+  state.processes.push(p); activePid=p.id; save(); render();
+}
+function addStepGlobal(){
+  const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
+  if(!p){ alert('Primero crea un proceso'); return; }
+  let m=p.modules[p.modules.length-1];
+  if(!m) m=createModuleForProcess(p.id, `${p.name} - Pasos`);
+  m.steps.push(makeStep()); save(); renderModules();
+}
+
+/* ===== Render maestro ===== */
+function render(){
+  renderProcesses();
+  renderModules();
+  if (window.applyPinLockUI) window.applyPinLockUI();
+}
+
+/* ===== Boot ===== */
+load(); document.getElementById('stamp').textContent='Última actualización '+stamp();
+window.applyPinLockUI = window.applyPinLockUI || function(){};
+render();
+document.getElementById('btnAddProcess').onclick=addProcess;
+document.getElementById('btnAddSubprocPaso').onclick=()=>{
+  const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
+  if(!p){alert('Crea un proceso');return;}
+  createModuleForProcess(p.id,'Nuevo subproceso');
+};
+document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
+document.getElementById('btnSave').onclick=save;
+
+/* Redibujar al redimensionar */
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
+
+/* ===== Buscador ===== */
+function stepMatches(st, q){
+  if(!q) return true;
+  const ql = q.toLowerCase();
+  if((st.title||'').toLowerCase().includes(ql)) return true;
+  if((st.detail||'').toLowerCase().includes(ql)) return true;
+
+  const checkPoints = (list=[])=>{
+    for(const pt of list){
+      if((pt.text||'').toLowerCase().includes(ql)) return true;
+      if(Array.isArray(pt.children)){
+        for(const ch of pt.children){
+          if((ch.text||'').toLowerCase().includes(ql)) return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  if(checkPoints(st.yes||[])) return true;
+  if(checkPoints(st.no||[])) return true;
+  return false;
+}
+function moduleMatches(m, q){
+  if(!q) return true;
+  const ql = q.toLowerCase();
+  if((m.title||'').toLowerCase().includes(ql)) return true;
+  if((m.detail||'').toLowerCase().includes(ql)) return true;
+  if(Array.isArray(m.steps)){
+    for(const st of m.steps){
+      if(stepMatches(st, ql)) return true;
+    }
+  }
+  return false;
+}
+function processMatches(p, q){
+  if(!q) return true;
+  const ql = q.toLowerCase();
+  if((p.name||'').toLowerCase().includes(ql)) return true;
+  if((p.detail||'').toLowerCase().includes(ql)) return true;
+  if(Array.isArray(p.modules)){
+    for(const m of p.modules){
+      if(moduleMatches(m, ql)) return true;
+    }
+  }
+  return false;
+}
+
+document.getElementById('q').addEventListener('input',e=>{
+  const q = e.target.value.trim().toLowerCase();
+
   document.querySelectorAll('.proc-item').forEach(el=>{
-    const txt=el.querySelector('.proc-name').textContent.toLowerCase();
-    el.style.display=(!q||txt.includes(q))?'flex':'none';
+    const pid = el.dataset.pid;
+    const p = state.processes.find(x=>x.id===pid);
+    const visible = !q || (p && processMatches(p, q));
+    el.classList.toggle('hide', !visible);
+  });
+
+  const pActive = state.processes.find(x=>x.id===activePid) || state.processes[0];
+  if(!pActive) return;
+
+  document.querySelectorAll('#modules .module').forEach(el=>{
+    const mid = el.dataset.mid;
+    const m = pActive.modules.find(x=>x.id===mid);
+    const visible = !q || (m && moduleMatches(m, q));
+    el.classList.toggle('hide', !visible);
   });
 });
 
-/* ======= NUEVO DEPARTAMENTO ======= */
-document.getElementById('btnNewDept').onclick=()=>{
-  const name=prompt('Nombre del nuevo departamento','Nuevo departamento');
-  if(!name)return;
-  const d=defaultDept();d.name=name;d.processes=[];
-  state.depts.push(d);
-  state.activeDeptId=d.id;
-  state.activeProcId=null;
-  saveState();renderAll();
-};
+/* =======================================================================
+   UTILIDADES (PIN, PDF, HTML, NUBE)
+   ======================================================================= */
+(function(){
+  const PIN_CODE = 'AR4321';
+  const SNAP_KEY = 'PA_SNAPSHOT_V1';
 
-/* ======= TOOLS TOPBAR ======= */
-document.getElementById('btnGlobalSave').onclick=()=>{saveState();toast('Todo guardado');};
+  const toast = (() => {
+    const n = document.createElement('div');
+    n.className='pa-toast'; n.id='paToast';
+    document.body.appendChild(n);
+    return (msg)=>{ n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2200); };
+  })();
 
-document.getElementById('btnHtml').onclick=()=>{
-  const clone=document.documentElement.cloneNode(true);
-  clone.querySelectorAll('#toast').forEach(n=>n.remove());
-  const blob=new Blob(['<!DOCTYPE html>\n'+clone.outerHTML],{type:'text/html'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='procesos-audio.html';
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-};
+  const fileStamp = () => { const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}`; };
 
-document.getElementById('btnCloudSave').onclick=()=>{
-  try{
-    localStorage.setItem('pa_snapshot_html_v1',document.documentElement.outerHTML);
-    toast('Copia guardada en nube local');
-  }catch(e){toast('No se pudo guardar la copia');}
-};
+  const pinBtn  = document.getElementById('paPinBtn');
+  const pdfBtn  = document.getElementById('paPdfBtn');
+  const htmlBtn = document.getElementById('paHtmlBtn');
+  const saveBtn = document.getElementById('paSaveCloud');
+  const loadBtn = document.getElementById('paLoadCloud');
 
-document.getElementById('btnPdf').onclick=()=>window.print();
+  window.applyPinLockUI = function applyPinLockUI(){
+    const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
+    document.body.classList.toggle('pa-locked', locked);
 
-/* ======= RENDER GLOBAL ======= */
-function renderAll(){
-  renderSidebar();
-  renderProcHeader();
-  renderSubprocs();
-  applyPin();
-}
+    ['#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso'].forEach(sel=>{
+      const b=document.querySelector(sel);
+      if(b){ b.classList.toggle('lock-block', locked); b.toggleAttribute('disabled', locked); }
+    });
 
-loadState();
-document.getElementById('stamp').textContent='Última actualización '+nowStamp();
-renderAll();
-window.addEventListener('resize',()=>{layoutAllSteps();drawAllFlows();});
+    document.querySelectorAll('.proc-item .icon-btn[title="Renombrar"], .proc-item .icon-btn[title="Eliminar"]').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+
+    document.querySelectorAll('input.title, .mod-title, textarea, .pt-input').forEach(el=>{
+      el.toggleAttribute('readonly', locked);
+      el.classList.toggle('is-readonly', locked);
+    });
+    document.querySelectorAll('select.sel').forEach(s=>{
+      s.toggleAttribute('disabled', locked);
+      s.classList.toggle('is-readonly', locked);
+    });
+
+    document.querySelectorAll('[data-act="add-step"], [data-act="close"], [data-act="del"]').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+
+    document.querySelectorAll('.step .mini[title="Eliminar"], .step .mini[title="Bandera paso"]').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+
+    document.querySelectorAll('.branch .p-mini').forEach(b=>{
+      b.classList.toggle('lock-block', locked);
+      b.toggleAttribute('disabled', locked);
+    });
+  };
+
+  function cancelIfLocked(e){
+    const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
+    if(!locked) return;
+    const t = e.target.closest('button, input, textarea, select');
+    if(!t) return;
+    const denySel = [
+      '#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso',
+      '.proc-item .icon-btn[title="Renombrar"]',
+      '.proc-item .icon-btn[title="Eliminar"]',
+      '[data-act="add-step"]','[data-act="close"]','[data-act="del"]',
+      '.step .mini[title="Eliminar"]','.step .mini[title="Bandera paso"]',
+      '.branch .p-mini'
+    ].join(',');
+    if(t.matches(denySel) || (t.tagName==='SELECT') || (t.tagName==='INPUT' && t.classList.contains('title')) ||
+       (t.tagName==='TEXTAREA') || t.classList.contains('pt-input')){
+      e.stopPropagation(); e.preventDefault();
+      toast('Modo lectura: bloqueado por PIN');
+    }
+  }
+  document.addEventListener('click', cancelIfLocked, true);
+  document.addEventListener('input', cancelIfLocked, true);
+  document.addEventListener('change', cancelIfLocked, true);
+
+  const mo = new MutationObserver(()=>applyPinLockUI());
+  mo.observe(document.body,{childList:true,subtree:true});
+
+  function printAll(){
+    const opened=[];
+    document.querySelectorAll('.proc-detail, .mod-detail, .branches, details').forEach(b=>{
+      const wasHidden = (b.classList && (b.classList.contains('hide') || b.style.display==='none')) || (b.tagName==='DETAILS' && !b.open);
+      if(wasHidden){
+        if(b.tagName==='DETAILS') b.open=true; else showBlock(b);
+        opened.push(b);
+      }
+    });
+    const restore=()=>{ opened.forEach(h=>{ if(h.tagName==='DETAILS') h.open=false; else hideBlock(h); }); window.removeEventListener('afterprint',restore); };
+    window.addEventListener('afterprint',restore);
+    window.print();
+  }
+
+  function currentHTML(){
+    const clone=document.documentElement.cloneNode(true);
+    clone.querySelectorAll('#paToast').forEach(el=>el?.parentNode?.removeChild(el));
+    return '<!DOCTYPE html>\n'+clone.outerHTML;
+  }
+
+  function downloadHTML(){
+    const blob = new Blob([currentHTML()],{type:'text/html'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`PROCESOS-AUDIO_${fileStamp()}.html`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+
+  function saveToCloud(){
+    try{
+      localStorage.setItem(SNAP_KEY, JSON.stringify({when:Date.now(), html: currentHTML()}));
+      toast('Guardado en nube (local)');
+    }catch(e){ console.error(e); toast('No se pudo guardar'); }
+  }
+
+  function loadFromCloud(){
+    const raw=localStorage.getItem(SNAP_KEY);
+    if(!raw){ toast('No hay copia en nube'); return; }
+    try{
+      const {html}=JSON.parse(raw)||{};
+      if(!html){ toast('Copia inválida'); return; }
+      const url = URL.createObjectURL(new Blob([html],{type:'text/html'}));
+      window.open(url,'_blank','noopener');
+      setTimeout(()=>URL.revokeObjectURL(url),10000);
+    }catch(e){ console.error(e); toast('Copia dañada'); }
+  }
+
+  function togglePin(){
+    if(sessionStorage.getItem('PA_PIN_OK')==='1'){
+      sessionStorage.removeItem('PA_PIN_OK');
+      pinBtn.classList.remove('locked');
+      applyPinLockUI();
+      toast('Edición bloqueada');
+    }else{
+      const v=prompt('Introduce PIN para editar:');
+      if(v===PIN_CODE){ sessionStorage.setItem('PA_PIN_OK','1'); pinBtn.classList.add('locked'); applyPinLockUI(); toast('Edición habilitada'); }
+      else if(v!==null){ toast('PIN incorrecto'); }
+    }
+  }
+
+  pinBtn?.addEventListener('click', togglePin);
+  pdfBtn?.addEventListener('click',  printAll);
+  htmlBtn?.addEventListener('click', downloadHTML);
+  saveBtn?.addEventListener('click', saveToCloud);
+  loadBtn?.addEventListener('click', loadFromCloud);
+
+  if(sessionStorage.getItem('PA_PIN_OK')!=='1'){ applyPinLockUI(); }
+})();
 </script>
 </body>
 </html>
