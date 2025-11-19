@@ -35,7 +35,7 @@
     display:flex;
     flex-wrap:wrap;
     align-items:center;
-    gap:.4rem;
+    gap:.6rem;
     padding:.55rem .9rem .7rem;
     background:var(--grad);
     color:#f9fafb;
@@ -48,7 +48,7 @@
     gap:.35rem;
     font-weight:900;
     font-size:22px;
-    flex:1 1 auto;
+    flex:0 0 auto;
     letter-spacing:.03em;
     text-shadow:0 1px 2px rgba(0,0,0,.6);
   }
@@ -59,12 +59,14 @@
     transform:translateY(2px);
     filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
   }
+
+  /* ===== BOTONES ROJOS (alineados, pequeños, ancho auto) ===== */
   .btn3d{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:.35rem;
-    padding:.42rem .85rem;
+    gap:.2rem;
+    padding:.12rem .5rem;
     border:0;
     border-radius:9999px;
     color:#f9fafb;
@@ -75,15 +77,10 @@
       0 11px 20px rgba(0,0,0,.6);
     cursor:pointer;
     font-weight:700;
-    font-size:13px;
+    font-size:10px;        /* letra más pequeña */
     line-height:1;
-    min-height:34px;
-  }
-  /* ICONOS ROJOS MÁS PEQUEÑOS EN EL FALDÓN NEGRO */
-  .topbar .btn3d{
-    padding:.28rem .55rem;
-    min-height:26px;
-    font-size:12px;
+    height:24px;           /* todos misma altura */
+    white-space:nowrap;    /* no se parten en dos líneas */
   }
   .btn3d:active{
     transform:translateY(1px);
@@ -92,15 +89,28 @@
       0 2px 0 rgba(0,0,0,.6),
       0 8px 16px rgba(0,0,0,.6);
   }
-  .bar-right{margin-left:auto;display:flex;align-items:center;gap:.3rem}
+
+  .bar-right{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:.25rem;
+    flex-wrap:nowrap;  /* todos los rojos de la derecha en una línea */
+  }
+
+  .topbar > .btn3d{
+    flex:0 0 auto;     /* los tres de la izquierda también en la misma fila */
+  }
+
   .stamp{
     color:#f9fafb;
     opacity:.9;
-    font-size:12px;
+    font-size:11px;         /* un poco más pequeño para que quepa todo */
     background:rgba(15,23,42,.8);
     border-radius:9999px;
     padding:.2rem .6rem;
     box-shadow:0 2px 8px rgba(0,0,0,.5);
+    white-space:nowrap;
   }
   .bar-right .btn3d svg{width:14px;height:14px}
   .search{
@@ -123,6 +133,23 @@
     font-size:13px;
   }
   .search input::placeholder{color:rgba(209,213,219,.82);}
+
+  /* ===== Dept selector ===== */
+  .dept-block{
+    display:flex;
+    align-items:center;
+    gap:.25rem;
+  }
+  .dept-select{
+    border-radius:9999px;
+    border:1px solid #e5e7eb;
+    padding:.2rem .6rem;
+    font-size:12px;
+    min-width:150px;
+    background:#f9fafb;
+    box-shadow:inset 0 1px 0 #fff;
+    color:#111827;
+  }
 
   /* ===== Layout ===== */
   .wrap{
@@ -153,6 +180,7 @@
     border-radius:0;
     box-shadow:var(--shadow);
   }
+  #deptInfo{margin-bottom:4px;}
   #processList{flex:1 1 auto;}
   @media (max-width:1020px){
     .wrap{
@@ -162,86 +190,6 @@
       border-right:0;
       border-bottom:1px solid #e5e7eb;
     }
-  }
-
-  /* ===== Departamentos izquierda ===== */
-  #deptList{
-    padding:4px 4px 6px;
-    margin-bottom:6px;
-    border-bottom:1px solid #e5e7eb;
-  }
-  .dept-label{
-    font-size:11px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.04em;
-    color:#6b7280;
-    margin:0 2px 4px;
-  }
-  .dept-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:4px;
-  }
-  .dept-pill{
-    border-radius:9999px;
-    border:1px solid #e5e7eb;
-    background:#f9fafb;
-    padding:2px 9px;
-    font-size:11px;
-    cursor:pointer;
-    box-shadow:0 1px 2px rgba(15,23,42,.08);
-    color:#374151;
-  }
-  .dept-pill:hover{
-    background:#e5e7eb;
-  }
-  .dept-pill-active{
-    background:#111827;
-    color:#f9fafb;
-    border-color:#111827;
-    box-shadow:0 2px 6px rgba(15,23,42,.35);
-  }
-
-  /* ===== DESPLEGABLE DEPARTAMENTOS+ ===== */
-  .dept-btn-wrap{
-    position:relative;
-    display:inline-block;
-  }
-  .dept-menu{
-    position:absolute;
-    top:115%;
-    right:0;
-    min-width:150px;
-    background:#020617;
-    border-radius:10px;
-    padding:4px;
-    box-shadow:0 10px 25px rgba(15,23,42,.7);
-    z-index:40;
-  }
-  .dept-menu-item,
-  .dept-menu-empty{
-    display:block;
-    width:100%;
-    border:0;
-    text-align:left;
-    padding:.25rem .55rem;
-    font-size:11.5px;
-    border-radius:7px;
-    cursor:pointer;
-    background:transparent;
-    color:#e5e7eb;
-  }
-  .dept-menu-empty{
-    cursor:default;
-    opacity:.7;
-  }
-  .dept-menu-item:hover{
-    background:#111827;
-  }
-  .dept-menu-item-active{
-    background:#1f2937;
-    font-weight:700;
   }
 
   /* ===== Lista de procesos ===== */
@@ -290,6 +238,62 @@
     padding:.45rem;
     background:#fff;
     font-size:12px;
+  }
+
+  /* ===== Dept info caja izquierda ===== */
+  .dept-info-box{
+    padding:6px 7px;
+    border-radius:10px;
+    background:#f9fafb;
+    border:1px solid #e5e7eb;
+    box-shadow:inset 0 1px 0 #fff;
+    font-size:12px;
+  }
+  .dept-info-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    position:relative; /* para menú del lápiz */
+  }
+  .dept-info-title{
+    font-weight:700;
+    font-size:13px;
+    color:#111827;
+  }
+  .dept-desc-toggle{
+    width:26px;
+    height:26px;
+    padding:0;
+    font-size:13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .dept-edit-menu{
+    position:absolute;
+    right:0;
+    top:28px;
+    background:#020617;
+    border-radius:8px;
+    padding:4px;
+    box-shadow:0 8px 18px rgba(15,23,42,.7);
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    z-index:20;
+  }
+  .dept-edit-menu button{
+    border:0;
+    border-radius:6px;
+    padding:3px 8px;
+    font-size:11px;
+    background:#111827;
+    color:#e5e7eb;
+    cursor:pointer;
+  }
+  .dept-edit-menu button:active{
+    transform:translateY(1px);
   }
 
   /* ===== Subproceso ===== */
@@ -693,7 +697,6 @@
     gap:.16rem;
   }
 
-  /* Faldón "ver más" en gris */
   .branch-indicator{
     margin:6px 0 0 46px;
     font-size:11px;
@@ -808,15 +811,11 @@
         Nube
       </button>
 
-      <!-- WRAPPER + DESPLEGABLE DEPARTAMENTOS+ -->
-      <div class="dept-btn-wrap pa-tools-hide">
-        <button id="paDeptBtn" class="btn3d" title="Añadir departamentos o elegir uno">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M4 5h16M4 11h10M4 17h7M16 9v4m-2-2h4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Departamentos+
-        </button>
-        <div id="paDeptMenu" class="dept-menu hide" aria-hidden="true"></div>
+      <div class="dept-block">
+        <button id="btnDeptAdd" class="btn3d" title="Añadir departamento">Departamentos+</button>
+        <select id="deptSelect" class="dept-select">
+          <option value="">(Sin departamentos)</option>
+        </select>
       </div>
 
       <span id="stamp" class="stamp">—</span>
@@ -828,7 +827,7 @@
 
   <div class="wrap">
     <div class="left">
-      <div id="deptList"></div>
+      <div id="deptInfo"></div>
       <div id="processList"></div>
     </div>
     <div class="right" id="modules"></div>
@@ -844,25 +843,36 @@
     </div>
   </div>
 
-  <!-- selector de archivos global para adjuntar documentos -->
   <input type="file" id="paFilePicker" style="display:none" multiple />
 
 <script>
-/* ===== util visibilidad ===== */
 function showBlock(el){ if(!el) return; el.classList.remove('hide'); el.style.display='block'; el.setAttribute('aria-hidden','false'); }
 function hideBlock(el){ if(!el) return; el.classList.add('hide'); el.style.display='none'; el.setAttribute('aria-hidden','true'); }
 function toggleBlock(el,open){ open ? showBlock(el) : hideBlock(el); }
 
 /* ===== Estado ===== */
-const LSKEY='pa_v3_connectors_3d';
+const LSKEY='pa_v4_dept_3d';
 const RESPONSABLES=['Audiólogo','Responsable','Otros'];
 const colors=['#ffd6a5','#bde0fe','#caffbf','#ffadad','#fdffb6','#bdb2ff','#ffc6ff','#a0e7e5','#c7f9cc','#fbcfe8','#fde68a','#bbf7d0'];
 const uid=()=>'p'+Math.random().toString(36).slice(2,9);
-const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/${p(d.getMonth()+1)}/${p(d.getFullYear())}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`};
+const stamp=()=>{const d=new Date(),p=n=>n<10?'0'+n:n;return `${p(d.getDate())}/${p(dMonth(d))}/${p(d.getFullYear())}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`};
+function dMonth(d){return d.getMonth()+1;}
 
-const state={processes:[],departments:[],activeDeptId:null};
+const state={departments:[], activeDeptId:null};
 let activePid=null;
 let pendingDocTarget=null;
+
+function currentDept(){
+  const d = state.departments.find(d=>d.id===state.activeDeptId);
+  return d || state.departments[0] || null;
+}
+function currentProcesses(){
+  const d=currentDept();
+  return d ? (d.processes || []) : [];
+}
+function findProcessById(pid){
+  return currentProcesses().find(p=>p.id===pid);
+}
 
 function save(){
   localStorage.setItem(LSKEY,JSON.stringify(state));
@@ -871,50 +881,41 @@ function save(){
 function load(){
   const raw=localStorage.getItem(LSKEY);
   if(!raw){
-    const deptId=uid();
-    state.departments.push({id:deptId,name:'Audiología'});
-    const procId=uid();
-    state.processes.push({
-      id:procId,
-      name:'Revisión auditiva',
-      color:colors[0],
-      detail:'',
-      modules:[],
-      _openDetail:false,
-      deptId
-    });
-    state.activeDeptId = deptId;
-    activePid = procId;
+    state.departments=[];
+    state.activeDeptId=null;
     save();
   }else{
     try{
-      const parsed = JSON.parse(raw);
-      Object.assign(state, parsed);
-    }catch(e){}
-    if(!Array.isArray(state.departments) || !state.departments.length){
-      const deptId=uid();
-      state.departments=[{id:deptId,name:'Audiología'}];
-      if(Array.isArray(state.processes)){
-        state.processes.forEach(p=>{
-          if(!p.deptId) p.deptId = deptId;
-        });
+      const data=JSON.parse(raw);
+      if(Array.isArray(data.departments)){
+        state.departments=data.departments;
+        state.activeDeptId=data.activeDeptId || (data.departments[0]?.id||null);
+      }else if(Array.isArray(data.processes)){
+        const dId=uid();
+        state.departments=[{
+          id:dId,
+          name:'Departamento 1',
+          description:'',
+          _openDesc:false,
+          processes:data.processes
+        }];
+        state.activeDeptId=dId;
       }
-      state.activeDeptId = deptId;
+    }catch(e){
+      state.departments=[];
+      state.activeDeptId=null;
     }
-    if(!state.activeDeptId && state.departments.length){
-      state.activeDeptId = state.departments[0].id;
-    }
-    const fallbackDept = state.activeDeptId || (state.departments[0] && state.departments[0].id);
-    if(Array.isArray(state.processes) && fallbackDept){
-      state.processes.forEach(p=>{
-        if(!p.deptId) p.deptId = fallbackDept;
-      });
-    }
-    if(!activePid && state.processes[0]) activePid=state.processes[0].id;
+  }
+  /* detalle de departamento siempre plegado por defecto */
+  if(Array.isArray(state.departments)){
+    state.departments.forEach(d=>{
+      if(!Array.isArray(d.processes)) d.processes=[];
+      d._openDesc=false;
+    });
   }
 }
 
-/* ===== helper auto-resize títulos de paso ===== */
+/* auto-resize títulos paso */
 function autoResize(el){
   if(!el) return;
   el.style.height='auto';
@@ -955,12 +956,14 @@ function procRow(p){
   bDel.onclick=e=>{
     e.stopPropagation();
     if(confirm('¿Eliminar proceso y sus módulos?')){
-      const i=state.processes.findIndex(x=>x.id===p.id);
+      const dept=currentDept(); if(!dept) return;
+      const i=dept.processes.findIndex(x=>x.id===p.id);
       if(i>-1){
-        state.processes.splice(i,1);
-        const remaining = state.processes.filter(pp=>pp.deptId===state.activeDeptId);
-        activePid = remaining[0]?.id || state.processes[0]?.id || null;
-        save(); render();
+        dept.processes.splice(i,1);
+        const procs=currentProcesses();
+        activePid=procs[0]?.id||null;
+        save();
+        render();
       }
     }
   };
@@ -968,60 +971,160 @@ function procRow(p){
   wrap.appendChild(row); wrap.appendChild(det);
   return wrap;
 }
-
-/* ===== Departamentos (píldoras izquierda) ===== */
-function renderDepartments(){
-  const box=document.getElementById('deptList');
-  if(!box) return;
+function renderProcesses(){
+  const box=document.getElementById('processList'); if(!box) return;
   box.innerHTML='';
-  if(!state.departments || !state.departments.length) return;
-
-  const label=document.createElement('div');
-  label.className='dept-label';
-  label.textContent='Departamentos';
-  box.appendChild(label);
-
-  const row=document.createElement('div');
-  row.className='dept-row';
-
-  const activeId = state.activeDeptId || state.departments[0].id;
-
-  state.departments.forEach(d=>{
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='dept-pill'+(d.id===activeId?' dept-pill-active':'');
-    btn.textContent=d.name;
-    btn.onclick=()=>{
-      state.activeDeptId = d.id;
-      const procs = state.processes.filter(p=>p.deptId===d.id);
-      activePid = procs[0]?.id || null;
-      save();
-      render();
-    };
-    row.appendChild(btn);
-  });
-
-  box.appendChild(row);
+  const dept=currentDept();
+  if(!dept){
+    box.innerHTML='<div style="font-size:12px;color:#6b7280;padding:4px 4px 6px;">Crea un departamento con “Departamentos+” y luego añade sus procesos.</div>';
+    return;
+  }
+  if(!Array.isArray(dept.processes)) dept.processes=[];
+  dept.processes.forEach(p=>box.appendChild(procRow(p)));
 }
 
-/* ===== Procesos filtrados por departamento activo ===== */
-function renderProcesses(){
-  const box=document.getElementById('processList'); box.innerHTML='';
-  if(!Array.isArray(state.processes)) return;
-  const activeDeptId = state.activeDeptId || (state.departments[0] && state.departments[0].id) || null;
-  const list = activeDeptId ? state.processes.filter(p=>p.deptId===activeDeptId) : state.processes.slice();
-
-  if(list.length && (!activePid || !list.some(p=>p.id===activePid))){
-    activePid = list[0].id;
+/* ===== Dept info izquierda (lápiz) ===== */
+function renderDeptInfo(){
+  const box=document.getElementById('deptInfo'); if(!box) return;
+  box.innerHTML='';
+  const dept=currentDept();
+  if(!dept){
+    box.innerHTML='';
+    return;
   }
-  list.forEach(p=>box.appendChild(procRow(p)));
+  const wrap=document.createElement('div');
+  wrap.className='dept-info-box';
+
+  const header=document.createElement('div');
+  header.className='dept-info-header';
+
+  const title=document.createElement('div');
+  title.className='dept-info-title';
+  title.textContent='Departamento: '+(dept.name || 'Sin nombre');
+
+  const btn=document.createElement('button');
+  btn.className='icon-btn dept-desc-toggle';
+  btn.textContent='✏️';
+  btn.title='Opciones del departamento';
+
+  header.appendChild(title);
+  header.appendChild(btn);
+
+  const menu=document.createElement('div');
+  menu.className='dept-edit-menu hide';
+  menu.innerHTML=`
+    <button data-act="edit">Editar</button>
+    <button data-act="delete">Borrar</button>
+    <button data-act="detail">Detalle</button>
+  `;
+  header.appendChild(menu);
+
+  const desc=document.createElement('div');
+  desc.classList.add('dept-desc');
+  if(!dept._openDesc) desc.classList.add('hide');
+  desc.innerHTML=`<textarea style="width:100%;min-height:52px;margin-top:4px;border-radius:8px;border:1px solid #e5e7eb;padding:4px;font-size:12px;">${dept.description||''}</textarea>`;
+  const ta=desc.querySelector('textarea');
+  ta.oninput=e=>{
+    dept.description=e.target.value;
+    save();
+  };
+
+  btn.onclick=(e)=>{
+    e.stopPropagation();
+    menu.classList.toggle('hide');
+  };
+
+  const bEdit=menu.querySelector('[data-act="edit"]');
+  const bDelete=menu.querySelector('[data-act="delete"]');
+  const bDetail=menu.querySelector('[data-act="detail"]');
+
+  bEdit.onclick=()=>{
+    const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
+    if(locked){ if(window.paToastFn) window.paToastFn('Modo lectura: bloqueado por PIN'); return; }
+    const nn=prompt('Nombre del departamento', dept.name || '');
+    if(nn){
+      dept.name=nn;
+      save();
+      render();
+    }
+    menu.classList.add('hide');
+  };
+  bDelete.onclick=()=>{
+    const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
+    if(locked){ if(window.paToastFn) window.paToastFn('Modo lectura: bloqueado por PIN'); return; }
+    if(!confirm('¿Eliminar departamento y todos sus procesos?')){ menu.classList.add('hide'); return; }
+    const idx=state.departments.findIndex(d=>d.id===dept.id);
+    if(idx>-1){
+      state.departments.splice(idx,1);
+      if(state.departments.length){
+        const next=state.departments[Math.min(idx,state.departments.length-1)];
+        state.activeDeptId=next.id;
+        activePid=null;
+      }else{
+        state.activeDeptId=null;
+        activePid=null;
+      }
+      save();
+      render();
+    }
+  };
+  bDetail.onclick=()=>{
+    dept._openDesc = !dept._openDesc;
+    toggleBlock(desc, dept._openDesc);
+    save();
+    menu.classList.add('hide');
+  };
+
+  wrap.appendChild(header);
+  wrap.appendChild(desc);
+  box.appendChild(wrap);
+}
+
+/* ===== Dept selector topbar ===== */
+function renderDeptSelect(){
+  const sel=document.getElementById('deptSelect');
+  if(!sel) return;
+  sel.innerHTML='';
+  if(!state.departments.length){
+    const opt=document.createElement('option');
+    opt.value='';
+    opt.textContent='(Sin departamentos)';
+    sel.appendChild(opt);
+    sel.disabled=true;
+    return;
+  }
+  sel.disabled=false;
+  state.departments.forEach(d=>{
+    const o=document.createElement('option');
+    o.value=d.id;
+    o.textContent=d.name || 'Sin nombre';
+    if(d.id===state.activeDeptId) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+function handleDeptChange(value){
+  if(!value){
+    state.activeDeptId = state.departments[0]?.id || null;
+  }else{
+    state.activeDeptId = value;
+  }
+  const dept=currentDept();
+  if(dept){
+    if(!Array.isArray(dept.processes)) dept.processes=[];
+    activePid = dept.processes[0]?.id || null;
+  }else{
+    activePid=null;
+  }
+  save();
+  render();
 }
 
 /* ===== Modal bandera ===== */
 function openProcPicker(onPick){
   const modal=document.getElementById('procModal');
   const list=document.getElementById('procModalList'); list.innerHTML='';
-  state.processes.forEach(p=>{
+  const procs=currentProcesses();
+  procs.forEach(p=>{
     const b=document.createElement('button');
     b.className='btn3d'; b.style.cssText='justify-content:flex-start;color:#111;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06);border-radius:12px';
     b.innerHTML=`<span class="dot" style="background:${p.color}"></span> <strong>${p.name}</strong>`;
@@ -1032,7 +1135,7 @@ function openProcPicker(onPick){
   modal.classList.remove('hide');
 }
 
-/* ===== helpers ===== */
+/* ===== helpers pasos ===== */
 function makeStep(){
   return {
     id:uid(),
@@ -1054,7 +1157,7 @@ function pushPoint(arr){ arr.push({id:uid(),text:'',children:[]}); }
 function pushSubPoint(pt){ if(!Array.isArray(pt.children)) pt.children=[]; pt.children.push({id:uid(),text:''}); }
 function delFromArray(arr,id){ const i=arr.findIndex(x=>x.id===id); if(i>-1) arr.splice(i,1); }
 
-/* ===== Layout serpentina 3 columnas ===== */
+/* ===== Layout serpentina ===== */
 function layoutStepsSerpentine(container){
   const wrappers = Array.from(container.children).filter(w => w.querySelector('.step'));
   if(!wrappers.length) return;
@@ -1073,9 +1176,7 @@ function layoutStepsSerpentine(container){
   const gapY = 24;
 
   const containerWidthRaw = container.clientWidth || (cardW+desiredGapX);
-
   const cols = Math.min(3, wrappers.length);
-
   const heights = wrappers.map(w => w.offsetHeight);
 
   const rows = [];
@@ -1334,7 +1435,7 @@ function branchBox(p,m,st,kind,idx){
   top.appendChild(right);
 
   if(st[kind+'Link']?.pid){
-    const dest=state.processes.find(x=>x.id===st[kind+'Link'].pid);
+    const dest=currentProcesses().find(x=>x.id===st[kind+'Link'].pid);
     if(dest){
       const chip=document.createElement('span'); chip.className='chip'; chip.style.background=dest.color; chip.style.marginLeft='.25rem';
       chip.innerHTML=`→ <small>Proceso:</small> <strong>${dest.name}</strong>`;
@@ -1427,7 +1528,7 @@ function branchBox(p,m,st,kind,idx){
     li.appendChild(actions);
 
     if(pt.link?.pid){
-      const dest=state.processes.find(x=>x.id===pt.link.pid);
+      const dest=currentProcesses().find(x=>x.id===pt.link.pid);
       if(dest){
         const pc=document.createElement('span'); pc.className='chip'; pc.style.background=dest.color; pc.style.marginLeft='.25rem';
         pc.innerHTML=`→ <small>${dest.name}</small>`;
@@ -1509,7 +1610,7 @@ function branchBox(p,m,st,kind,idx){
       cli.appendChild(cActions);
 
       if(ch.link?.pid){
-        const dest=state.processes.find(x=>x.id===ch.link.pid);
+        const dest=currentProcesses().find(x=>x.id===ch.link.pid);
         if(dest){
           const cc=document.createElement('span'); cc.className='chip'; cc.style.background=dest.color; cc.innerHTML=`→ <small>${dest.name}</small>`;
           cli.appendChild(cc);
@@ -1655,7 +1756,7 @@ function stepRow(p,m,st,index){
   row.appendChild(sc);
 
   if(st.link?.pid){
-    const dest=state.processes.find(x=>x.id===st.link.pid);
+    const dest=currentProcesses().find(x=>x.id===st.link.pid);
     if(dest){
       const chip=document.createElement('div');
       chip.className='chip'; chip.style.background=dest.color; chip.style.margin='3px 0 0 48px';
@@ -1701,11 +1802,9 @@ function stepRow(p,m,st,index){
   }else if(hasAny){
     const indicator = document.createElement('div');
     indicator.className='branch-indicator';
-    indicator.innerHTML='<span><strong>ver más</strong></span><span>👇</span>';
+    indicator.innerHTML='<span>ver más</span><span>👇</span>';
     indicator.onclick=()=>{
-      if(sessionStorage.getItem('PA_PIN_OK')!=='1'){
-        return;
-      }
+      // En modo lectura también dejamos ver contenido, solo bloqueamos edición con PIN
       st._editingBranches=true;
       st._openBranches=true;
       save();
@@ -1776,8 +1875,12 @@ function modCard(p,m){
 
   head.querySelector('[data-act="del"]').onclick=()=>{
     if(confirm('¿Eliminar subproceso, sus pasos y sub-subprocesos?')){
+      const dept=currentDept(); if(!dept) return;
       const idToRemove = m.id;
-      p.modules = p.modules.filter(mod=>mod.id!==idToRemove && mod.parentId!==idToRemove);
+      dept.processes.forEach(proc=>{
+        if(!Array.isArray(proc.modules)) return;
+        proc.modules = proc.modules.filter(mod=>mod.id!==idToRemove && mod.parentId!==idToRemove);
+      });
       save();
       renderModules();
     }
@@ -1785,29 +1888,36 @@ function modCard(p,m){
 
   const btnSub = head.querySelector('[data-act="add-submodule"]');
   if(btnSub){
-    btnSub.onclick=()=>{
-      const idx = p.modules.findIndex(x=>x.id===m.id);
-      const subModule = {
-        id:uid(),
-        title: (m.title || 'Subproceso') + ' - Sub',
-        responsable: m.responsable || RESPONSABLES[0],
-        respOtro: m.respOtro || '',
-        detail:'',
-        steps:[makeStep()],
-        completed:false,
-        _openDetail:false,
-        _openSteps:true,
-        isSub:true,
-        parentId:m.id
+    if(m.isSub){
+      btnSub.style.display='none'; /* solo en subproceso principal */
+    }else{
+      btnSub.onclick=()=>{
+        const dept=currentDept(); if(!dept) return;
+        const proc = dept.processes.find(x=>x.id===p.id); if(!proc) return;
+        if(!Array.isArray(proc.modules)) proc.modules=[];
+        const idx = proc.modules.findIndex(x=>x.id===m.id);
+        const subModule = {
+          id:uid(),
+          title: (m.title || 'Subproceso') + ' - Sub',
+          responsable: m.responsable || RESPONSABLES[0],
+          respOtro: m.respOtro || '',
+          detail:'',
+          steps:[makeStep()],
+          completed:false,
+          _openDetail:false,
+          _openSteps:true,
+          isSub:true,
+          parentId:m.id
+        };
+        if(idx>-1){
+          proc.modules.splice(idx+1,0,subModule);
+        }else{
+          proc.modules.push(subModule);
+        }
+        save();
+        renderModules();
       };
-      if(idx>-1){
-        p.modules.splice(idx+1,0,subModule);
-      }else{
-        p.modules.push(subModule);
-      }
-      save();
-      renderModules();
-    };
+    }
   }
 
   card.appendChild(head);
@@ -1864,20 +1974,14 @@ function modCard(p,m){
 
 /* ===== Render derecha ===== */
 function renderModules(){
-  const box=document.getElementById('modules'); box.innerHTML='';
-  const activeDeptId = state.activeDeptId || (state.departments[0] && state.departments[0].id) || null;
-
-  let p = null;
-  if(activePid){
-    p = state.processes.find(x=>x.id===activePid) || null;
-  }
-  if(!p && activeDeptId){
-    const list = state.processes.filter(x=>x.deptId===activeDeptId);
-    if(list.length) p=list[0]; else p=null;
-  }
-  if(!p) return;
-  activePid = p.id;
-
+  const box=document.getElementById('modules'); if(!box) return;
+  box.innerHTML='';
+  const dept=currentDept(); if(!dept) return;
+  if(!Array.isArray(dept.processes)) dept.processes=[];
+  let p=findProcessById(activePid) || dept.processes[0];
+  if(!p){ activePid=null; return; }
+  activePid=p.id;
+  if(!Array.isArray(p.modules)) p.modules=[];
   p.modules.forEach(m=> box.appendChild(modCard(p,m)));
 
   requestAnimationFrame(()=>{ layoutAllSteps(); drawAllFlows(); });
@@ -1885,7 +1989,10 @@ function renderModules(){
 
 /* ===== Acciones globales ===== */
 function createModuleForProcess(pid,titleOverride){
-  const p=state.processes.find(x=>x.id===pid); if(!p) return null;
+  const dept=currentDept(); if(!dept) return null;
+  if(!Array.isArray(dept.processes)) dept.processes=[];
+  const p=dept.processes.find(x=>x.id===pid); if(!p) return null;
+  if(!Array.isArray(p.modules)) p.modules=[];
   const defaultTitle = titleOverride || (p.name ? `${p.name} - Pasos` : 'Nuevo subproceso');
   const m={
     id:uid(),
@@ -1901,17 +2008,26 @@ function createModuleForProcess(pid,titleOverride){
   p.modules.push(m); save(); renderModules(); return m;
 }
 function addProcess(){
-  const color=colors[state.processes.length%colors.length];
-  const deptId = state.activeDeptId || (state.departments[0] && state.departments[0].id);
-  const p={id:uid(),name:'Nuevo proceso',color,detail:'',modules:[],_openDetail:false,deptId};
-  state.processes.push(p);
-  activePid=p.id;
-  save();
-  render();
+  const dept=currentDept();
+  if(!dept){
+    alert('Primero crea un departamento con "Departamentos+"');
+    return;
+  }
+  if(!Array.isArray(dept.processes)) dept.processes=[];
+  const color=colors[dept.processes.length%colors.length];
+  const p={id:uid(),name:'Nuevo proceso',color,detail:'',modules:[],_openDetail:false};
+  dept.processes.push(p); activePid=p.id; save(); render();
 }
 function addStepGlobal(){
-  const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
-  if(!p){ alert('Primero crea un proceso'); return; }
+  const dept=currentDept();
+  if(!dept){ alert('Crea un departamento y un proceso'); return; }
+  if(!Array.isArray(dept.processes) || !dept.processes.length){ alert('Primero crea un proceso'); return; }
+  let p=findProcessById(activePid) || dept.processes[dept.processes.length-1];
+  if(!p){ p=dept.processes[0]; }
+  if(!p) return;
+  if(!Array.isArray(p.modules) || !p.modules.length){
+    createModuleForProcess(p.id, `${p.name} - Pasos`);
+  }
   let m=p.modules[p.modules.length-1];
   if(!m) m=createModuleForProcess(p.id, `${p.name} - Pasos`);
   m.steps.push(makeStep());
@@ -1919,50 +2035,27 @@ function addStepGlobal(){
   save();
   renderModules();
 }
-function addDepartment(){
-  const name = prompt('Nombre del nuevo departamento','Nuevo departamento');
+function addDept(){
+  const name=prompt('Nombre del nuevo departamento:','');
   if(!name) return;
-  const id = uid();
-  if(!Array.isArray(state.departments)) state.departments=[];
-  // se añade AL FINAL y NO se abre automáticamente (quedan plegados hasta seleccionar)
-  state.departments.push({id,name});
+  const dId=uid();
+  state.departments.push({
+    id:dId,
+    name:name,
+    description:'',
+    _openDesc:false,
+    processes:[]
+  });
+  state.activeDeptId=dId;
+  activePid=null;
   save();
   render();
 }
 
-/* ===== DESPLEGABLE DEPARTAMENTOS+ ===== */
-function renderDeptMenu(){
-  const menu=document.getElementById('paDeptMenu');
-  if(!menu) return;
-  menu.innerHTML='';
-  if(!state.departments || !state.departments.length){
-    const empty=document.createElement('div');
-    empty.className='dept-menu-empty';
-    empty.textContent='Sin departamentos';
-    menu.appendChild(empty);
-    return;
-  }
-  const activeId=state.activeDeptId;
-  state.departments.forEach(d=>{
-    const item=document.createElement('button');
-    item.type='button';
-    item.className='dept-menu-item'+(d.id===activeId?' dept-menu-item-active':'');
-    item.textContent=d.name;
-    item.onclick=()=>{
-      state.activeDeptId=d.id;
-      const procs=state.processes.filter(p=>p.deptId===d.id);
-      activePid=procs[0]?.id || null;
-      save();
-      render();
-      hideBlock(menu);
-    };
-    menu.appendChild(item);
-  });
-}
-
 /* ===== Render maestro ===== */
 function render(){
-  renderDepartments();
+  renderDeptSelect();
+  renderDeptInfo();
   renderProcesses();
   renderModules();
   if (window.applyPinLockUI) window.applyPinLockUI();
@@ -1975,34 +2068,25 @@ render();
 
 document.getElementById('btnAddProcess').onclick=addProcess;
 document.getElementById('btnAddSubprocPaso').onclick=()=>{
-  const p=state.processes.find(x=>x.id===activePid)||state.processes[0];
+  const dept=currentDept();
+  if(!dept){alert('Crea un departamento y un proceso');return;}
+  if(!Array.isArray(dept.processes) || !dept.processes.length){alert('Crea un proceso');return;}
+  const p=findProcessById(activePid) || dept.processes[0];
   if(!p){alert('Crea un proceso');return;}
   createModuleForProcess(p.id,'Nuevo subproceso');
 };
 document.getElementById('btnAddStepGlobal').onclick=addStepGlobal;
 document.getElementById('btnSave').onclick=save;
 
-/* Eventos botón Departamentos+ y cierre del menú */
-const deptBtn = document.getElementById('paDeptBtn');
-const deptMenu = document.getElementById('paDeptMenu');
+const deptSelectEl=document.getElementById('deptSelect');
+if(deptSelectEl){
+  deptSelectEl.addEventListener('change',e=>handleDeptChange(e.target.value));
+}
+const btnDeptAdd=document.getElementById('btnDeptAdd');
+if(btnDeptAdd){
+  btnDeptAdd.addEventListener('click',addDept);
+}
 
-deptBtn?.addEventListener('click',e=>{
-  e.stopPropagation();
-  if(deptMenu.classList.contains('hide')){
-    renderDeptMenu();
-    showBlock(deptMenu);
-  }else{
-    hideBlock(deptMenu);
-  }
-});
-
-document.addEventListener('click',e=>{
-  if(!deptMenu || deptMenu.classList.contains('hide')) return;
-  if(e.target.closest('#paDeptMenu') || e.target.closest('#paDeptBtn')) return;
-  hideBlock(deptMenu);
-});
-
-/* Redibujar al redimensionar */
 window.addEventListener('resize',()=>requestAnimationFrame(()=>{layoutAllSteps();drawAllFlows();}));
 
 /* ===== Buscador ===== */
@@ -2056,19 +2140,23 @@ function processMatches(p, q){
 document.getElementById('q').addEventListener('input',e=>{
   const q = e.target.value.trim().toLowerCase();
 
+  const dept=currentDept();
+  if(!dept) return;
+  if(!Array.isArray(dept.processes)) dept.processes=[];
+
   document.querySelectorAll('.proc-item').forEach(el=>{
     const pid = el.dataset.pid;
-    const p = state.processes.find(x=>x.id===pid);
+    const p = dept.processes.find(x=>x.id===pid);
     const visible = !q || (p && processMatches(p, q));
     el.classList.toggle('hide', !visible);
   });
 
-  const pActive = state.processes.find(x=>x.id===activePid) || state.processes[0];
+  const pActive = findProcessById(activePid) || dept.processes[0];
   if(!pActive) return;
 
   document.querySelectorAll('#modules .module').forEach(el=>{
     const mid = el.dataset.mid;
-    const m = pActive.modules.find(x=>x.id===mid);
+    const m = (pActive.modules||[]).find(x=>x.id===mid);
     const visible = !q || (m && moduleMatches(m, q));
     el.classList.toggle('hide', !visible);
   });
@@ -2100,7 +2188,9 @@ if(filePicker){
     const n = document.createElement('div');
     n.className='pa-toast'; n.id='paToast';
     document.body.appendChild(n);
-    return (msg)=>{ n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2200); };
+    const fn = (msg)=>{ n.textContent=msg; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),2200); };
+    window.paToastFn = fn;
+    return fn;
   })();
 
   const fileStamp = () => { const d=new Date(),p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}`; };
@@ -2114,7 +2204,7 @@ if(filePicker){
     const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
     document.body.classList.toggle('pa-locked', locked);
 
-    ['#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso','#paDeptBtn'].forEach(sel=>{
+    ['#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso','#btnDeptAdd'].forEach(sel=>{
       const b=document.querySelector(sel);
       if(b){ b.classList.toggle('lock-block', locked); b.toggleAttribute('disabled', locked); }
     });
@@ -2124,16 +2214,19 @@ if(filePicker){
       b.toggleAttribute('disabled', locked);
     });
 
+    // campos de texto en solo lectura, pero clicables (se pueden seleccionar / copiar)
     document.querySelectorAll('.title, .mod-title, textarea, .pt-input').forEach(el=>{
       el.toggleAttribute('readonly', locked);
       el.classList.toggle('is-readonly', locked);
     });
+
+    // sólo se bloquean los select de responsable; el selector de departamento SI se puede usar
     document.querySelectorAll('select.sel').forEach(s=>{
       s.toggleAttribute('disabled', locked);
       s.classList.toggle('is-readonly', locked);
     });
 
-    document.querySelectorAll('[data-act="add-step"], [data-act="close"], [data-act="del"]').forEach(b=>{
+    document.querySelectorAll('[data-act="add-step"], [data-act="close"], [data-act="del"], [data-act="add-submodule"]').forEach(b=>{
       b.classList.toggle('lock-block', locked);
       b.toggleAttribute('disabled', locked);
     });
@@ -2142,35 +2235,28 @@ if(filePicker){
       b.classList.toggle('lock-block', locked);
       b.toggleAttribute('disabled', locked);
     });
-
-    document.querySelectorAll('.step-menu button, .mini[data-act="menu-toggle"], [data-act="add-submodule"]').forEach(b=>{
-      b.classList.toggle('lock-block', locked);
-      b.toggleAttribute('disabled', locked);
-    });
   };
 
+  // BLOQUEO SÓLO PARA AÑADIR / BORRAR / EDITAR
   function cancelIfLocked(e){
     const locked = sessionStorage.getItem('PA_PIN_OK')!=='1';
     if(!locked) return;
     const t = e.target.closest('button, textarea, select, .title, .mod-title, .pt-input');
     if(!t) return;
 
-    const denySel = [
-      '#btnAddProcess','#btnAddStepGlobal','#btnAddSubprocPaso','#paDeptBtn',
-      '.proc-item .icon-btn[title="Renombrar"]',
-      '.proc-item .icon-btn[title="Eliminar"]',
-      '[data-act="add-step"]','[data-act="close"]','[data-act="del"]',
-      '[data-act="add-submodule"]',
-      '.branch .p-mini',
-      '.step-menu button',
-      '.mini[data-act="menu-toggle"]',
-      '.title','.mod-title','.pt-input','textarea'
-    ].join(',');
-
-    if(t.matches(denySel)){
-      e.stopPropagation(); e.preventDefault();
+    // Sólo bloqueamos acciones de EDICIÓN, BORRADO o AÑADIDO
+    if(
+      t.matches('#btnAddProcess, #btnAddStepGlobal, #btnAddSubprocPaso, #btnDeptAdd') ||
+      t.matches('.proc-item .icon-btn[title="Renombrar"], .proc-item .icon-btn[title="Eliminar"]') ||
+      t.matches('[data-act="add-step"], [data-act="close"], [data-act="del"], [data-act="add-submodule"]') ||
+      t.matches('.branch .p-mini') ||
+      t.matches('.dept-edit-menu button[data-act="edit"], .dept-edit-menu button[data-act="delete"]')
+    ){
+      e.stopPropagation();
+      e.preventDefault();
       toast('Modo lectura: bloqueado por PIN');
     }
+    // Se permiten: desplegar/plegar, ver detalle, cambiar departamento, hacer scroll y seleccionar texto.
   }
   document.addEventListener('click', cancelIfLocked, true);
   document.addEventListener('input', cancelIfLocked, true);
@@ -2181,7 +2267,7 @@ if(filePicker){
 
   function printAll(){
     const opened=[];
-    document.querySelectorAll('.proc-detail, .mod-detail, .branches, .step-detail, details').forEach(b=>{
+    document.querySelectorAll('.proc-detail, .mod-detail, .branches, .step-detail, .dept-desc, details').forEach(b=>{
       const wasHidden = (b.classList && (b.classList.contains('hide') || b.style.display==='none')) || (b.tagName==='DETAILS' && !b.open);
       if(wasHidden){
         if(b.tagName==='DETAILS') b.open=true; else showBlock(b);
