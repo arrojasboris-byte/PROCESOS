@@ -6,19 +6,17 @@
 <title>PROCESOS AUDIO</title>
 <style>
 :root{
-  /* PALETA NEUTRA: FONDOS CLAROS, FALDONES OSCUROS */
-  --bg:#e5e7eb;          /* alrededor */
-  --main-bg:#ffffff;     /* zona de trabajo */
+  --bg:#e5e7eb;
+  --main-bg:#ffffff;
   --ink:#111827;
   --muted:#6b7280;
 
   --top-grad:linear-gradient(90deg,#7b1f1f 0%,#b91c1c 45%,#7b1f1f 100%);
 
-  --panel-dark:#111827;      /* faldón principal y subprocesos */
+  --panel-dark:#111827;
   --panel-dark-soft:#020617;
 
-  --card:#ffffff;            /* pasos */
-  --card-strip:#fde68a;      /* banda pastel ligada a proceso */
+  --card:#ffffff;
 
   --accent:#ef4444;
   --accent-soft:#fecaca;
@@ -206,7 +204,8 @@ body{
   position:relative;
   margin-bottom:1.2rem;
   border-radius:14px;
-  background:#f3f4f6;
+  background:#ffffff;                  /* FONDO BLANCO */
+  border:1px solid #e5e7eb;
   box-shadow:0 6px 16px rgba(15,23,42,.18);
 }
 .sub-head{
@@ -236,12 +235,12 @@ body{
 }
 .badge-save span.icon{font-size:13px}
 
-/* SUB-SUBPROCESO */
+/* SUB-SUBPROCESO, más pequeño, blanco */
 .sub-child{
   position:relative;
   margin:.75rem .9rem .9rem .9rem;
   border-radius:12px;
-  background:#f3f4f6;
+  background:#ffffff;                    /* BLANCO */
   border:1px dashed rgba(148,163,184,.9);
   box-shadow:0 4px 12px rgba(15,23,42,.18);
 }
@@ -278,17 +277,15 @@ body{
   position:relative;
   padding:.7rem .9rem 1.1rem .9rem;
 }
+
+/* ahora layout manual serpentina, no grid */
 .steps-grid{
   position:relative;
-  display:grid;
-  grid-template-columns:repeat(3,minmax(260px,1fr));
-  gap:1rem 1.1rem;
+  min-height:120px;
 }
-
-/* wrapper para card + "ver más" */
 .step-wrap{
-  position:relative;
-  padding-bottom:18px; /* espacio para ver más */
+  position:absolute;          /* colocado por JS */
+  padding-bottom:18px;
 }
 
 /* tarjeta de paso */
@@ -305,7 +302,7 @@ body{
   inset:0 auto 0 0;
   width:10px;
   border-radius:16px 0 0 16px;
-  background:var(--card-strip);
+  background:#fde68a; /* se sobrescribe por proceso */
 }
 
 /* número circular */
@@ -314,7 +311,7 @@ body{
   z-index:2;
   width:26px;height:26px;
   border-radius:999px;
-  background:radial-gradient(circle at 30% 20%,#eff6ff,#60a5fa);
+  background:#e5e7eb;  /* color por proceso en JS */
   box-shadow:0 3px 6px rgba(15,23,42,.45);
   display:flex;align-items:center;justify-content:center;
   font-weight:800;font-size:13px;
@@ -463,7 +460,6 @@ body.pa-locked .edit-menu{display:none!important}
   .app{grid-template-columns:1fr}
   .sidebar{order:2}
   .main{order:1}
-  .steps-grid{grid-template-columns:minmax(240px,1fr);}
 }
 </style>
 </head>
@@ -512,6 +508,13 @@ body.pa-locked .edit-menu{display:none!important}
 const LSKEY='pa_departamentos_v1';
 const PIN_CODE='AR4321';
 
+const PROC_COLORS=[
+  '#fee2e2','#ffedd5','#fef3c7',
+  '#dcfce7','#bfdbfe','#e0e7ff',
+  '#fce7f3','#e0f2fe'
+];
+let procColorIndex=0;
+
 const uid=()=> 'id'+Math.random().toString(36).slice(2,9);
 const nowStamp=()=>{
   const d=new Date(),p=n=>String(n).padStart(2,'0');
@@ -531,7 +534,8 @@ function defaultDept(){
   return {id:uid(),name:'Audiología',processes:[]};
 }
 function defaultProcess(name){
-  return {id:uid(),name:name||'Nuevo proceso',detail:'',modules:[]};
+  const color=PROC_COLORS[procColorIndex++ % PROC_COLORS.length];
+  return {id:uid(),name:name||'Nuevo proceso',detail:'',color,modules:[]};
 }
 function defaultModule(isChild=false){
   return {
@@ -567,13 +571,20 @@ function loadState(){
     state.depts.push(d);
     state.activeDeptId=d.id;
     state.activeProcId=p.id;
-  }else{
-    state.activeDeptId=state.activeDeptId||state.depts[0].id;
-    const dept=state.depts.find(x=>x.id===state.activeDeptId);
-    if(dept && dept.processes.length && !state.activeProcId){
-      state.activeProcId=dept.processes[0].id;
-    }
   }
+
+  /* asegurar colores pastel para procesos antiguos */
+  state.depts.forEach(dept=>{
+    dept.processes.forEach(proc=>{
+      if(!proc.color){
+        proc.color=PROC_COLORS[procColorIndex++ % PROC_COLORS.length];
+      }
+    });
+  });
+
+  if(!state.activeDeptId && state.depts[0]) state.activeDeptId=state.depts[0].id;
+  const dept=state.depts.find(x=>x.id===state.activeDeptId);
+  if(dept && !state.activeProcId && dept.processes[0]) state.activeProcId=dept.processes[0].id;
 }
 
 /* ======= SIDEBAR ======= */
@@ -604,7 +615,7 @@ function renderSidebar(){
       item.className='proc-item'+(proc.id===state.activeProcId?' active':'');
       item.onclick=()=>{state.activeDeptId=dept.id;state.activeProcId=proc.id;renderAll();};
       item.innerHTML=`
-        <span class="proc-dot"></span>
+        <span class="proc-dot" style="background:${proc.color||'#a5b4fc'}"></span>
         <span class="proc-name">${proc.name}</span>
         <div class="proc-acts">
           <button class="icon-pill" title="Guardar">💾</button>
@@ -687,7 +698,11 @@ function renderSubprocs(){
   proc.modules.forEach(mod=>{
     container.appendChild(buildModule(mod,false,proc));
   });
-  drawAllFlows();
+
+  requestAnimationFrame(()=>{
+    layoutAllSteps();
+    drawAllFlows();
+  });
 }
 
 function buildModule(mod,isChild,proc){
@@ -738,7 +753,7 @@ function buildModule(mod,isChild,proc){
   stepsArea.className='steps-area';
   const grid=document.createElement('div');
   grid.className='steps-grid';
-  mod.steps.forEach((st,idx)=>grid.appendChild(buildStep(mod,st,idx)));
+  mod.steps.forEach((st,idx)=>grid.appendChild(buildStep(mod,st,idx,proc.color)));
   stepsArea.appendChild(grid);
   block.appendChild(stepsArea);
 
@@ -748,7 +763,7 @@ function buildModule(mod,isChild,proc){
 }
 
 /* ======= PASO ======= */
-function buildStep(mod,st,idx){
+function buildStep(mod,st,idx,procColor){
   const wrap=document.createElement('div');
   wrap.className='step-wrap';
   wrap.dataset.stepId=st.id;
@@ -774,6 +789,15 @@ function buildStep(mod,st,idx){
       <div class="next-proc">Etiqueta “Ir a próximo proceso” (escribe aquí si aplica)</div>
       <textarea style="width:100%;margin-top:.25rem;min-height:32px;border-radius:8px;border:1px solid #e5e7eb;padding:.25rem .35rem;font-size:12px;">${st.detail||''}</textarea>
     </div>`;
+
+  /* color pastel del proceso en la banda y el punto */
+  const strip=card.querySelector('.step-strip');
+  const badge=card.querySelector('.step-badge');
+  if(procColor){
+    strip.style.background=procColor;
+    badge.style.background=procColor;
+  }
+
   const titleEl=card.querySelector('.step-title');
   titleEl.oninput=()=>{st.title=titleEl.textContent.trim()||'Paso';};
 
@@ -840,7 +864,36 @@ function buildStep(mod,st,idx){
   return wrap;
 }
 
-/* ======= FLECHAS 1→2→3→4 (SIN DIAGONALES LOCAS) ======= */
+/* ======= LAYOUT SERPENTINA 1-2-3 / 6-5-4 ======= */
+function layoutStepsSerpentine(container){
+  const wraps=[...container.querySelectorAll('.step-wrap')];
+  if(!wraps.length)return;
+
+  const firstCard=wraps[0].querySelector('.step-card');
+  const cardW=firstCard.offsetWidth||260;
+  const cardH=firstCard.offsetHeight||110;
+  const gapX=24,gapY=40;
+  const cols=3;
+
+  const rows=Math.ceil(wraps.length/cols);
+  for(let i=0;i<wraps.length;i++){
+    const row=Math.floor(i/cols);
+    const idxInRow=i%cols;
+    const col = (row%2===0) ? idxInRow : (cols-1-idxInRow); // fila impar invertida
+
+    const x=col*(cardW+gapX);
+    const y=row*(cardH+gapY);
+    const w=wraps[i];
+    w.style.left=x+'px';
+    w.style.top=y+'px';
+  }
+  container.style.height=rows*(cardH+gapY)+20+'px';
+}
+function layoutAllSteps(){
+  document.querySelectorAll('.steps-grid').forEach(layoutStepsSerpentine);
+}
+
+/* ======= FLECHAS 1→2→3→4 (respeta serpentina) ======= */
 function drawAllFlows(){
   document.querySelectorAll('.steps-area').forEach(area=>{
     const old=area.querySelector('.flow-svg');
@@ -883,7 +936,7 @@ function drawAllFlows(){
     for(let i=0;i<cards.length-1;i++){
       const a=rects[i],b=rects[i+1];
       const s=anchorRight(a),e=anchorLeft(b);
-      const sameRow=Math.abs(a.top-b.top)<20;   // misma fila
+      const sameRow=Math.abs(a.top-b.top)<20;
       const path=document.createElementNS(svgNS,'path');
       let d;
 
@@ -891,7 +944,6 @@ function drawAllFlows(){
         const midX=(s.x+e.x)/2;
         d=`M ${s.x} ${s.y} C ${midX} ${s.y} ${midX} ${e.y} ${e.x} ${e.y}`;
       }else{
-        // siguiente fila: baja desde el centro del paso y luego gira
         const downY=s.y+20;
         const upY=e.y-20;
         const midX=s.x+40;
@@ -986,6 +1038,7 @@ function renderAll(){
 loadState();
 document.getElementById('stamp').textContent='Última actualización '+nowStamp();
 renderAll();
+window.addEventListener('resize',()=>{layoutAllSteps();drawAllFlows();});
 </script>
 </body>
 </html>
