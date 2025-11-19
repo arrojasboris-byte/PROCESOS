@@ -6,24 +6,28 @@
 <title>PROCESOS AUDIO</title>
 <style>
 :root{
-  /* PALETA WARM ROJA + MELOCOTÓN */
-  --bg:#f3f4f6;
+  /* PALETA NEUTRA: FONDOS CLAROS, FALDONES OSCUROS */
+  --bg:#e5e7eb;          /* alrededor */
+  --main-bg:#ffffff;     /* zona de trabajo */
   --ink:#111827;
   --muted:#6b7280;
-  --top-grad:linear-gradient(90deg,#7b1f1f 0%,#c0392b 50%,#7b1f1f 100%);
-  --panel:#111827;
-  --sub-head:#f7c28a;
-  --sub-sub-head:#fde1b7;
-  --pill:#fee2b3;
+
+  --top-grad:linear-gradient(90deg,#7b1f1f 0%,#b91c1c 45%,#7b1f1f 100%);
+
+  --panel-dark:#111827;      /* faldón principal y subprocesos */
+  --panel-dark-soft:#020617;
+
+  --card:#ffffff;            /* pasos */
+  --card-strip:#fde68a;      /* banda pastel ligada a proceso */
+
   --accent:#ef4444;
   --accent-soft:#fecaca;
-  --card:#fffaf2;
-  --step-strip:#fecba1;
-  --shadow-soft:0 8px 18px rgba(0,0,0,.16);
-  --shadow-pill:0 4px 10px rgba(0,0,0,.28);
+
+  --shadow-soft:0 10px 24px rgba(15,23,42,.25);
+  --shadow-card:0 6px 16px rgba(15,23,42,.28);
 }
 
-/* RESET BÁSICO */
+/* RESET */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
@@ -46,15 +50,15 @@ body{
   display:flex;align-items:center;gap:.55rem;
   font-size:22px;font-weight:900;letter-spacing:.03em;
 }
-.logo span.ear{font-size:30px;line-height:1}
+.logo .ear{font-size:30px;line-height:1}
 .top-actions{
   display:flex;align-items:center;gap:.45rem;
   margin-left:auto;
 }
 
-/* Botones 3D rojos, más pequeños y alineados */
+/* Botones 3D rojos pequeños y alineados */
 .btn3d{
-  display:inline-flex;align-items:center;gap:.35rem;
+  display:inline-flex;align-items:center;gap:.3rem;
   padding:.35rem .75rem;
   border-radius:9999px;
   border:none;
@@ -68,29 +72,29 @@ body{
     0 3px 0 rgba(127,29,29,.9),
     0 10px 18px rgba(0,0,0,.45);
 }
-.btn3d span.icon{font-size:15px;line-height:1}
-.btn3d:active{transform:translateY(1px);box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.4),
+.btn3d span.icon{font-size:15px}
+.btn3d:active{
+  transform:translateY(1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.45),
     0 1px 0 rgba(127,29,29,.9),
-    0 6px 10px rgba(0,0,0,.4);
+    0 6px 10px rgba(0,0,0,.45);
 }
 
 .stamp{
   font-size:12px;
-  padding:.2rem .6rem;
+  padding:.2rem .65rem;
   border-radius:9999px;
-  background:rgba(0,0,0,.25);
-  margin-left:.35rem;
+  background:rgba(0,0,0,.28);
 }
 
-/* Buscador global (debajo del topbar rojo) */
+/* buscador global */
 .searchbar-wrap{
   padding:.35rem .8rem .55rem;
   background:#f9fafb;
-  box-shadow:0 4px 10px rgba(0,0,0,.07);
+  box-shadow:0 4px 10px rgba(0,0,0,.06);
 }
 .searchbar{
-  max-width:100%;
   display:flex;align-items:center;
   padding:.45rem .7rem;
   border-radius:9999px;
@@ -101,94 +105,92 @@ body{
   font-weight:600;color:#374151;
 }
 
-/* =================== LAYOUT PRINCIPAL =================== */
+/* =================== LAYOUT =================== */
 .app{
   display:grid;
   grid-template-columns:320px 1fr;
-  gap:0;
-  min-height:calc(100vh - 90px);
+  min-height:calc(100vh - 96px);
 }
 .sidebar{
-  background:#0f172a;
+  background:#0b1120;
   color:#e5e7eb;
   padding:.8rem .7rem 1.2rem;
-  box-shadow:4px 0 18px rgba(0,0,0,.45);
+  box-shadow:4px 0 18px rgba(0,0,0,.55);
   overflow-y:auto;
 }
 .main{
+  background:var(--main-bg);
   padding:.8rem 1rem 1.2rem 1rem;
   overflow:auto;
 }
 
-/* =================== SIDEBAR: departamentos / procesos =================== */
+/* =================== SIDEBAR =================== */
 .dept-header{
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:.4rem;
-  font-weight:800;
-  font-size:15px;
+  font-weight:800;font-size:15px;
 }
-.dept-header small{
-  font-size:11px;
-  opacity:.7;
+.dept-header small{font-size:11px;opacity:.7}
+
+.dept-block{
+  margin-bottom:1rem;
+  border-top:1px solid rgba(148,163,184,.5);
+  padding-top:.6rem;
 }
-.dept-block{margin-bottom:1rem;border-top:1px solid rgba(148,163,184,.5);padding-top:.6rem}
 .dept-title-row{
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:.4rem;
 }
 .dept-title-row strong{font-size:14px}
 .dept-title-row button{
-  background:#111827;border-radius:999px;border:none;color:#e5e7eb;
+  background:#020617;border-radius:999px;border:none;color:#e5e7eb;
   padding:.15rem .45rem;font-size:11px;cursor:pointer;
 }
 
-.proc-list{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.5rem}
+.proc-list{display:flex;flex-direction:column;gap:.3rem}
 .proc-item{
-  position:relative;
   display:flex;align-items:center;gap:.5rem;
-  padding:.45rem .55rem;
+  padding:.45rem .6rem;
   border-radius:12px;
   background:#020617;
-  box-shadow:0 1px 0 rgba(255,255,255,.06),0 4px 10px rgba(0,0,0,.45);
+  box-shadow:0 1px 0 rgba(255,255,255,.06),0 4px 10px rgba(0,0,0,.5);
   cursor:pointer;
 }
 .proc-item.active{
   outline:2px solid var(--accent-soft);
-  box-shadow:0 0 0 1px rgba(248,250,252,.4),0 4px 12px rgba(0,0,0,.7);
+  box-shadow:0 0 0 1px rgba(248,250,252,.4),0 4px 14px rgba(0,0,0,.75);
 }
 .proc-dot{
   width:10px;height:10px;border-radius:999px;
   background:#22c55e;
-  box-shadow:0 0 0 2px rgba(15,23,42,.7);
+  box-shadow:0 0 0 2px rgba(15,23,42,.8);
 }
 .proc-name{flex:1;font-weight:700;font-size:13px}
-.proc-acts{display:flex;align-items:center;gap:.2rem}
+.proc-acts{display:flex;align-items:center;gap:.25rem}
 .icon-pill{
   width:26px;height:26px;border-radius:999px;
   border:none;cursor:pointer;
   background:#111827;color:#e5e7eb;
   display:flex;align-items:center;justify-content:center;
   font-size:13px;
-  box-shadow:0 2px 5px rgba(0,0,0,.6);
+  box-shadow:0 2px 5px rgba(0,0,0,.65);
 }
 .icon-pill:active{transform:translateY(1px)}
 
-/* =================== MAIN: Cabecera proceso =================== */
+/* =================== CABECERA PROCESO =================== */
 .proc-header{
-  background:#0f172a;
+  background:var(--panel-dark);
   color:#f9fafb;
-  border-radius:16px;
+  border-radius:14px;
   padding:.6rem .9rem;
   box-shadow:var(--shadow-soft);
-  margin-bottom:.7rem;
-  display:flex;align-items:center;gap:.6rem;
+  margin-bottom:.8rem;
+  display:flex;align-items:center;gap:.7rem;
 }
 .proc-header h1{
-  font-size:18px;font-weight:900;margin-right:.7rem;
+  font-size:18px;font-weight:900;margin-right:.6rem;
 }
-.proc-header small{
-  font-size:11px;opacity:.7;
-}
+.proc-header small{font-size:11px;opacity:.7}
 .proc-header-right{
   margin-left:auto;
   display:flex;align-items:center;gap:.4rem;
@@ -203,22 +205,19 @@ body{
 .sub-block{
   position:relative;
   margin-bottom:1.2rem;
-  background:#111827;
-  border-radius:18px;
-  box-shadow:var(--shadow-soft);
-  padding:0 0 .75rem 0;
+  border-radius:14px;
+  background:#f3f4f6;
+  box-shadow:0 6px 16px rgba(15,23,42,.18);
 }
 .sub-head{
   display:flex;align-items:center;gap:.6rem;
   padding:.5rem .8rem;
-  border-radius:18px 18px 0 0;
-  background:var(--sub-head);
-  color:#1f2937;
+  border-radius:14px 14px 0 0;
+  background:var(--panel-dark);
+  color:#f9fafb;
   font-weight:800;
 }
-.sub-head-title{
-  flex:1;
-}
+.sub-head-title{flex:1}
 .sub-head select{
   border-radius:999px;border:none;
   padding:.2rem .6rem;
@@ -231,53 +230,53 @@ body{
   display:inline-flex;align-items:center;gap:.25rem;
   padding:.25rem .6rem;
   border-radius:9999px;
-  background:#111827;
+  background:#0b1120;
   color:#f9fafb;
   font-size:12px;
 }
 .badge-save span.icon{font-size:13px}
 
-/* Sub-subproceso (hijo) */
+/* SUB-SUBPROCESO */
 .sub-child{
   position:relative;
-  margin:.75rem .75rem 0 .75rem;
-  border-radius:16px;
-  border:1px dashed rgba(249,115,22,.65);
-  background:#020617;
-  box-shadow:0 4px 14px rgba(0,0,0,.7);
+  margin:.75rem .9rem .9rem .9rem;
+  border-radius:12px;
+  background:#f3f4f6;
+  border:1px dashed rgba(148,163,184,.9);
+  box-shadow:0 4px 12px rgba(15,23,42,.18);
 }
 .sub-child-head{
   display:flex;align-items:center;gap:.6rem;
-  padding:.4rem .7rem;
-  border-radius:16px 16px 0 0;
-  background:var(--sub-sub-head);
-  color:#1f2937;
+  padding:.45rem .75rem;
+  border-radius:12px 12px 0 0;
+  background:#1f2937;
+  color:#f9fafb;
   font-weight:800;
 }
-.sub-child .badge-save{background:#111827}
+.sub-child .badge-save{background:#020617}
 
-/* Conector discontínuo de faldón a faldón */
+/* línea discontinua desde faldón padre hasta faldón hijo */
 .sub-child::before{
   content:"";
   position:absolute;
   top:-18px;left:40px;
   width:0;height:18px;
-  border-left:2px dashed rgba(249,115,22,.8);
+  border-left:2px dashed rgba(148,163,184,.95);
 }
 .sub-child::after{
   content:"";
   position:absolute;
   top:-4px;left:34px;
   width:12px;height:12px;
-  border-right:2px dashed rgba(249,115,22,.8);
-  border-bottom:2px dashed rgba(249,115,22,.8);
+  border-right:2px dashed rgba(148,163,184,.95);
+  border-bottom:2px dashed rgba(148,163,184,.95);
   transform:rotate(45deg);
 }
 
 /* =================== STEPS =================== */
 .steps-area{
   position:relative;
-  padding:.7rem .8rem 1rem .8rem;
+  padding:.7rem .9rem 1.1rem .9rem;
 }
 .steps-grid{
   position:relative;
@@ -289,7 +288,7 @@ body{
 /* wrapper para card + "ver más" */
 .step-wrap{
   position:relative;
-  padding-bottom:18px;        /* espacio para el ver más */
+  padding-bottom:18px; /* espacio para ver más */
 }
 
 /* tarjeta de paso */
@@ -297,8 +296,8 @@ body{
   position:relative;
   background:var(--card);
   border-radius:16px;
-  box-shadow:0 6px 14px rgba(15,23,42,.35);
-  padding:.55rem .6rem .65rem .6rem;
+  box-shadow:var(--shadow-card);
+  padding:.6rem .65rem .7rem .65rem;
   border:1px solid rgba(148,163,184,.7);
 }
 .step-strip{
@@ -306,24 +305,24 @@ body{
   inset:0 auto 0 0;
   width:10px;
   border-radius:16px 0 0 16px;
-  background:var(--step-strip);
+  background:var(--card-strip);
 }
 
 /* número circular */
 .step-badge{
   position:relative;
   z-index:2;
-  width:28px;height:28px;
+  width:26px;height:26px;
   border-radius:999px;
-  background:radial-gradient(circle at 30% 20%,#fef3c7,#f97316);
-  box-shadow:0 3px 6px rgba(0,0,0,.45);
+  background:radial-gradient(circle at 30% 20%,#eff6ff,#60a5fa);
+  box-shadow:0 3px 6px rgba(15,23,42,.45);
   display:flex;align-items:center;justify-content:center;
-  font-weight:900;font-size:13px;
+  font-weight:800;font-size:13px;
   color:#111827;
   margin-bottom:.25rem;
 }
 
-/* título del paso: se parte en varias líneas, no crece a lo ancho */
+/* título del paso: multilinea, no crece a lo ancho */
 .step-title{
   position:relative;
   z-index:2;
@@ -333,15 +332,13 @@ body{
   margin-right:40px;
   word-wrap:break-word;
 }
-.step-title[contenteditable="true"]{
-  outline:none;
-}
+.step-title[contenteditable="true"]{outline:none}
 
 /* lápiz flotante */
 .step-edit{
   position:absolute;
   right:10px;bottom:10px;
-  width:34px;height:34px;
+  width:32px;height:32px;
   border-radius:999px;
   border:none;
   background:#111827;
@@ -349,14 +346,14 @@ body{
   display:flex;align-items:center;justify-content:center;
   font-size:15px;
   cursor:pointer;
-  box-shadow:0 4px 10px rgba(0,0,0,.6);
+  box-shadow:0 4px 10px rgba(0,0,0,.55);
 }
 .step-edit:active{transform:translateY(1px)}
 
-/* menú flotante del lápiz */
+/* menú del lápiz */
 .edit-menu{
   position:absolute;
-  right:6px;bottom:52px;
+  right:6px;bottom:50px;
   padding:.25rem .35rem;
   border-radius:9999px;
   background:#020617;
@@ -364,13 +361,13 @@ body{
   box-shadow:0 6px 16px rgba(0,0,0,.8);
 }
 .edit-menu button{
-  width:28px;height:28px;
+  width:26px;height:26px;
   border-radius:999px;
   border:none;
   background:#111827;
   color:#e5e7eb;
+  font-size:13px;
   cursor:pointer;
-  font-size:14px;
 }
 .edit-menu button:active{transform:translateY(1px)}
 
@@ -386,11 +383,12 @@ body{
   color:#111827;
   display:inline-flex;align-items:center;gap:.25rem;
   cursor:pointer;
-  box-shadow:0 2px 6px rgba(0,0,0,.4);
+  box-shadow:0 2px 5px rgba(0,0,0,.35);
 }
-.more-pill span.hand{font-size:13px}
+.more-pill strong{font-weight:800}
+.more-pill .hand{font-size:13px}
 
-/* bloque oculto SÍ/NO */
+/* bloque detalle SÍ/NO */
 .step-detail{
   margin-top:.55rem;
   padding:.4rem .45rem .5rem;
@@ -401,9 +399,7 @@ body{
 }
 .step-detail.open{display:block;}
 
-.sn-row{
-  display:flex;gap:.45rem;margin-bottom:.35rem;
-}
+.sn-row{display:flex;gap:.45rem;margin-bottom:.35rem}
 .sn-col{
   flex:1;
   background:#fff;
@@ -425,7 +421,6 @@ body{
   font-size:12px;
 }
 
-/* etiqueta Ir a próximo proceso siempre visible dentro de detalle */
 .next-proc{
   margin-top:.25rem;
   font-size:11px;
@@ -440,7 +435,7 @@ body{
   overflow:visible;
 }
 
-/* =================== PIN BLOQUEO LECTURA =================== */
+/* =================== PIN LECTURA =================== */
 body.pa-locked .lock-block{pointer-events:none;opacity:.55}
 body.pa-locked [contenteditable]{pointer-events:none}
 body.pa-locked textarea{pointer-events:none}
@@ -463,7 +458,6 @@ body.pa-locked .edit-menu{display:none!important}
 
 @media (max-width:1024px){
   .app{grid-template-columns:260px 1fr}
-  .steps-grid{grid-template-columns:repeat(2,minmax(240px,1fr));}
 }
 @media (max-width:820px){
   .app{grid-template-columns:1fr}
@@ -474,7 +468,7 @@ body.pa-locked .edit-menu{display:none!important}
 </style>
 </head>
 <body>
-  <!-- ========= TOPBAR ========= -->
+  <!-- TOPBAR -->
   <div class="topbar">
     <div class="logo"><span class="ear">🎧</span> PROCESOS AUDIO</div>
     <div class="top-actions">
@@ -488,14 +482,14 @@ body.pa-locked .edit-menu{display:none!important}
     </div>
   </div>
 
-  <!-- buscador -->
+  <!-- BUSCADOR -->
   <div class="searchbar-wrap">
     <div class="searchbar">
       <input id="globalSearch" placeholder="Buscar departamento, proceso, subproceso, paso…">
     </div>
   </div>
 
-  <!-- ========= LAYOUT PRINCIPAL ========= -->
+  <!-- LAYOUT -->
   <div class="app">
     <aside class="sidebar">
       <div class="dept-header">
@@ -514,7 +508,7 @@ body.pa-locked .edit-menu{display:none!important}
   <div id="toast" class="pa-toast"></div>
 
 <script>
-/* ============== UTILIDADES BÁSICAS ============== */
+/* ======= UTILIDADES ======= */
 const LSKEY='pa_departamentos_v1';
 const PIN_CODE='AR4321';
 
@@ -523,7 +517,6 @@ const nowStamp=()=>{
   const d=new Date(),p=n=>String(n).padStart(2,'0');
   return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()}, ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 };
-
 function toast(msg){
   const el=document.getElementById('toast');
   el.textContent=msg;
@@ -531,30 +524,17 @@ function toast(msg){
   setTimeout(()=>el.classList.remove('show'),2300);
 }
 
-/* ============== ESTADO ============== */
-const state={
-  depts:[],
-  activeDeptId:null,
-  activeProcId:null
-};
+/* ======= ESTADO ======= */
+const state={depts:[],activeDeptId:null,activeProcId:null};
 
 function defaultDept(){
-  return {
-    id:uid(),
-    name:'Audiología',
-    processes:[]
-  };
+  return {id:uid(),name:'Audiología',processes:[]};
 }
 function defaultProcess(name){
-  return {
-    id:uid(),
-    name:name||'Nuevo proceso',
-    detail:'',
-    modules:[]
-  };
+  return {id:uid(),name:name||'Nuevo proceso',detail:'',modules:[]};
 }
 function defaultModule(isChild=false){
-  return{
+  return {
     id:uid(),
     title:isChild?'Nuevo subproceso - Sub':'Nuevo subproceso',
     owner:'Audiólogo',
@@ -564,17 +544,10 @@ function defaultModule(isChild=false){
   };
 }
 function defaultStep(){
-  return{
-    id:uid(),
-    title:'Nuevo paso',
-    detail:'',
-    yes:'',
-    no:'',
-    collapsedDetail:true
-  };
+  return{ id:uid(),title:'Nuevo paso',detail:'',yes:'',no:'',collapsedDetail:true };
 }
 
-/* ============== PERSISTENCIA ============== */
+/* ======= PERSISTENCIA ======= */
 function saveState(){
   localStorage.setItem(LSKEY,JSON.stringify(state));
   document.getElementById('stamp').textContent='Última actualización '+nowStamp();
@@ -582,41 +555,40 @@ function saveState(){
 function loadState(){
   const raw=localStorage.getItem(LSKEY);
   if(raw){
-    try{
-      const obj=JSON.parse(raw);
-      if(obj.depts){ Object.assign(state,obj); }
-    }catch(e){console.error(e);}
+    try{Object.assign(state,JSON.parse(raw));}catch(e){console.error(e);}
   }
   if(!state.depts.length){
     const d=defaultDept();
-    d.processes.push(defaultProcess('Revisión auditiva'));
+    const p=defaultProcess('Revisión auditiva');
+    const m=defaultModule(false);
+    m.steps.push(defaultStep(),defaultStep(),defaultStep(),defaultStep());
+    p.modules.push(m);
+    d.processes.push(p);
     state.depts.push(d);
     state.activeDeptId=d.id;
-    state.activeProcId=d.processes[0].id;
-    d.processes[0].modules.push(defaultModule(false));
-    d.processes[0].modules[0].steps.push(defaultStep(),defaultStep(),defaultStep());
+    state.activeProcId=p.id;
   }else{
     state.activeDeptId=state.activeDeptId||state.depts[0].id;
-    const dept=state.depts.find(d=>d.id===state.activeDeptId);
+    const dept=state.depts.find(x=>x.id===state.activeDeptId);
     if(dept && dept.processes.length && !state.activeProcId){
       state.activeProcId=dept.processes[0].id;
     }
   }
 }
 
-/* ============== RENDER SIDEBAR ============== */
+/* ======= SIDEBAR ======= */
 function renderSidebar(){
   const wrap=document.getElementById('deptContainer');
   wrap.innerHTML='';
   state.depts.forEach(dept=>{
     const block=document.createElement('div');
     block.className='dept-block';
+
     const title=document.createElement('div');
     title.className='dept-title-row';
     title.innerHTML=`<strong>${dept.name}</strong>
       <button data-dept="${dept.id}">Procesos (${dept.processes.length}) +</button>`;
-    title.querySelector('button').onclick=(e)=>{
-      e.stopPropagation();
+    title.querySelector('button').onclick=()=>{
       const p=defaultProcess('Nuevo proceso');
       dept.processes.push(p);
       state.activeDeptId=dept.id;
@@ -640,14 +612,14 @@ function renderSidebar(){
           <button class="icon-pill" title="Eliminar">🗑</button>
         </div>`;
       const [bSave,bRen,bDel]=item.querySelectorAll('.icon-pill');
-      bSave.onclick=(ev)=>{ev.stopPropagation();saveState();toast('Proceso guardado');};
-      bRen.onclick=(ev)=>{
-        ev.stopPropagation();
+      bSave.onclick=e=>{e.stopPropagation();saveState();toast('Proceso guardado');};
+      bRen.onclick=e=>{
+        e.stopPropagation();
         const nn=prompt('Nombre del proceso',proc.name);
         if(nn){proc.name=nn;saveState();renderAll();}
       };
-      bDel.onclick=(ev)=>{
-        ev.stopPropagation();
+      bDel.onclick=e=>{
+        e.stopPropagation();
         if(!confirm('¿Eliminar proceso y todos sus subprocesos y pasos?'))return;
         dept.processes=dept.processes.filter(p=>p.id!==proc.id);
         if(dept.processes[0]) state.activeProcId=dept.processes[0].id; else state.activeProcId=null;
@@ -660,14 +632,15 @@ function renderSidebar(){
   });
 }
 
-/* ============== RENDER CABECERA PROCESO ============== */
+/* ======= HELPERS ======= */
 function getActive(){
-  const dept=state.depts.find(d=>d.id===state.activeDeptId) || state.depts[0];
+  const dept=state.depts.find(d=>d.id===state.activeDeptId)||state.depts[0];
   const proc=dept?dept.processes.find(p=>p.id===state.activeProcId)||dept.processes[0]:null;
-  if(dept && proc){ state.activeDeptId=dept.id; state.activeProcId=proc.id; }
+  if(dept && proc){state.activeDeptId=dept.id;state.activeProcId=proc.id;}
   return {dept,proc};
 }
 
+/* ======= CABECERA PROCESO ======= */
 function renderProcHeader(){
   const {dept,proc}=getActive();
   const wrap=document.getElementById('procHeader');
@@ -681,13 +654,13 @@ function renderProcHeader(){
     <small>${dept.name}</small>
     <div class="proc-header-right">
       <select id="selOwner">
-        <option>Audíologo</option>
+        <option>Audiólogo</option>
         <option>Responsable</option>
         <option>Otros</option>
       </select>
-      <button id="btnAddModule" class="btn3d" style="transform:scale(.85)"><span class="icon">➕</span>Subproceso</button>
-      <button id="btnAddStepGlobal" class="btn3d" style="transform:scale(.85)"><span class="icon">➕</span>Paso</button>
-      <button id="btnProcSave" class="btn3d" style="transform:scale(.85)"><span class="icon">🎯</span>Guardar proceso</button>
+      <button id="btnAddModule" class="btn3d" style="transform:scale(.8)"><span class="icon">➕</span>Subproceso</button>
+      <button id="btnAddStepGlobal" class="btn3d" style="transform:scale(.8)"><span class="icon">➕</span>Paso</button>
+      <button id="btnProcSave" class="btn3d" style="transform:scale(.8)"><span class="icon">🎯</span>Guardar proceso</button>
     </div>`;
   wrap.appendChild(box);
 
@@ -704,7 +677,7 @@ function renderProcHeader(){
   document.getElementById('btnProcSave').onclick=()=>{saveState();toast('Proceso guardado');};
 }
 
-/* ============== RENDER SUBPROCESOS Y PASOS ============== */
+/* ======= SUBPROCESOS / SUB-SUBPROCESOS ======= */
 function renderSubprocs(){
   const {proc}=getActive();
   const container=document.getElementById('subContainer');
@@ -717,13 +690,12 @@ function renderSubprocs(){
   drawAllFlows();
 }
 
-/* crea módulo (subproceso o sub-subproceso) */
 function buildModule(mod,isChild,proc){
   const block=document.createElement('div');
   block.className=isChild?'sub-child':'sub-block';
 
   const head=document.createElement('div');
-  head.className=isChild?'sub-child-head sub-head':'sub-head';
+  head.className=isChild?'sub-child-head':'sub-head';
   head.innerHTML=`
     <div class="sub-head-title" contenteditable="true">${mod.title}</div>
     <select>
@@ -732,25 +704,22 @@ function buildModule(mod,isChild,proc){
       <option ${mod.owner==='Otros'?'selected':''}>Otros</option>
     </select>
     <div class="head-actions">
-      <button class="btn3d" style="transform:scale(.75)"><span class="icon">📝</span>Detalle</button>
-      <button class="btn3d" style="transform:scale(.75)"><span class="icon">➕</span>Paso</button>
-      <button class="btn3d" style="transform:scale(.75)"><span class="icon">➕</span>Sub/subproceso</button>
+      <button class="btn3d" style="transform:scale(.7)"><span class="icon">📝</span>Detalle</button>
+      <button class="btn3d" style="transform:scale(.7)"><span class="icon">➕</span>Paso</button>
+      <button class="btn3d" style="transform:scale(.7)"><span class="icon">➕</span>Sub/subproceso</button>
       <span class="badge-save"><span class="icon">💾</span>Guardar</span>
-      <button class="btn3d" style="transform:scale(.75)"><span class="icon">✖</span></button>
+      <button class="btn3d" style="transform:scale(.7)"><span class="icon">✖</span></button>
     </div>`;
-  const [sel]=head.querySelectorAll('select');
-  sel.onchange=e=>{mod.owner=e.target.value;saveState();};
   const titleEl=head.querySelector('.sub-head-title');
   titleEl.oninput=()=>{mod.title=titleEl.textContent.trim()||'Subproceso';};
+  const [sel]=head.getElementsByTagName('select');
+  sel.onchange=e=>{mod.owner=e.target.value;saveState();};
   const [btnDet,btnPaso,btnSubSub,btnSave,btnDel]=head.querySelectorAll('.head-actions > *');
   btnDet.onclick=()=>{
     const txt=prompt('Detalle del subproceso',mod.detail||'');
     if(txt!==null){mod.detail=txt;saveState();}
   };
-  btnPaso.onclick=()=>{
-    mod.steps.push(defaultStep());
-    saveState();renderSubprocs();
-  };
+  btnPaso.onclick=()=>{mod.steps.push(defaultStep());saveState();renderSubprocs();};
   btnSubSub.onclick=()=>{
     const child=defaultModule(true);
     mod.children.push(child);
@@ -762,29 +731,23 @@ function buildModule(mod,isChild,proc){
     proc.modules=proc.modules.filter(m=>m.id!==mod.id);
     saveState();renderSubprocs();
   };
+
   block.appendChild(head);
 
-  /* steps */
   const stepsArea=document.createElement('div');
   stepsArea.className='steps-area';
   const grid=document.createElement('div');
   grid.className='steps-grid';
-
-  mod.steps.forEach((st,idx)=>{
-    grid.appendChild(buildStep(mod,st,idx));
-  });
+  mod.steps.forEach((st,idx)=>grid.appendChild(buildStep(mod,st,idx)));
   stepsArea.appendChild(grid);
   block.appendChild(stepsArea);
 
-  /* hijos (sub-subprocesos) */
-  mod.children.forEach(ch=>{
-    block.appendChild(buildModule(ch,true,proc));
-  });
+  mod.children.forEach(ch=>block.appendChild(buildModule(ch,true,proc)));
 
   return block;
 }
 
-/* construcción de un paso */
+/* ======= PASO ======= */
 function buildStep(mod,st,idx){
   const wrap=document.createElement('div');
   wrap.className='step-wrap';
@@ -810,21 +773,20 @@ function buildStep(mod,st,idx){
       </div>
       <div class="next-proc">Etiqueta “Ir a próximo proceso” (escribe aquí si aplica)</div>
       <textarea style="width:100%;margin-top:.25rem;min-height:32px;border-radius:8px;border:1px solid #e5e7eb;padding:.25rem .35rem;font-size:12px;">${st.detail||''}</textarea>
-    </div>
-  `;
+    </div>`;
   const titleEl=card.querySelector('.step-title');
   titleEl.oninput=()=>{st.title=titleEl.textContent.trim()||'Paso';};
 
   const detailBox=card.querySelector('.step-detail');
   const [yesTA,noTA,detailTA]=detailBox.querySelectorAll('textarea');
-  yesTA.oninput=()=>{st.yes=yesTA.value;};
-  noTA.oninput=()=>{st.no=noTA.value;};
-  detailTA.oninput=()=>{st.detail=detailTA.value;};
+  yesTA.oninput=()=>{st.yes=yesTA.value;saveState();};
+  noTA.oninput=()=>{st.no=noTA.value;saveState();};
+  detailTA.oninput=()=>{st.detail=detailTA.value;saveState();};
 
   /* menú lápiz */
   const editBtn=card.querySelector('.step-edit');
   let menu=null;
-  editBtn.onclick=(e)=>{
+  editBtn.onclick=e=>{
     e.stopPropagation();
     if(menu){menu.remove();menu=null;return;}
     menu=document.createElement('div');
@@ -838,16 +800,16 @@ function buildStep(mod,st,idx){
     const [bSave,bDoc,bLink,bHelp,bDel]=menu.querySelectorAll('button');
     bSave.onclick=()=>{saveState();toast('Paso guardado');};
     bDoc.onclick=()=>{
-      const input=document.createElement('input');
-      input.type='file';
-      input.onchange=()=>toast('Documento adjuntado (referencia local)');
-      input.click();
+      const inp=document.createElement('input');
+      inp.type='file';
+      inp.onchange=()=>toast('Documento adjuntado (referencia local)');
+      inp.click();
     };
     bLink.onclick=()=>{
       const url=prompt('Pega el enlace a adjuntar');
-      if(url){toast('Enlace guardado en el paso');}
+      if(url)toast('Enlace guardado en el paso');
     };
-    bHelp.onclick=()=>alert('Este botón puede usarse para notas de ayuda del paso.');
+    bHelp.onclick=()=>alert('Puedes usar este paso para documentar instrucciones o ayudas.');
     bDel.onclick=()=>{
       if(!confirm('¿Eliminar este paso?'))return;
       mod.steps=mod.steps.filter(x=>x.id!==st.id);
@@ -856,35 +818,29 @@ function buildStep(mod,st,idx){
     card.appendChild(menu);
   };
 
-  /* Ver más */
-  const hasExtra = st.yes || st.no || st.detail;
+  /* ver más */
   const pill=document.createElement('div');
   pill.className='more-pill';
   pill.innerHTML=`<strong>ver más</strong><span class="hand">👇</span>`;
-  if(!hasExtra && st.collapsedDetail) pill.style.display='none';
+  const showPill=()=>{ if(yesTA.value||noTA.value||detailTA.value) pill.style.display='inline-flex'; };
+  if(!st.yes && !st.no && !st.detail && st.collapsedDetail) pill.style.display='none';
+  yesTA.addEventListener('input',showPill);
+  noTA.addEventListener('input',showPill);
+  detailTA.addEventListener('input',showPill);
+
   pill.onclick=()=>{
     st.collapsedDetail=!st.collapsedDetail;
-    if(st.collapsedDetail){
-      detailBox.classList.remove('open');
-    }else{
-      detailBox.classList.add('open');
-    }
+    if(st.collapsedDetail) detailBox.classList.remove('open');
+    else detailBox.classList.add('open');
+    saveState();
   };
-
-  /* mostrar pill también cuando se escriba algo por primera vez */
-  ['input','change'].forEach(ev=>{
-    detailBox.addEventListener(ev,()=>{
-      if(yesTA.value || noTA.value || detailTA.value) pill.style.display='inline-flex';
-      saveState();
-    });
-  });
 
   wrap.appendChild(card);
   wrap.appendChild(pill);
   return wrap;
 }
 
-/* ============== FLECHAS ENTRE PASOS (3 en fila) ============== */
+/* ======= FLECHAS 1→2→3→4 (SIN DIAGONALES LOCAS) ======= */
 function drawAllFlows(){
   document.querySelectorAll('.steps-area').forEach(area=>{
     const old=area.querySelector('.flow-svg');
@@ -894,8 +850,8 @@ function drawAllFlows(){
     const cards=[...grid.querySelectorAll('.step-card')];
     if(cards.length<2)return;
 
-    const svgNS='http://www.w3.org/2000/svg';
     const rect=grid.getBoundingClientRect();
+    const svgNS='http://www.w3.org/2000/svg';
     const svg=document.createElementNS(svgNS,'svg');
     svg.classList.add('flow-svg');
     svg.setAttribute('viewBox',`0 0 ${rect.width} ${rect.height}`);
@@ -908,76 +864,95 @@ function drawAllFlows(){
     marker.setAttribute('refX','7');
     marker.setAttribute('refY','4');
     marker.setAttribute('orient','auto');
-    const path=document.createElementNS(svgNS,'path');
-    path.setAttribute('d','M0,0 L8,4 L0,8 Z');
-    path.setAttribute('fill','#d1d5db');
-    marker.appendChild(path);
+    const head=document.createElementNS(svgNS,'path');
+    head.setAttribute('d','M0,0 L8,4 L0,8 Z');
+    head.setAttribute('fill','#d1d5db');
+    marker.appendChild(head);
     defs.appendChild(marker);
     svg.appendChild(defs);
 
     const rects=cards.map(c=>c.getBoundingClientRect());
-    function centerRight(r){
+
+    function anchorRight(r){
       return {x:r.right-rect.left,y:(r.top+r.bottom)/2-rect.top};
     }
-    function centerLeft(r){
+    function anchorLeft(r){
       return {x:r.left-rect.left,y:(r.top+r.bottom)/2-rect.top};
     }
 
     for(let i=0;i<cards.length-1;i++){
       const a=rects[i],b=rects[i+1];
-      const s=centerRight(a),e=centerLeft(b);
-      const midX=(s.x+e.x)/2;
-      const d=`M ${s.x} ${s.y} C ${midX} ${s.y} ${midX} ${e.y} ${e.x} ${e.y}`;
-      const p=document.createElementNS(svgNS,'path');
-      p.setAttribute('d',d);
-      p.setAttribute('fill','none');
-      p.setAttribute('stroke','#d1d5db');
-      p.setAttribute('stroke-width','3');
-      p.setAttribute('marker-end','url(#arrowHead)');
-      svg.appendChild(p);
+      const s=anchorRight(a),e=anchorLeft(b);
+      const sameRow=Math.abs(a.top-b.top)<20;   // misma fila
+      const path=document.createElementNS(svgNS,'path');
+      let d;
+
+      if(sameRow){
+        const midX=(s.x+e.x)/2;
+        d=`M ${s.x} ${s.y} C ${midX} ${s.y} ${midX} ${e.y} ${e.x} ${e.y}`;
+      }else{
+        // siguiente fila: baja desde el centro del paso y luego gira
+        const downY=s.y+20;
+        const upY=e.y-20;
+        const midX=s.x+40;
+        d=`M ${s.x} ${s.y}
+           L ${s.x+20} ${s.y}
+           L ${s.x+20} ${downY}
+           L ${midX} ${downY}
+           L ${midX} ${upY}
+           L ${e.x-10} ${upY}
+           L ${e.x-10} ${e.y}
+           L ${e.x} ${e.y}`;
+      }
+      path.setAttribute('d',d);
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke','#d1d5db');
+      path.setAttribute('stroke-width','3');
+      path.setAttribute('marker-end','url(#arrowHead)');
+      svg.appendChild(path);
     }
+
     area.appendChild(svg);
   });
 }
 
-/* ============== PIN BLOQUEO ============== */
+/* ======= PIN LECTURA ======= */
 function applyPin(){
   const locked=sessionStorage.getItem('PA_PIN_OK')!=='1';
   document.body.classList.toggle('pa-locked',locked);
 }
 document.getElementById('btnPin').onclick=()=>{
   if(sessionStorage.getItem('PA_PIN_OK')==='1'){
-    sessionStorage.removeItem('PA_PIN_OK');applyPin();toast('Modo lectura activado');
+    sessionStorage.removeItem('PA_PIN_OK');
+    applyPin();toast('Modo lectura activado');
   }else{
     const v=prompt('Introduce PIN para editar (AR4321)');
-    if(v===PIN_CODE){sessionStorage.setItem('PA_PIN_OK','1');toast('Edición habilitada');applyPin();}
+    if(v===PIN_CODE){sessionStorage.setItem('PA_PIN_OK','1');applyPin();toast('Edición habilitada');}
     else if(v!==null)toast('PIN incorrecto');
   }
 };
 
-/* ============== BUSCADOR ============== */
+/* ======= BUSCADOR ======= */
 document.getElementById('globalSearch').addEventListener('input',e=>{
   const q=e.target.value.toLowerCase().trim();
   document.querySelectorAll('.proc-item').forEach(el=>{
     const txt=el.querySelector('.proc-name').textContent.toLowerCase();
-    el.style.display=(!q || txt.includes(q))?'flex':'none';
+    el.style.display=(!q||txt.includes(q))?'flex':'none';
   });
 });
 
-/* ============== NUEVO DEPARTAMENTO ============== */
+/* ======= NUEVO DEPARTAMENTO ======= */
 document.getElementById('btnNewDept').onclick=()=>{
   const name=prompt('Nombre del nuevo departamento','Nuevo departamento');
   if(!name)return;
-  const d=defaultDept();
-  d.name=name;
-  d.processes=[];
+  const d=defaultDept();d.name=name;d.processes=[];
   state.depts.push(d);
   state.activeDeptId=d.id;
   state.activeProcId=null;
   saveState();renderAll();
 };
 
-/* ============== OTROS BOTONES DE UTILIDAD (PDF/HTML/NUBE) ============== */
+/* ======= TOOLS TOPBAR ======= */
 document.getElementById('btnGlobalSave').onclick=()=>{saveState();toast('Todo guardado');};
 
 document.getElementById('btnHtml').onclick=()=>{
@@ -998,11 +973,9 @@ document.getElementById('btnCloudSave').onclick=()=>{
   }catch(e){toast('No se pudo guardar la copia');}
 };
 
-document.getElementById('btnPdf').onclick=()=>{
-  window.print();
-};
+document.getElementById('btnPdf').onclick=()=>window.print();
 
-/* ============== RENDER GLOBAL ============== */
+/* ======= RENDER GLOBAL ======= */
 function renderAll(){
   renderSidebar();
   renderProcHeader();
